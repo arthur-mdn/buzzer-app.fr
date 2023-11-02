@@ -1,12 +1,87 @@
-// models/Server.js
+// models/GameServer.js
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const serverSchema = new Schema({
-    name: String,
-    code: String, // vous pouvez générer un code unique pour chaque serveur
-    hostId: String, // référence à l'ID de l'utilisateur qui a créé le serveur
-    // autres champs selon vos besoins
+const playerSchema = new Schema({
+    userId: String,
+    score: Number,
+    state: String, // par exemple, 'waiting', 'buzzed', 'answered'
 });
 
-module.exports = mongoose.model('Server', serverSchema);
+const GameServerSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+    },
+    code: {
+        type: String,
+        required: true,
+    },
+    hostId: {
+        type: String, // ceci stocke l'ID de l'hôte
+        required: true,
+    },
+    gameStatus: {
+        type: String, // ceci stocke l'ID de l'hôte
+        required: true,
+        default: "waiting"
+    },
+    players: [
+        {
+            user: {
+                type: Schema.Types.ObjectId,
+                ref: 'User',
+                required: true
+            },
+            state: {
+                type: String,
+                required: true,
+                default: "offline"
+            },
+            score: {
+                type: Number,
+                required: true,
+                default: 0
+            },
+            wins: {
+                type: Number,
+                required: true,
+                default: 0
+            },
+            role: {
+                type: String,
+                required: true,
+                default: "user"
+            }
+        }
+    ],
+    buzzOrder: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    options: {
+        autoRestartAfterDecline: {
+            type: Boolean,
+            required:true,
+            default: true
+        },
+        answerPoint: {
+            type: Number,
+            required:true,
+            default: 1
+        },
+        winPoint: {
+            type: Number,
+            required:true,
+            default: 10
+        },
+        deductPointOnWrongAnswer: {
+            type: Boolean,
+            required: true,
+            default: false
+        }
+    }
+});
+
+module.exports = mongoose.model('GameServer', GameServerSchema);
+

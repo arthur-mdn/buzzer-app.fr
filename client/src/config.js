@@ -1,5 +1,5 @@
 module.exports = {
-    dbUri: process.env.DB_URI,
     port: process.env.PORT || 3000,
-    clientUrl: process.env.CLIENT_URL
+    instanceUrl: process.env.REACT_APP_INSTANCE_URL,
+    serverUrl: process.env.REACT_APP_SERVER_URL,
 };

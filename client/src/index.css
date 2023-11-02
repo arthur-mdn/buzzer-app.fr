@@ -1,3 +1,30 @@
+@font-face {
+  font-family: "Fredoka One";
+  src: url("https://db.onlinewebfonts.com/t/5165c0facbfede7afe6c9ef3fd635f11.eot");
+  src: url("https://db.onlinewebfonts.com/t/5165c0facbfede7afe6c9ef3fd635f11.eot?#iefix")format("embedded-opentype"),
+  url("https://db.onlinewebfonts.com/t/5165c0facbfede7afe6c9ef3fd635f11.woff2")format("woff2"),
+  url("https://db.onlinewebfonts.com/t/5165c0facbfede7afe6c9ef3fd635f11.woff")format("woff"),
+  url("https://db.onlinewebfonts.com/t/5165c0facbfede7afe6c9ef3fd635f11.ttf")format("truetype"),
+  url("https://db.onlinewebfonts.com/t/5165c0facbfede7afe6c9ef3fd635f11.svg#Fredoka One")format("svg");
+}
+
+html, body {
+  height: 100%; /* Fait en sorte que le html et le body prennent toute la hauteur de la fenêtre */
+  margin: 0; /* Supprime la marge par défaut */
+  padding: 0; /* Supprime le padding par défaut */
+  background-color: #5386f5; /* Mettez la couleur de fond souhaitée ici */
+  box-sizing: inherit;
+}
+body {
+  background-image: url('../public/background_simple.png');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  overflow: hidden;
+
+}
+
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -11,3 +38,447 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+
+/* Style pour le menu latéral */
+.sidebar {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+  color:white
+}
+
+.sidebar ul{
+  list-style: none;
+  padding:0;
+}
+.sidebar ul li{
+  display: flex;
+  gap: 10px;
+  padding: 0.3rem;
+}
+.sidebar ul li div{
+  display: flex;
+  flex-direction: column;
+}
+
+/* Les styles de sidebar lorsqu'il est ouvert */
+.sidebar.open {
+  width: 250px;
+}
+span.offline{
+  color: red;
+  font-weight: bold;
+}
+span.online{
+  color: #16d216;
+  font-weight: bold;
+
+}
+span.online, span.offline{
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-wrap: nowrap;
+  flex-wrap: nowrap;
+
+}
+
+.yourProfile{
+  background-color: chocolate;
+}
+
+span.online svg, span.offline svg{
+  width: 0.8em;
+}
+/* Les boutons de fermeture */
+.closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+/* Style pour le bouton qui ouvre le menu */
+.openMenuButton {
+  /*position: fixed;*/
+  /*top: 20px;*/
+  /*right: 20px;*/
+  z-index: 1;
+}
+
+
+.btn-push {
+  font-family: "Fredoka One";
+  position: relative;
+  font-weight: bold;
+  top: 0px;
+  letter-spacing: 0.1rem;
+  text-decoration: none;
+  font-size: 25px;
+  background: rgb(251,112,115);
+  background: linear-gradient(180deg, rgba(251,112,115,1) 0%, rgba(222,46,72,1) 100%);
+  /*margin: 0 10px;*/
+  /*border: 1px solid #c4c4c4;*/
+  -webkit-transition: All 250ms ease;
+  -moz-transition: All 250ms ease;
+  -o-transition: All 250ms ease;
+  -ms-transition: All 250ms ease;
+  transition: All 250ms ease;
+  cursor: pointer;
+  color: #fff;
+  /*border: 1px solid #a01b1b;*/
+  -webkit-border-radius: 1rem;
+  -moz-border-radius: 1rem;
+  border-radius: 1rem;
+  -webkit-box-shadow: 0px 5px 0px #a01b1b;
+  -moz-box-shadow: 0px 5px 0px #a01b1b;
+  -ms-box-shadow: 0px 5px 0px #a01b1b;
+  -o-box-shadow: 0px 5px 0px #a01b1b;
+  box-shadow: 0px 5px 0px #a01b1b;
+  text-shadow: 2px 4px 4px #a01b1b;
+  border: 0;
+}
+
+.btn-push-green{
+  background: rgb(56,201,29);
+  background: linear-gradient(180deg, rgba(132,249,40,1) 0%, rgba(56,201,29,1) 100%);
+  -webkit-box-shadow: 0px 5px 0px #319244;
+  -moz-box-shadow: 0px 5px 0px #319244;
+  -ms-box-shadow: 0px 5px 0px #319244;
+  -o-box-shadow: 0px 5px 0px #319244;
+  box-shadow: 0px 5px 0px #319244;
+  text-shadow: 2px 4px 4px #319244;
+}
+
+/*==========  Active State  ==========*/
+.btn-push:active {
+  position: relative;
+  top: 5px;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  -ms-box-shadow: none !important;
+  -o-box-shadow: none !important;
+  box-shadow: none !important;
+  -webkit-transition: All 250ms ease;
+  -moz-transition: All 250ms ease;
+  -o-transition: All 250ms ease;
+  -ms-transition: All 250ms ease;
+  transition: All 250ms ease;
+}
+
+/*==========  Hover State  ==========*/
+.btn-push:hover {
+  box-shadow: 0px 7px 0px #c0392b; /* ombre légèrement plus grande */
+  color: #ffffff; /* couleur du texte blanche pour un contraste élevé */
+}
+.btn-push-green:hover {
+  box-shadow: 0px 7px 0px #14a12e; /* ombre légèrement plus grande */
+  color: #ffffff; /* couleur du texte blanche pour un contraste élevé */
+}
+
+.btn-push:disabled{
+  background: rgb(136, 136, 136);
+  background: linear-gradient(180deg, rgb(131, 131, 131) 0%, rgb(101, 101, 101) 100%);
+  -webkit-box-shadow: 0px 5px 0px #4b4b4b;
+  -moz-box-shadow: 0px 5px 0px #4b4b4b;
+  -ms-box-shadow: 0px 5px 0px #4b4b4b;
+  -o-box-shadow: 0px 5px 0px #4b4b4b;
+  box-shadow: 0px 5px 0px #4b4b4b;
+  text-shadow: 2px 4px 4px #4b4b4b;
+}
+
+
+
+
+.btn-push a{
+  padding: 15px 50px;
+
+  border-radius: 10px;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.buzz-btn-container{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.buzz-btn{
+  aspect-ratio: 1/1;
+  padding: 4rem;
+  border-radius: 2000px;
+}
+
+.game_button a:hover{
+  background-color: cornflowerblue;
+}
+
+.server_button a{
+  padding: 1rem 3rem;
+  background-color: #61dafb;
+  border-radius: 10px;
+  gap: 0.5rem;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.server_button a:hover{
+  background-color: cornflowerblue;
+}
+
+.modal_bg {
+  background-color: rgba(0,0,0,0.4);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal{
+  margin: 3rem;
+  width: 100%;
+  max-width: 300px;
+}
+.modal_content {
+  background-color: #e4f3ff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+
+  padding: 1.5rem 2rem 2rem 2rem;
+gap: 1rem;
+  border-radius: 0 0 1rem 1rem;
+
+  position: relative;
+}
+
+.modal .modal_content_title{
+  background-color: #19acff;
+  color: white;
+  width: 100%;
+  text-align: center;
+  border-radius: 0.5rem;
+  position: relative;
+  z-index: 2;
+  padding: 1rem 0;
+  box-shadow: 0px 5px 0px #0a80ce;
+  font-family: "Fredoka One";
+  /*text-shadow: 4px 1px 2px pink;*/
+  letter-spacing: 0.1rem;
+}
+.modal .modal_content_title h2{
+  margin: 0;
+}
+
+.modal .modal_content input{
+  background-color: #b7d3ed;
+  padding: 1rem 0;
+  padding-left: 1rem;
+  border-radius: 0.5rem;
+  border: 0;
+}
+.modal .modal_content input[type="range"]{
+  padding:0;
+  width: 100%;
+}
+
+.z_top{
+  /*position: fixed;*/
+  padding: 3rem;
+  z-index: 9999;
+}
+
+
+
+
+.big-red-button {
+  box-shadow: 0px 15px 0 20px #352d2d, 0px 40px 0 30px #000;
+  cursor: pointer;
+  background-color: #c0392b;
+  position: absolute;
+  border-radius: 50%;
+  border: 0;
+  top: 50%;
+  left: 50%;
+  width: 480px;
+  height: 80px;
+  transform: translateX(-50%);
+}
+.big-red-button::before {
+  content: '';
+  z-index: 1;
+  border-radius: 50%;
+  background-color: #e74c3c;
+  position: absolute;
+  bottom: 100%;
+  left: 0%;
+  transition: bottom 0.4s;
+  width: 480px;
+  height: 80px;
+}
+.big-red-button::after {
+  content: '';
+  background-color: #c0392b;
+  position: absolute;
+  bottom: 50%;
+  left: 0%;
+  width: 480px;
+  height: 80px;
+  transition: height 0.4s;
+}
+.big-red-button:active::before {
+  bottom: 10%;
+}
+.big-red-button:active::after {
+  height: 10%;
+}
+
+.big-red-button:disabled{
+  background-color: #656565;
+}
+.big-red-button:disabled::before {
+   background-color: #9d9d9d;
+ }
+.big-red-button:disabled::after {
+  background-color: #656565;
+}
+
+
+
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 15px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+margin: 0.5rem 0;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
+  border-radius:10px;
+  background: rgb(56,201,29);
+  background: linear-gradient(180deg, rgba(132,249,40,1) 0%, rgba(56,201,29,1) 100%);
+  -webkit-box-shadow: 0px 5px 0px #319244;
+  -moz-box-shadow: 0px 5px 0px #319244;
+  -ms-box-shadow: 0px 5px 0px #319244;
+  -o-box-shadow: 0px 5px 0px #319244;
+  box-shadow: 0px 5px 0px #319244;
+}
+
+.slider::-moz-range-thumb {
+  width: 15px;
+  height: 25px;
+  cursor: pointer;
+  background: rgb(56,201,29);
+  background: linear-gradient(180deg, rgba(132,249,40,1) 0%, rgba(56,201,29,1) 100%);
+  -webkit-box-shadow: 0px 5px 0px #319244;
+  -moz-box-shadow: 0px 5px 0px #319244;
+  -ms-box-shadow: 0px 5px 0px #319244;
+  -o-box-shadow: 0px 5px 0px #319244;
+  box-shadow: 0px 5px 0px #319244;
+}
+
+
+progress{
+  --fill: linear-gradient(rgba(226, 102, 76, 0.65), transparent),
+  repeating-linear-gradient(135deg, #a22215 0 0.25em, #be2a20 0 0.5em);
+}
+
+progress {
+  box-sizing: border-box;
+  border: solid 0.15em #242b35;
+  border-radius: 0.5em;
+  background: linear-gradient(#191c23, #2d3341);
+  font: clamp(0.625em, 7.5vw, 5em) monospace;
+  width: 100%;
+}
+progress::-webkit-progress-bar {
+  background: transparent;
+}
+progress::-webkit-progress-value {
+  border-radius: 0.35em;
+  box-shadow: inset 0 0.05em 0.05em rgba(255, 255, 255, 0.35);
+  background: var(--fill);
+}
+progress::-moz-progress-bar {
+  border-radius: 0.35em;
+  box-shadow: inset 0 0.05em 0.05em rgba(255, 255, 255, 0.35);
+  background: var(--fill);
+}
+
+
+.crown {
+  position: relative;
+  width: 0;
+  height: 0px;
+  border-bottom: 50px solid #b80;
+  border-right: 20px solid transparent;
+  border-left: 20px solid transparent;
+  margin: 0 auto;
+}
+.crown:after, .crown:before {
+  position: absolute;
+  content: "";
+  width: 0px;
+}
+.crown:before {
+  border-bottom: 50px solid #fb0;
+  border-right: 50px solid transparent;
+  left: -25px;
+  top: 0;
+}
+.crown:after {
+  border-bottom: 50px solid #fb0;
+  border-left: 50px solid transparent;
+  right: -25px;
+  top: 0;
+}
+
+.crown .wins{
+  color: white;
+  margin: 0;
+  position: absolute;
+  /* top: 49%; */
+  left: 50%;
+  transform: translate(-50%, 105%);
+  z-index: 2;
+}
+

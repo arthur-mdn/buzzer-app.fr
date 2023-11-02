@@ -1,17 +1,17 @@
-//SocketContext.js
+// TokenContext.js
 
 import React, { createContext, useContext } from 'react';
 
-const SocketContext = createContext();
+const TokenContext = createContext();
 
-export const useSocket = () => {
-    return useContext(SocketContext);
+export const useToken = () => {
+    return useContext(TokenContext);
 };
 
-export const SocketProvider = ({ children, socket }) => {
+export const TokenProvider = ({ children, token }) => {
     return (
-        <SocketContext.Provider value={socket.current}>
+        <TokenContext.Provider value={token}>
             {children}
-        </SocketContext.Provider>
+        </TokenContext.Provider>
     );
 };

@@ -1,17 +1,17 @@
-// TokenContext.js
+// UserContext.js
 
 import React, { createContext, useContext } from 'react';
 
-const TokenContext = createContext();
+const UserContext = createContext();
 
-export const useToken = () => {
-    return useContext(TokenContext);
+export const useUser = () => {
+    return useContext(UserContext);
 };
 
-export const TokenProvider = ({ children, token }) => {
+export const UserProvider = ({ children, userId }) => {
     return (
-        <TokenContext.Provider value={token}>
+        <UserContext.Provider value={userId}>
             {children}
-        </TokenContext.Provider>
+        </UserContext.Provider>
     );
 };
