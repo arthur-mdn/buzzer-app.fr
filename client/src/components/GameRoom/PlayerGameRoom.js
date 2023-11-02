@@ -68,9 +68,20 @@ function PlayerGameRoom({ serverInfo}) {
                 </div>
             )}
             {(gameState === 'inProgress' || gameState === 'buzzed' ) &&
-                <label className={'buzz-btn-container'} htmlFor={'big-red-button'}>
-                    {gameState === 'inProgress' ? <button id={'big-red-button'} className="big-red-button" onClick={handleBuzz}></button> : <button id={'big-red-button'} disabled className="big-red-button" onClick={handleBuzz}></button>}
-                </label>}
+                <div className="btn-container">
+                    {gameState === 'inProgress' ? <button className="btn" id={'big-red-button'} onClick={handleBuzz}>
+                            <span className="back"></span>
+                            <input type="checkbox" className="checkbox" id="Checkbox"/>
+                                <label htmlFor="Checkbox" className="front"></label>
+                                <span className="base"></span>
+                        </button>
+                    : <button className="btn" id={'big-red-button'} onClick={handleBuzz} disabled>
+                    <span className="back"></span>
+                    <input type="checkbox" className="checkbox" id="Checkbox"  onclick="event.stopPropagation()"/>
+                        <label htmlFor="Checkbox" className="front"></label>
+                        <span className="base"></span>
+                    </button>}
+                </div>}
             {gameState === 'waiting' && <div>En attente de l'hôte...</div>}
         </div>
     );
