@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import {Link} from "react-router-dom";
+import config from "../../config";
 
 function UserNameInput({ onSuccess }) {
     const [tempUserName, setTempUserName] = useState('');
@@ -34,7 +35,7 @@ function UserNameInput({ onSuccess }) {
 
 
         try {
-            const response = await fetch('http://localhost:3001/registerUser', {
+            const response = await fetch(config.serverUrl+'/registerUser', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
