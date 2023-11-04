@@ -52,7 +52,7 @@ function App() {
   const setupSocket = (userId) => {
     console.log('setup')
 
-    socketRef.current = io(config.serverUrl, {
+    socketRef.current = io("/", {
       transports: ['websocket', 'polling'],
       query: { token: localStorage.getItem('token') }
     });
