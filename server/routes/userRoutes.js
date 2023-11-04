@@ -33,6 +33,7 @@ router.get('/authenticate', async (req, res) => {
         const data = verifyToken(token);
         console.log(data);
         const user = await User.findOne({ userId: data.userId });
+        console.log(user)
         if (user) {
             res.json({ success: true, userId: data.userId });
         } else {
