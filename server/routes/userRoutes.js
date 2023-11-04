@@ -28,10 +28,10 @@ router.get('/authenticate', async (req, res) => {
     const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) return res.status(401).json({ success: false, message: "No token provided." });
-
+    console.log("token : " + token)
     try {
         const data = verifyToken(token);
-        // console.log(data);
+        console.log(data);
         const user = await User.findOne({ userId: data.userId });
         if (user) {
             res.json({ success: true, userId: data.userId });
