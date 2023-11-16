@@ -101,7 +101,7 @@ function GameRoom() {
     if (role === 'host') {
         return <GameProvider initialGameState={serverInfo.gameStatus} initialBuzzOrder={serverInfo.buzzOrder} >
             <div style={{display:'flex', padding:'2rem', flexDirection:'row', justifyContent:'space-between'}}>
-                <Link to="/" onClick={handleBackClick} className={'btn-push'} style={{padding: '1rem 1.5rem',  zIndex: '2'}} >{'<'}</Link>
+                <Link to="/" onClick={handleBackClick} className={'btn-push'} style={{padding: '1rem 1.5rem',  zIndex: '2', height: 'fit-content'}} >{'<'}</Link>
                 <RoomDetails serverInfo={serverInfo} />
                 <PlayerList serverInfo={serverInfo}/>
             </div>
@@ -110,7 +110,7 @@ function GameRoom() {
     } else if (role === 'participant') {
         return <GameProvider initialGameState={serverInfo.gameStatus} initialBuzzOrder={serverInfo.buzzOrder}>
             <div style={{display:'flex', padding:'2rem', flexDirection:'row', justifyContent:'space-between'}}>
-                <Link to="/" onClick={handleBackClick} className={'btn-push'} style={{padding: '1rem 1.5rem',  zIndex: '2'}} >{'<'}</Link>
+                <Link to="/" onClick={handleBackClick} className={'btn-push'} style={{padding: '1rem 1.5rem',  zIndex: '2', height: 'fit-content'}} >{'<'}</Link>
                 <RoomDetails serverInfo={serverInfo} />
                 <PlayerList serverInfo={serverInfo}/>
             </div>
