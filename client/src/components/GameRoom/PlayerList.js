@@ -17,7 +17,7 @@ function PlayerList({ serverInfo }) {
 
     useEffect(() => {
         const handlePlayersUpdate = (updatedServer) => {
-            // console.log(updatedServer)
+            console.log(updatedServer.players)
             setPlayers(updatedServer.players);
         };
         socket.on('playersUpdate', handlePlayersUpdate);

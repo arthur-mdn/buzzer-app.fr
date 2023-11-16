@@ -5,15 +5,22 @@ const { generateUserId, authenticateToken } = require('../others/utils');
 const GameServer = require('../models/GameServer');
 const User = require('../models/User');
 const router = express.Router();
-
+const config = require('../others/config');
 
 router.post('/registerUser', async (req, res) => {
-    const { userName } = req.body;
+    const { userName, userPassword } = req.body;
 
     try {
         const userId = generateUserId();  // Utilisez votre fonction de génération d'userId ici
-        const user = new User({ userId, userName });
-        await user.save();
+        if(userPassword === config.adminPassword){
+            const user = new User({ userId, userName, userRole: "admin" });
+            await user.save();
+
+        }else{
+            const user = new User({ userId, userName });
+            await user.save();
+
+        }
 
         const token = generateToken({ userId: userId });  // Générez un JWT pour cet utilisateur
         res.json({ success: true, token, userId });

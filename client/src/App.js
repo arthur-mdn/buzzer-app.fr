@@ -52,11 +52,11 @@ function App() {
   const setupSocket = (userId) => {
     console.log('setup')
 
-    socketRef.current = io("/", {
+    socketRef.current = io(config.serverSocketUrl, {
       transports: ['websocket', 'polling'],
       query: { token: localStorage.getItem('token') }
     });
-    console.log(socketRef.current)
+    
     socketRef.current.on('socketIdUpdated', () => {
       console.log("socketIdUpdated")
       setStatus('socketReady');

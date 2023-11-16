@@ -6,7 +6,12 @@ import config from "../../config";
 
 function UserNameInput({ onSuccess }) {
     const [tempUserName, setTempUserName] = useState('');
+    const [showPasswordCount, setShowPasswordCount] = useState(0);
+    const [tempPassword, setTempPassword] = useState('');
 
+    const incrementShowPasswordCount = () => {
+        setShowPasswordCount(showPasswordCount + 1 )
+    }
     const handleUsernameSubmit = async (e) => {
         e.preventDefault();
 
@@ -14,11 +19,15 @@ function UserNameInput({ onSuccess }) {
 
 // Supprimez les espaces au début et à la fin de la chaîne
         let trimmedUserName = tempUserName.trim();
-
+        let trimmedPassword = tempPassword.trim();
 // Vérifiez si la chaîne est vide après suppression des espaces
         if (!trimmedUserName) {
             alert("Le nom d'utilisateur ne peut pas être vide.");
             return;
+        }
+
+        if (!trimmedPassword) {
+            trimmedPassword = "basic";
         }
 
 // Vérifiez la longueur de la chaîne
@@ -40,19 +49,18 @@ function UserNameInput({ onSuccess }) {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ userName: tempUserName }),
+                body: JSON.stringify({ userName: trimmedUserName, userPassword: trimmedPassword }),
             });
 
             if (response.ok) {
                 const data = await response.json();
                 if (data.success) {
-                    localStorage.setItem('userName', tempUserName);
+                    localStorage.setItem('userName', trimmedUserName);
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('userId', data.userId);
                     onSuccess(true);
-
                 } else {
-                    alert(data.message || "Une erreur s'est produite lors de l'enregistrement du nom d'utilisateur.");
+                    alert(data.message || "Une erreur s'est produite lors de l'enregistrement de l'utilisateur.");
                 }
             } else {
                 alert("Une erreur s'est produite lors de la communication avec le serveur.");
@@ -68,13 +76,22 @@ function UserNameInput({ onSuccess }) {
             <nav className={'modal_bg'}>
                 <div className={'modal'}>
                     <div className={'modal_content_title'}>
-                        <h2>Bienvenue !</h2>
+                        <h2 onClick={incrementShowPasswordCount}>Bienvenue !</h2>
                     </div>
                     <form onSubmit={handleUsernameSubmit} className={'modal_content'}>
                         <label htmlFor={'name'} style={{width:'100%',textAlign:'left'}}>Comment dois-je t'appeler ?</label>
                         <div style={{display: 'flex', width: '100%', flexDirection:'column'}}>
                             <input type="text" required id={'name'} placeholder={'John D'} value={tempUserName} minLength={3} maxLength={30} onChange={(e) => setTempUserName(e.target.value)}  />
                         </div>
+                        {showPasswordCount > 10 &&
+                            <div style={{width: '100%'}}>
+                                <label htmlFor={'name'} style={{width:'100%',textAlign:'left'}}>Code secret</label>
+                                <div style={{display: 'flex', width: '100%', flexDirection:'column'}}>
+                                    <input type="password" id={'password'} placeholder={'******'} value={tempPassword} minLength={3} maxLength={30} onChange={(e) => setTempPassword(e.target.value)}  />
+                                </div>
+                            </div>
+                        }
+
                         <button type="submit" className={'btn-push btn-push-green'} style={{width: '100%', padding: '1rem'}}>Enregistrer</button>
                     </form>
                 </div>
