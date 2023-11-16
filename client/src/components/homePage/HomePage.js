@@ -42,7 +42,7 @@ function HomePage() {
 
             <div className={'modal'}>
                 <div className={'modal_content_title'}>
-                    <h2>Serveurs</h2>
+                    <h2>Liens rapides</h2>
                 </div>
                 <div style={{marginLeft: '15px', display: 'flex', gap: '10px'}}>
                     <button onClick={() => setServerActiveTab('history')}
