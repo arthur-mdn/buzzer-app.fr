@@ -298,7 +298,7 @@ span.online svg, span.offline svg{
   align-items: center;
   padding: 1.5rem 2rem 2rem 2rem;
   gap: 1rem;
-  border-radius: 0 0 1rem 1rem;
+  border-radius: 0.5rem;
   position: relative;
 }
 
