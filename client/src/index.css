@@ -248,22 +248,6 @@ span.online svg, span.offline svg{
   background-color: cornflowerblue;
 }
 
-.server_button a{
-  padding: 1rem 3rem;
-  background-color: #61dafb;
-  border-radius: 10px;
-  gap: 0.5rem;
-  color: white;
-  font-weight: bold;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-}
-.server_button a:hover{
-  background-color: cornflowerblue;
-}
 
 .modal_bg {
   background-color: rgba(0,0,0,0.4);

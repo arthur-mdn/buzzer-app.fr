@@ -6,54 +6,20 @@ import homePageStyle from "../../homePage.css";
 import {FaUserGroup} from "react-icons/fa6";
 import { useSocket } from '../../SocketContext';
 import { useUser } from '../../UserContext';
+import RoomDetails from "../GameRoom/RoomDetails";
+import PlayerList from "../GameRoom/PlayerList";
+import UserHistory from "../GameRoom/UserHistory";
 const config = require('../../config');
 
 function HomePage() {
     const { userId, userRole } = useUser();
     const socket = useSocket();
-    const [userServers, setUserServers] = useState([]);
-
-    useEffect(() => {
-        // Abonnement à l'événement 'playersUpdate'
-        socket.on('playersUpdate', (updatedServer) => {
-            setUserServers(prevServers => {
-                // Mettez à jour la liste des serveurs avec les serveurs mis à jour
-                return prevServers.map(server => {
-                    if (server._id === updatedServer._id) {
-                        return updatedServer;  // Remplacez le serveur par la version mise à jour
-                    }
-                    return server;  // Retournez le serveur inchangé
-                });
-            });
-        });
-
-        // Pas besoin d'une fonction de nettoyage ici car le socket est géré dans App.js
-    }, [setUserServers, socket]);
+    const [serverActiveTab, setServerActiveTab] = useState('history'); // 'history' ou 'public'
 
 
-    useEffect(() => {
-        const fetchUserServers = async () => {
-            try {
-                const response = await fetch(config.serverUrl + '/user-servers', {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
-                const servers = await response.json();
-                setUserServers(servers);
 
-                // Faites rejoindre chaque salle de serveur
-                servers.forEach(server => {
-                    socket.emit('joinRoom', server.code);
-                });
 
-            } catch (error) {
-                console.error('Error fetching user servers:', error);
-            }
-        };
 
-        fetchUserServers();
-    }, [userId]); // N'oubliez pas la dépendance userId dans la liste des dépendances de useEffect
 
     const handleDisconnectAll = () => {
         socket.emit('adminForceDisconnect');
@@ -73,25 +39,25 @@ function HomePage() {
                     </li>
                 </ul>
             </nav>
-            {userServers.length > 0 && (
-                <div>
-                    <h3>Vos serveurs précédents:</h3>
-                    <ul  style={{listStyle: 'none', padding: '0'}}>
-                        {userServers.map(server => {
-                            const onlinePlayersCount = server.players.filter(player => player.state === "online").length;
-                            return (
-                                <li key={server._id} className={'server_button'}>
-                                    <Link to={`/server/${server.code}`}>
-                                        <span>{server.name}</span>
-                                        <span className={'online'}>{onlinePlayersCount} <FaUserGroup /></span>
-                                    </Link>
-                                </li>
-                            );
-                        })}
 
-                    </ul>
+            <div className={'modal'}>
+                <div className={'modal_content_title'}>
+                    <h2>Serveurs</h2>
                 </div>
-            )}
+                <div style={{marginLeft: '15px', display: 'flex', gap: '10px'}}>
+                    <button onClick={() => setServerActiveTab('history')}
+                            className={`modal-tab ${serverActiveTab === 'history' ? 'active' : ''}`}>
+                        Historique
+                    </button>
+                    <button onClick={() => setServerActiveTab('public')}
+                            className={`modal-tab ${serverActiveTab === 'public' ? 'active' : ''}`}>
+                        Public
+                    </button>
+                </div>
+                {serverActiveTab === 'history' ? <UserHistory/> : <></>}
+            </div>
+
+
             {userRole === "admin" &&
                 <div>
                     <h3>YoADMIN</h3>

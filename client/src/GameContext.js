@@ -24,7 +24,6 @@ export function GameProvider({ children , initialGameState, initialBuzzOrder, in
         socket.on('gameReStarted', ({server}) => {
             setGameState('waiting');
             setMessage('La partie va recommencer !');
-            console.log(server)
             // setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
             setPlayers(server.players)
@@ -41,21 +40,18 @@ export function GameProvider({ children , initialGameState, initialBuzzOrder, in
         });
 
         socket.on('answerAccepted', ({ server }) => {
-            // console.log(server);
             setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
             setPlayers(server.players)
             setMessage('Réponse valide !')
         });
         socket.on('answerWon', ({ server }) => {
-            // console.log(server);
             setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
             setPlayers(server.players)
             setMessage('Réponse gagnante !')
         });
         socket.on('answerDeclined', ({ server }) => {
-            // console.log(server);
             setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
             setPlayers(server.players);
@@ -63,7 +59,6 @@ export function GameProvider({ children , initialGameState, initialBuzzOrder, in
 
         });
         const handlePlayersUpdate = (updatedServer) => {
-            console.log(updatedServer.players)
             setPlayers(updatedServer.players);
         };
         socket.on('playersUpdate', handlePlayersUpdate);

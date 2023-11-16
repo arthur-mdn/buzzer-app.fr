@@ -26,7 +26,7 @@ function RoomDetails({ serverInfo }) {
                 </div>
                 <div style={{width:"100%", textAlign:"center"}}>
                     <h4 style={{margin:'0'}}>Points gagnés par bonne réponse</h4>
-                    <h2 style={{margin:'0'}}>{serverInfo.options.answerPoint}</h2>
+                    <h2 style={{margin:'0'}}>+{serverInfo.options.answerPoint}</h2>
                 </div>
                 <h6 style={{margin:'0'}}>{serverInfo.options.deductPointOnWrongAnswer}</h6>
             </div>
