@@ -71,7 +71,7 @@ function UserHistory() {
                                     <img alt={'blason'} src={"/blasons/blason1.png"} style={{width:'35px'}}/>
                                     <div>
                                         <h6 style={{margin:'0', fontSize:'1rem'}}>{server.name}</h6>
-                                        <span>{onlinePlayersCount} <FaUserGroup /></span>
+                                        <span style={{fontSize:'1.2rem'}}>{onlinePlayersCount} <FaUserGroup /></span>
                                     </div>
                                 </Link>
                             </li>
