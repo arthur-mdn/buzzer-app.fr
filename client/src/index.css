@@ -166,10 +166,23 @@ span.online svg, span.offline svg{
   box-shadow: 0px 5px 0px #949494;
   text-shadow: 1px 2px 4px #000000
 }
+.btn-push-blue{
+  background: rgb(64, 158, 255);
+  background: linear-gradient(180deg, rgb(61, 179, 255) 0%, rgb(11, 146, 194) 100%);
+  -webkit-box-shadow: 0px 5px 0px #1c6186;
+  -moz-box-shadow: 0px 5px 0px #1c6186;
+  -ms-box-shadow: 0px 5px 0px #1c6186;
+  -o-box-shadow: 0px 5px 0px #1c6186;
+  box-shadow: 0px 5px 0px #1c6186;
+  text-shadow: 1px 2px 4px #000000
+}
 
 .btn-push-gray h6{
   margin: 0;
   font-size: 1.5rem
+}
+.btn-push-blue{
+  font-size: 1.2rem;
 }
 .btn-push-gray span{
   margin: 0;
@@ -203,6 +216,10 @@ span.online svg, span.offline svg{
 }
 .btn-push-gray:hover {
   box-shadow: 0px 7px 0px #757575; /* ombre légèrement plus grande */
+  color: #ffffff; /* couleur du texte blanche pour un contraste élevé */
+}
+.btn-push-blue:hover {
+  box-shadow: 0px 7px 0px #274f79; /* ombre légèrement plus grande */
   color: #ffffff; /* couleur du texte blanche pour un contraste élevé */
 }
 
@@ -305,8 +322,6 @@ span.online svg, span.offline svg{
   width: 100%;
   text-align: center;
   border-radius: 0.5rem;
-  position: relative;
-  z-index: 2;
   padding: 0 0 0.5rem 0;
   font-family: "Fredoka One";
   text-shadow: 2px 1px 2px black;

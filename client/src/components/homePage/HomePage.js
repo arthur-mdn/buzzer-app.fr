@@ -16,11 +16,6 @@ function HomePage() {
     const socket = useSocket();
     const [serverActiveTab, setServerActiveTab] = useState('history'); // 'history' ou 'public'
 
-
-
-
-
-
     const handleDisconnectAll = () => {
         socket.emit('adminForceDisconnect');
     };

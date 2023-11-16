@@ -1,7 +1,7 @@
 // Modal.js
 import React from "react";
 
-function Modal({ isOpen, onClose, children }) {
+function Modal({ isOpen, onClose, children, title }) {
     if (!isOpen) return null;
 
     return (
@@ -10,7 +10,7 @@ function Modal({ isOpen, onClose, children }) {
                 <div className={'modal'} style={{maxWidth:'none'}}>
                     <div className={'modal_content_title'}>
                         <div></div>
-                        <h2>Serveur</h2>
+                        <h2>{title || 'Serveur'}</h2>
                         <button className={"close btn-push"} onClick={onClose}>&times;</button>
                     </div>
                     {children}
