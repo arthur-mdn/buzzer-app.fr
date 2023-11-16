@@ -16,6 +16,7 @@ function App() {
   const [status, setStatus] = useState('initial');
   const [statusMsg, setStatusMsg] = useState('');
   const [userId, setUserId] = useState(null);
+  const [userRole, setUserRole] = useState('user');
 
   const socketRef = useRef();
   console.log("App rendered");
@@ -40,6 +41,7 @@ function App() {
         setStatus('authenticated');
         setupSocket(data.userId);
         setUserId(data.userId);
+        setUserRole(data.userRole);
       } else {
         setStatusMsg(data.message);
         setStatus('authError');
@@ -137,7 +139,7 @@ function App() {
     case 'socketReady':
       const token = localStorage.getItem('token'); // Récupérez le token
       return (
-          <UserProvider userId={userId}>
+          <UserProvider userId={userId} userRole={userRole}>
             <TokenProvider token={token}>
               <SocketProvider socket={socketRef}>
                 <Router>

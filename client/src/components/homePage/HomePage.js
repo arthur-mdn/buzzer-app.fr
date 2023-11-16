@@ -5,9 +5,11 @@ import { FaUser, FaCircle } from 'react-icons/fa';
 import homePageStyle from "../../homePage.css";
 import {FaUserGroup} from "react-icons/fa6";
 import { useSocket } from '../../SocketContext';
+import { useUser } from '../../UserContext';
 const config = require('../../config');
 
-function HomePage({ userId }) {
+function HomePage() {
+    const { userId, userRole } = useUser();
     const socket = useSocket();
     const [userServers, setUserServers] = useState([]);
 
@@ -86,6 +88,11 @@ function HomePage({ userId }) {
                     </ul>
                 </div>
             )}
+            {userRole === "admin" &&
+                <div>
+                    <h3>YoADMIN</h3>
+                </div>
+            }
 
 
         </div>
