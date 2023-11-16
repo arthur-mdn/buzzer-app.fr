@@ -299,5 +299,24 @@ module.exports = function(io) {
         });
 
 
+
+
+
+
+
+        socket.on('adminForceDisconnect', () => {
+            // Assurez-vous que seul un admin peut déclencher cet événement
+            User.findOne({ userId: socket.userId }).then(user => {
+                if (user && user.userRole === 'admin') {
+                    io.sockets.sockets.forEach(s => {
+                        s.emit('adminForceDisconnect');
+                        s.disconnect(true);
+                    });
+                }
+            }).catch(err => {
+                console.error(err);
+            });
+        });
+
     });
 };

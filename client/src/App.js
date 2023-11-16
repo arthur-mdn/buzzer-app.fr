@@ -75,6 +75,10 @@ function App() {
 
       // Vous pouvez également rediriger l'utilisateur vers une autre page ou rafraîchir la page actuelle
     });
+    socketRef.current.on('adminForceDisconnect', () => {
+      socketRef.current.disconnect(); // Fermer la connexion socket
+      setStatus('adminForceDisconnect');
+    });
   };
 
   const onRegisterSuccess = () => {
@@ -131,6 +135,20 @@ function App() {
           </div>
           <div className={'modal_content'}>
             <label htmlFor={'name'} style={{width:'100%',textAlign:'center'}}> Oops... Vous semblez vous être connecté sur un autre appareil.</label>
+            <button onClick={() => window.location.reload()}  className={'btn-push btn-push-green'} style={{padding: '1rem 1.5rem'}}>Reconnexion</button>
+          </div>
+        </div>
+      </div>
+      );
+    case 'adminForceDisconnect':
+      return (
+      <div className={'modal_bg'}>
+        <div className={'modal'}>
+          <div className={'modal_content_title'}>
+            <h2>Erreur !</h2>
+          </div>
+          <div className={'modal_content'}>
+            <label htmlFor={'name'} style={{width:'100%',textAlign:'center'}}> Vous avez été déconnecté par un administrateur.</label>
             <button onClick={() => window.location.reload()}  className={'btn-push btn-push-green'} style={{padding: '1rem 1.5rem'}}>Reconnexion</button>
           </div>
         </div>

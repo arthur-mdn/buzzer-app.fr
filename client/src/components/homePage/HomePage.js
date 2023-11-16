@@ -55,6 +55,10 @@ function HomePage() {
         fetchUserServers();
     }, [userId]); // N'oubliez pas la dépendance userId dans la liste des dépendances de useEffect
 
+    const handleDisconnectAll = () => {
+        socket.emit('adminForceDisconnect');
+    };
+
     return (
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             <img src={process.env.PUBLIC_URL + '/logo.png'} alt="Logo" style={{width: '100%', maxWidth: '300px', marginTop:'3rem', aspectRatio: '1/1'}}/>
@@ -91,6 +95,9 @@ function HomePage() {
             {userRole === "admin" &&
                 <div>
                     <h3>YoADMIN</h3>
+                    <button onClick={handleDisconnectAll} className={'btn-push btn-push-red'}>
+                        Déconnecter tous les utilisateurs
+                    </button>
                 </div>
             }
 

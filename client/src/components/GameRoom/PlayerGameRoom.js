@@ -77,7 +77,7 @@ function PlayerGameRoom({ serverInfo}) {
                         </button>
                     : <button className="btn" id={'big-red-button'} onClick={handleBuzz} disabled>
                     <span className="back"></span>
-                    <input type="checkbox" className="checkbox" id="Checkbox"  onclick="event.stopPropagation()"/>
+                    <input type="checkbox" className="checkbox" id="Checkbox" onclick="event.stopPropagation()"/>
                         <label htmlFor="Checkbox" className="front"></label>
                         <span className="base"></span>
                     </button>}
