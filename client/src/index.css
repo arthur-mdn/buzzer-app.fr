@@ -100,12 +100,9 @@ span.online svg, span.offline svg{
   width: 0.8em;
 }
 /* Les boutons de fermeture */
-.closebtn {
-  position: absolute;
-  top: 0;
-  right: 25px;
-  font-size: 36px;
-  margin-left: 50px;
+.close.btn-push {
+  padding: 0.1rem 0.7rem 0.3rem 0.75rem;
+
 }
 
 /* Style pour le bouton qui ouvre le menu */
@@ -137,9 +134,9 @@ span.online svg, span.offline svg{
   cursor: pointer;
   color: #fff;
   /*border: 1px solid #a01b1b;*/
-  -webkit-border-radius: 1rem;
-  -moz-border-radius: 1rem;
-  border-radius: 1rem;
+  -webkit-border-radius: 0.7rem;
+  -moz-border-radius: 0.7rem;
+  border-radius: 0.7rem;
   -webkit-box-shadow: 0px 5px 0px #a01b1b;
   -moz-box-shadow: 0px 5px 0px #a01b1b;
   -ms-box-shadow: 0px 5px 0px #a01b1b;
@@ -158,6 +155,25 @@ span.online svg, span.offline svg{
   -o-box-shadow: 0px 5px 0px #319244;
   box-shadow: 0px 5px 0px #319244;
   text-shadow: 2px 4px 4px #319244;
+}
+.btn-push-gray{
+  background: rgb(192,200,208);
+  background: linear-gradient(180deg, rgb(226 235 241) 0%, rgb(205 205 205) 100%);
+  -webkit-box-shadow: 0px 5px 0px #949494;
+  -moz-box-shadow: 0px 5px 0px #949494;
+  -ms-box-shadow: 0px 5px 0px #949494;
+  -o-box-shadow: 0px 5px 0px #949494;
+  box-shadow: 0px 5px 0px #949494;
+  text-shadow: 1px 2px 4px #000000
+}
+
+.btn-push-gray h6{
+  margin: 0;
+  font-size: 1.5rem
+}
+.btn-push-gray span{
+  margin: 0;
+  font-size: 0.9rem;
 }
 
 /*==========  Active State  ==========*/
@@ -183,6 +199,10 @@ span.online svg, span.offline svg{
 }
 .btn-push-green:hover {
   box-shadow: 0px 7px 0px #14a12e; /* ombre légèrement plus grande */
+  color: #ffffff; /* couleur du texte blanche pour un contraste élevé */
+}
+.btn-push-gray:hover {
+  box-shadow: 0px 7px 0px #757575; /* ombre légèrement plus grande */
   color: #ffffff; /* couleur du texte blanche pour un contraste élevé */
 }
 
@@ -258,37 +278,57 @@ span.online svg, span.offline svg{
 }
 
 .modal{
-  margin: 3rem;
+  margin: 2rem;
   width: 100%;
   max-width: 300px;
+  max-height: 90vh;
+  overflow: hidden;
+  background: rgb(141,147,160);
+  background: linear-gradient(180deg, rgba(141,147,160,1) 0%, rgba(118,124,140,1) 10%, rgba(105,112,129,1) 18%, rgba(93,102,121,1) 21%, rgba(89,98,118,1) 100%);
+  border-radius: 15px;
+  border: 1.5px solid #777f8e;
+  padding: 0.7rem 0.7rem 0.7rem 0.7rem;
+  display: flex;
+  flex-direction: column;
 }
 .modal_content {
   background-color: #e4f3ff;
   display: flex;
   flex-direction: column;
   align-items: center;
-
-
   padding: 1.5rem 2rem 2rem 2rem;
-gap: 1rem;
+  gap: 1rem;
   border-radius: 0 0 1rem 1rem;
-
   position: relative;
 }
 
+/*.modal .modal_content_title{*/
+/*  background-color: #19acff;*/
+/*  color: white;*/
+/*  width: 100%;*/
+/*  text-align: center;*/
+/*  border-radius: 0.5rem;*/
+/*  position: relative;*/
+/*  z-index: 2;*/
+/*  padding: 1rem 0;*/
+/*  box-shadow: 0px 5px 0px #0a80ce;*/
+/*  font-family: "Fredoka One";*/
+/*  !*text-shadow: 4px 1px 2px pink;*!*/
+/*  letter-spacing: 0.1rem;*/
+/*}*/
 .modal .modal_content_title{
-  background-color: #19acff;
   color: white;
   width: 100%;
   text-align: center;
   border-radius: 0.5rem;
   position: relative;
   z-index: 2;
-  padding: 1rem 0;
-  box-shadow: 0px 5px 0px #0a80ce;
+  padding: 0 0 0.5rem 0;
   font-family: "Fredoka One";
-  /*text-shadow: 4px 1px 2px pink;*/
+  text-shadow: 2px 1px 2px black;
   letter-spacing: 0.1rem;
+  display: flex;
+  justify-content: space-between
 }
 .modal .modal_content_title h2{
   margin: 0;
@@ -305,6 +345,56 @@ gap: 1rem;
   padding:0;
   width: 100%;
 }
+
+.modal .modal-tab{
+  font-size: 1rem;
+  color: white;
+  border: 0;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  padding: 0.5rem 1rem;
+  font-family: "Fredoka One";
+  background-color: #81a3bb;
+  text-shadow: 1px 1px 6px black;
+}
+.modal .modal-tab.active{
+  background-color: #f9fcff;
+}
+.modal .tab-content{
+  border-radius: 0.5rem;
+  padding: 1rem;
+  background-color: #f9fcff;
+}
+
+.tab-content ul{
+  padding: 0;
+  margin: 0;
+}
+
+.tab-content .server-info{
+  display:flex;
+  gap:1rem;
+  align-items:center;
+  padding:1rem
+}
+.tab-content .server-info-rules{
+  color:white;
+  background-color:#0081cc;
+  padding:1rem;
+  display:flex;
+  background: rgb(0,104,172);
+  background: linear-gradient(180deg, rgba(0,104,172,1) 0%, rgba(59,187,247,1) 100%);
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+.tab-content .server-info-rule{
+  width:100%;
+  text-align:center;
+  border-right:1px solid white;
+  padding: 0 0.2rem 0 ;
+}
+
 
 .z_top{
   /*position: fixed;*/

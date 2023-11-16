@@ -16,6 +16,7 @@ export function GameProvider({ children , initialGameState, initialBuzzOrder, in
     const [players, setPlayers] = useState(initialPlayers || []);
 
     useEffect(() => {
+
         socket.on('gameStarted', () => {
             setGameState('inProgress');
             setMessage('La partie a commencé !');
@@ -61,6 +62,15 @@ export function GameProvider({ children , initialGameState, initialBuzzOrder, in
             setMessage('Réponse incorrecte !')
 
         });
+        const handlePlayersUpdate = (updatedServer) => {
+            console.log(updatedServer.players)
+            setPlayers(updatedServer.players);
+        };
+        socket.on('playersUpdate', handlePlayersUpdate);
+        socket.on('error', console.error);
+        return () => {
+            socket.off('playersUpdate', handlePlayersUpdate);
+        };
 
         return () => {
             socket.off('gameStarted');

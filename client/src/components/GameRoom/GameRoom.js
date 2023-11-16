@@ -4,14 +4,16 @@ import HostGameRoom from './HostGameRoom';
 import PlayerGameRoom from './PlayerGameRoom';
 import {Link, useParams} from "react-router-dom";
 import PlayerList from "./PlayerList";
+import PlayerCount from "./PlayerCount";
 import {useSocket} from "../../SocketContext";
 import { useUser } from '../../UserContext';
 import {useToken} from "../../TokenContext";
 import { GameProvider } from '../../GameContext';
 import {FaUser} from "react-icons/fa";
 import RoomDetails from "./RoomDetails";
-const config = require('../../config');
+import Modal from '../modal/Modal'; // Importez votre composant modale
 
+const config = require('../../config');
 
 function GameRoom() {
     const socket = useSocket();
@@ -21,6 +23,10 @@ function GameRoom() {
     const [role, setRole] = useState(null); // 'host' ou 'participant'
     const [serverInfo, setServerInfo] = useState(null);
     const [error, setError] = useState(null);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState('details'); // 'details' ou 'players'
+
 
     useEffect(() => {
         const fetchServerDetails = async () => {
@@ -69,12 +75,14 @@ function GameRoom() {
         socket.emit('userLeaving', { userId: userId });
     };
 
-
+    const handleOpenModal = (tab) => {
+        setActiveTab(tab);
+        setIsModalOpen(true);
+    };
 
     // console.log(serverInfo)
     if (error) {
         return (
-
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                 <nav className={'modal_bg'}>
                     <div className={'modal'}>
@@ -88,38 +96,49 @@ function GameRoom() {
                     </div>
                 </nav>
             </div>
-
-
         );
     }
 
     // console.log(serverInfo)
     if (!serverInfo) {
-        return <div>Récupération des informations du serveur...</div>; // Ou tout autre composant de chargement
+        return <div>Récupération des informations du serveur...</div>;
+    }
+    if(role !== "host" && role !== "participant"){
+        return <div>Rôle invalide.</div>;
     }
 
-    if (role === 'host') {
-        return <GameProvider initialGameState={serverInfo.gameStatus} initialBuzzOrder={serverInfo.buzzOrder} >
-            <div style={{display:'flex', padding:'2rem', flexDirection:'row', justifyContent:'space-between'}}>
-                <Link to="/" onClick={handleBackClick} className={'btn-push'} style={{padding: '1rem 1.5rem',  zIndex: '2', height: 'fit-content'}} >{'<'}</Link>
-                <RoomDetails serverInfo={serverInfo} />
-                <PlayerList serverInfo={serverInfo}/>
-            </div>
+
+    return <GameProvider initialGameState={serverInfo.gameStatus} initialBuzzOrder={serverInfo.buzzOrder} >
+        <div style={{display:'flex', padding:'2rem', flexDirection:'row', justifyContent:'space-between', gap:'2rem', alignItems:'center'}}>
+            <button onClick={() => handleOpenModal('details')} className={"btn-push btn-push-gray"} style={{padding:'0.5rem 1rem', gap:'1rem', width:'100%', display:'flex', alignItems:'center'}}>
+                <img alt={'blason'} src={"/blasons/blason1.png"} style={{width:'50px'}}/>
+                <div>
+                    <h6 style={{textAlign:'left'}}>{serverInfo.name}</h6>
+                    <span onClick={() => handleOpenModal('players')} style={{ display:'flex',gap:'5px'}}> <FaUser /> <PlayerCount /></span>
+                </div>
+            </button>
+            <Link to="/" onClick={handleBackClick} className={'btn-push'} style={{padding: '0.1rem 0.7rem 0.3rem 0.75rem', height: 'fit-content'}} >{'x'}</Link>
+        </div>
+        { role === 'host' &&
             <HostGameRoom serverInfo={serverInfo}/>
-        </GameProvider>;
-    } else if (role === 'participant') {
-        return <GameProvider initialGameState={serverInfo.gameStatus} initialBuzzOrder={serverInfo.buzzOrder}>
-            <div style={{display:'flex', padding:'2rem', flexDirection:'row', justifyContent:'space-between'}}>
-                <Link to="/" onClick={handleBackClick} className={'btn-push'} style={{padding: '1rem 1.5rem',  zIndex: '2', height: 'fit-content'}} >{'<'}</Link>
-                <RoomDetails serverInfo={serverInfo} />
-                <PlayerList serverInfo={serverInfo}/>
-            </div>
+        }
+        { role === 'participant' &&
             <PlayerGameRoom serverInfo={serverInfo}  />
-        </GameProvider>;
-    } else {
-        // Vous pouvez afficher un spinner ou un autre indicateur de chargement ici pendant que le rôle est déterminé
-        return <div>Rôle en cours de chargement...</div>;
-    }
+        }
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} style={{maxWidth:'none'}}>
+            <div style={{marginLeft: '15px', display: 'flex', gap: '10px'}}>
+                <button onClick={() => setActiveTab('details')}
+                        className={`modal-tab ${activeTab === 'details' ? 'active' : ''}`}>
+                    Détails
+                </button>
+                <button onClick={() => setActiveTab('players')}
+                        className={`modal-tab ${activeTab === 'players' ? 'active' : ''}`}>
+                    Membres
+                </button>
+            </div>
+            {activeTab === 'details' ? <><RoomDetails serverInfo={serverInfo} /> <div style={{margin:'0.5rem'}}></div> <PlayerList serverInfo={serverInfo} /></> : <PlayerList serverInfo={serverInfo} />}
+        </Modal>
+    </GameProvider>;
 }
 
 export default GameRoom;
