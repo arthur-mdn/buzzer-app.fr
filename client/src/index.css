@@ -93,7 +93,7 @@ span.online, span.offline{
 }
 
 .yourProfile{
-  background-color: chocolate;
+  background-color: #d9ffda;
 }
 
 span.online svg, span.offline svg{

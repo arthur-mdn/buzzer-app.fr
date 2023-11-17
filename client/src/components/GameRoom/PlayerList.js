@@ -5,8 +5,8 @@ import {useUser} from "../../UserContext";
 import {useGame} from "../../GameContext";
 
 function PlayerList({ serverInfo }) {
-    const userId = useUser();
-    const {players} = useGame();
+    const { userId } = useUser();
+    const { players } = useGame();
 
     const playersGrouped = players ? players.reduce((acc, player) => {
         const key = `${player.role}-${player.state}`;
