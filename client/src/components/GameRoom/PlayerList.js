@@ -1,10 +1,7 @@
 // PlayerList.js
-import React, { useEffect, useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
-import { FaUser, FaCircle } from 'react-icons/fa';
-import {useSocket} from "../../SocketContext";
+import React from 'react';
+import { FaCircle } from 'react-icons/fa';
 import {useUser} from "../../UserContext";
-import {useToken} from "../../TokenContext";
 import {useGame} from "../../GameContext";
 
 function PlayerList({ serverInfo }) {
@@ -50,7 +47,6 @@ function PlayerList({ serverInfo }) {
     return (
         <div className={"tab-content"} style={{height:'100%', overflowY:'scroll'}}>
             <div>
-                {/*<button className="closebtn" onClick={toggleSidebar}>&times;</button>*/}
                 <h2 style={{marginTop:'0'}}>Hôte:</h2>
                 <ul className={playersGrouped['host-online']?.some(player => player.user.userId === userId) ? "yourProfile" : ""}>
                     {playersGrouped['host-online']?.map(player => <PlayerItem key={player._id} player={player} />)}

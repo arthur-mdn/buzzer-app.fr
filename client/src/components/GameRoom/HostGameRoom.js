@@ -1,18 +1,14 @@
 // HostGameRoom.js
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import {useSocket} from "../../SocketContext";
-import {useUser} from "../../UserContext";
-import {useToken} from "../../TokenContext";
 import { useGame } from '../../GameContext';
 import Podium from './Podium';
 
 function HostGameRoom({ serverInfo }) {
     const { serverCode } = useParams();
-    const { gameState, message, setMessage, setGameState, buzzOrder, players, setPlayers } = useGame();
+    const { gameState, message, setMessage, buzzOrder, players } = useGame();
     const socket = useSocket();
-    const userId = useUser();
-    const token = useToken();
 
     useEffect(() => {
         if (gameState === 'buzzed' && buzzOrder.length > 0) {

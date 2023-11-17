@@ -1,5 +1,5 @@
 //GameRoom.js
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import HostGameRoom from './HostGameRoom';
 import PlayerGameRoom from './PlayerGameRoom';
 import {Link, useParams} from "react-router-dom";

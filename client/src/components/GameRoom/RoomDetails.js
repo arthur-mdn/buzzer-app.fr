@@ -1,7 +1,6 @@
 // RoomDetails.js
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import PlayerList from "./PlayerList";
 import Modal from "../modal/Modal";
 import QRCode from 'qrcode.react';
 const config = require('../../config');

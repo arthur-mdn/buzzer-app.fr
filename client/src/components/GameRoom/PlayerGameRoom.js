@@ -1,5 +1,5 @@
 // PlayerGameRoom.js
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useUser } from '../../UserContext';
 import { useParams } from 'react-router-dom';
 import {useSocket} from "../../SocketContext";
@@ -10,7 +10,7 @@ function PlayerGameRoom({ serverInfo}) {
     const socket = useSocket();
     const userId = useUser();
     const { serverCode } = useParams();
-    const { gameState, message, setMessage, setGameState, buzzOrder, players } = useGame();
+    const { gameState, message, setMessage, buzzOrder, players } = useGame();
 
 
     useEffect(() => {
@@ -23,28 +23,6 @@ function PlayerGameRoom({ serverInfo}) {
             }
         }
     }, [buzzOrder, gameState, serverInfo, setMessage, userId]);
-
-    // console.log(serverInfo)
-
-    // useEffect(() => {
-    //     setGameState(serverInfo.gameStatus);
-    //
-    //     socket.on('error', (error) => {
-    //         console.error('Socket Error:', error);
-    //     });
-    //
-    //     // socket.emit('joinServer', { userId: userId, serverCode: serverCode });
-    //
-    //     socket.on('gameStarted', () => {
-    //         setGameState('inProgress');
-    //         console.log("go")
-    //         setMessage('La partie a commencé !');
-    //     });
-    //     socket.on('gameCancelled', () => {
-    //         setGameState('waiting');
-    //         setMessage('La partie a été annulée.');
-    //     });
-    // }, [serverCode, socket, userId]);
 
     const handleBuzz = () => {
         if (socket) {

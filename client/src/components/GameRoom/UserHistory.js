@@ -1,6 +1,5 @@
 // UserHistory.js
 import React, {useEffect, useState} from 'react';
-import {useGame} from "../../GameContext";
 import {useUser} from "../../UserContext";
 import {useSocket} from "../../SocketContext";
 import config from "../../config";
@@ -9,7 +8,7 @@ import {FaUserGroup} from "react-icons/fa6";
 
 function UserHistory() {
     const socket = useSocket();
-    const { userId, userRole } = useUser();
+    const { userId } = useUser();
     const [userServers, setUserServers] = useState([]);
 
     useEffect(() => {
@@ -51,7 +50,7 @@ function UserHistory() {
         };
 
         fetchUserServers();
-    }, [userId]);
+    }, [socket, userId]);
 
 
     return (

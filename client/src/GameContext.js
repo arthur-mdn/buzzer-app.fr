@@ -65,9 +65,6 @@ export function GameProvider({ children , initialGameState, initialBuzzOrder, in
         socket.on('error', console.error);
         return () => {
             socket.off('playersUpdate', handlePlayersUpdate);
-        };
-
-        return () => {
             socket.off('gameStarted');
             socket.off('gameCancelled');
         };
