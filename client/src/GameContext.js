@@ -70,11 +70,18 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
             setOptions(updatedServer.options);
         };
         socket.on('playersUpdate', handlePlayersUpdate);
+
+        const handleOptionsUpdate = (newOptions) => {
+            setOptions(newOptions);
+        };
+        socket.on('serverOptionsUpdated', handleOptionsUpdate);
+
         socket.on('error', console.error);
         return () => {
             socket.off('playersUpdate', handlePlayersUpdate);
             socket.off('gameStarted');
             socket.off('gameCancelled');
+            socket.off('serverOptionsUpdated', handleOptionsUpdate);
         };
     }, [socket]);
 

@@ -302,6 +302,25 @@ module.exports = function(io) {
 
 
 
+        socket.on('updateServerOptions', async ({ serverCode, newOptions }) => {
+            try {
+                const server = await GameServer.findOne({ code: serverCode });
+
+                if (!server) {
+                    socket.emit('serverError', { message: "Server not found" });
+                    return;
+                }
+                // Mettre à jour les options du serveur
+                server.options = newOptions;
+                await server.save();
+
+                // Informer tous les clients connectés au serveur des nouvelles options
+                io.to(serverCode).emit('serverOptionsUpdated', server.options);
+            } catch (error) {
+                console.error(error);
+                socket.emit('serverError', { message: "An error occurred while updating server options" });
+            }
+        });
 
 
 

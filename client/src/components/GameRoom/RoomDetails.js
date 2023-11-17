@@ -3,11 +3,13 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Modal from "../modal/Modal";
 import QRCode from 'qrcode.react';
+import {useGame} from "../../GameContext";
 const config = require('../../config');
 
 
 function RoomDetails({ serverInfo }) {
     const { serverCode } = useParams();
+    const { options } = useGame();
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
     const handleShareServer = () => {
@@ -27,17 +29,27 @@ function RoomDetails({ serverInfo }) {
                         </button>
                     </div>
                 </div>
+                    {options.deductPointOnWrongAnswer &&
+                        <div style={{width:"100%", textAlign:"center"}}>
+                            <h4 style={{margin:'0'}}>1 point retiré si mauvaise réponse</h4>
+                        </div>
+                    }
+                    {options.autoRestartAfterDecline &&
+                        <div style={{width:"100%", textAlign:"center"}}>
+                            <h4 style={{margin:'0'}}>Partie relancée automatiquement en cas de mauvaise réponse</h4>
+                        </div>
+                    }
                 <div className={"server-info-rules"}>
                     <div className={"server-info-rule"}>
                         <h4 style={{margin:'0'}}>Points nécessaires pour gagner</h4>
-                        <h2 style={{margin:'0'}}>{serverInfo.options.winPoint}</h2>
+                        <h2 style={{margin:'0'}}>{options.winPoint}</h2>
                     </div>
                     <div style={{width:"100%", textAlign:"center"}}>
                         <h4 style={{margin:'0'}}>Points gagnés par bonne réponse</h4>
-                        <h2 style={{margin:'0'}}>+{serverInfo.options.answerPoint}</h2>
+                        <h2 style={{margin:'0'}}>+{options.answerPoint}</h2>
                     </div>
-                    <h6 style={{margin:'0'}}>{serverInfo.options.deductPointOnWrongAnswer}</h6>
                 </div>
+
             </div>
             <Modal title={'Partager'} isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)} style={{maxWidth:'none'}}>
                 <div style={{ display:"flex", flexDirection:"column",alignItems:'center', justifyContent:'center',padding:'0 0 2rem 0', gap:'2rem'}}>
