@@ -188,7 +188,8 @@ module.exports = function(io) {
                 if (server && (server.gameStatus === 'inProgress' || server.gameStatus === 'buzzed')) {
 
                     // Ajouter le userId de l'utilisateur à la fin de buzzOrder s'il n'est pas déjà présent
-                    if (!server.buzzOrder.some(buzzedUserId => buzzedUserId.equals(user._id))) {
+                    const userIdString = user._id.toString();
+                    if (!server.buzzOrder.some(buzzedUser => buzzedUser._id.toString() === userIdString)) {
                         server.buzzOrder.push(user._id);
                         server.gameStatus = 'buzzed';
                         await server.save();
@@ -196,7 +197,6 @@ module.exports = function(io) {
 
                     // Informer l'hôte et potentiellement les autres joueurs
                     const serverUpdated = await GameServer.findOne({ code: serverCode }).populate('buzzOrder');
-
                     io.to(serverCode).emit('playerBuzzed', { server: serverUpdated });
                 }
             } catch (error) {
@@ -258,18 +258,19 @@ module.exports = function(io) {
                         return GameServer.findOne({code: serverCode}).populate('players.user').populate('buzzOrder');
                     }
                 }
+            }else{
+                if(server.options.deductPointOnWrongAnswer) {
+                    const player = server.players.find(p => p.user.userId === userId);
+                    if (player) {
+                        player.score -= server.options.answerPoint; // Déduire le score du joueur
+                    }
+                }
             }
             if(accept){
                 server.buzzOrder = [];
             }else{
-                // Retirez le premier joueur de buzzOrder et vérifiez s'il reste des joueurs qui ont buzzé
-                const index = server.buzzOrder.findIndex(user => user.userId === userId);
-
-                if (index > -1) {
-                    server.buzzOrder.splice(index, 1);
-                }
+                server.buzzOrder = server.buzzOrder.filter(buzzedUser => buzzedUser.userId !== userId);
             }
-
 
             // Si buzzOrder est vide, changez le statut du jeu en 'waiting'
             if (server.buzzOrder.length === 0) {

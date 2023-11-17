@@ -739,7 +739,7 @@ progress::-moz-progress-bar {
     position: relative;
     will-change: transform;
     transition: all .2s ease-in-out 0s;
-    z-index: 5;
+    z-index: 0;
   }
 
   /*Socle du bouton*/
@@ -791,7 +791,7 @@ progress::-moz-progress-bar {
     position: relative;
     will-change: transform;
     transition: all .2s ease-in-out 0s;
-    z-index: 5;
+    z-index: 0;
   }
 
   /*Socle du bouton*/

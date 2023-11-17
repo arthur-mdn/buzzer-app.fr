@@ -55,7 +55,6 @@ function UserNameInput({ onSuccess }) {
                 if (data.success) {
                     localStorage.setItem('userName', trimmedUserName);
                     localStorage.setItem('token', data.token);
-                    localStorage.setItem('userId', data.userId);
                     onSuccess(true);
                 } else {
                     alert(data.message || "Une erreur s'est produite lors de l'enregistrement de l'utilisateur.");

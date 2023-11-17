@@ -1,9 +1,11 @@
 // Host.js
 import React, { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
+import { useUser } from '../../UserContext';
 const config = require('../../config');
 
 function Host() {
+    const { userId } = useUser();
     const [serverName, setServerName] = useState('');
     const [winPoint, setWinPoint] = useState(10);
     const [answerPoint, setAnswerPoint] = useState(1);
@@ -15,8 +17,6 @@ function Host() {
         e.preventDefault();
         try {
             // Envoyer une requête POST au serveur pour créer un nouveau groupe
-            // Récupérer l'userId du localStorage
-            const userId = localStorage.getItem('userId');
             const token = localStorage.getItem('token');
 
             const response = await fetch(config.serverUrl + '/create-server', { // Assurez-vous que l'URL est correcte
