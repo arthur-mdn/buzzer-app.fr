@@ -8,12 +8,14 @@ export function useGame() {
     return useContext(GameContext);
 }
 
-export function GameProvider({ children , initialGameState, initialBuzzOrder, initialPlayers }) {
+export function GameProvider({ children , initialGameState, initialGameOptions, initialBuzzOrder, initialPlayers }) {
     const socket = useSocket();
     const [gameState, setGameState] = useState(initialGameState || 'waiting');
     const [message, setMessage] = useState('');
     const [buzzOrder, setBuzzOrder] = useState(initialBuzzOrder || []);
     const [players, setPlayers] = useState(initialPlayers || []);
+    // options of the server
+    const [options, setOptions] = useState(initialGameOptions || {});
 
     useEffect(() => {
 
@@ -26,6 +28,7 @@ export function GameProvider({ children , initialGameState, initialBuzzOrder, in
             setMessage('La partie va recommencer !');
             // setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
+            setOptions(server.options);
             setPlayers(server.players)
         });
 
@@ -37,29 +40,34 @@ export function GameProvider({ children , initialGameState, initialBuzzOrder, in
         socket.on('playerBuzzed', ({ server }) => {
             setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
+            setOptions(server.options);
         });
 
         socket.on('answerAccepted', ({ server }) => {
             setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
-            setPlayers(server.players)
+            setPlayers(server.players);
+            setOptions(server.options);
             setMessage('Réponse valide !')
         });
         socket.on('answerWon', ({ server }) => {
             setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
-            setPlayers(server.players)
+            setPlayers(server.players);
+            setOptions(server.options);
             setMessage('Réponse gagnante !')
         });
         socket.on('answerDeclined', ({ server }) => {
             setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
             setPlayers(server.players);
+            setOptions(server.options);
             setMessage('Réponse incorrecte !')
 
         });
         const handlePlayersUpdate = (updatedServer) => {
             setPlayers(updatedServer.players);
+            setOptions(updatedServer.options);
         };
         socket.on('playersUpdate', handlePlayersUpdate);
         socket.on('error', console.error);
@@ -76,7 +84,9 @@ export function GameProvider({ children , initialGameState, initialBuzzOrder, in
         setGameState,
         setMessage,
         buzzOrder,
-        players, setPlayers
+        players,
+        setPlayers,
+        options
     };
 
     return <GameContext.Provider value={value}>{children}</GameContext.Provider>;

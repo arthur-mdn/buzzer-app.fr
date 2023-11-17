@@ -11,7 +11,8 @@ import {useToken} from "../../TokenContext";
 import { GameProvider } from '../../GameContext';
 import {FaUser} from "react-icons/fa";
 import RoomDetails from "./RoomDetails";
-import Modal from '../modal/Modal'; // Importez votre composant modale
+import Modal from '../modal/Modal';
+import ServerSettings from "./ServerSettings";
 
 const config = require('../../config');
 
@@ -108,7 +109,7 @@ function GameRoom() {
     }
 
 
-    return <GameProvider initialGameState={serverInfo.gameStatus} initialBuzzOrder={serverInfo.buzzOrder} >
+    return <GameProvider initialGameState={serverInfo.gameStatus} initialGameOptions={serverInfo.options} initialBuzzOrder={serverInfo.buzzOrder} >
         <div style={{display:'flex', padding:'2rem', flexDirection:'row', justifyContent:'space-between', gap:'2rem', alignItems:'center'}}>
             <button onClick={() => handleOpenModal('details')} className={"btn-push btn-push-gray"} style={{padding:'0.5rem 1rem', gap:'1rem', width:'100%', display:'flex', alignItems:'center'}}>
                 <img alt={'blason'} src={"/blasons/blason1.png"} style={{width:'50px'}}/>
@@ -135,8 +136,14 @@ function GameRoom() {
                         className={`modal-tab ${activeTab === 'players' ? 'active' : ''}`}>
                     Membres
                 </button>
+                { role === 'host' &&
+                    <button onClick={() => setActiveTab('settings')}
+                            className={`modal-tab ${activeTab === 'settings' ? 'active' : ''}`}>
+                        Paramètres
+                    </button>
+                }
             </div>
-            {activeTab === 'details' ? <><RoomDetails serverInfo={serverInfo} /> <div style={{margin:'0.5rem'}}></div> <PlayerList serverInfo={serverInfo} /></> : <PlayerList serverInfo={serverInfo} />}
+            {activeTab === 'details' ? <><RoomDetails serverInfo={serverInfo} /> <div style={{margin:'0.5rem'}}></div> <PlayerList serverInfo={serverInfo} /></> : (activeTab === 'players' ? <PlayerList serverInfo={serverInfo} /> : <ServerSettings/>)}
         </Modal>
     </GameProvider>;
 }
