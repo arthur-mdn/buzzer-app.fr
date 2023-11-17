@@ -4,6 +4,8 @@ import { useParams } from 'react-router-dom';
 import Modal from "../modal/Modal";
 import QRCode from 'qrcode.react';
 import {useGame} from "../../GameContext";
+import {FaShare} from "react-icons/fa6";
+
 const config = require('../../config');
 
 
@@ -24,8 +26,8 @@ function RoomDetails({ serverInfo }) {
                     <img alt={'blason'} src={"/blasons/blason1.png"} style={{width:'50px'}}/>
                     <div>
                         <h2 style={{margin:'0'}}>{serverInfo.name}</h2>
-                        <button onClick={() => handleShareServer()} style={{margin:'0', padding:'0.2rem 1rem'}} className={"btn-push btn-push-blue"}>
-                            {serverCode}
+                        <button onClick={() => handleShareServer()} style={{margin:'0', padding:'0.2rem 1rem', display:'flex', alignItems:'center', gap:'0.5rem'}} className={"btn-push btn-push-blue"}>
+                            <FaShare/>{serverCode}
                         </button>
                     </div>
                 </div>

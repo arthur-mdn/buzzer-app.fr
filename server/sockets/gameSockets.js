@@ -3,7 +3,6 @@ const GameServer = require("../models/GameServer");
 const { generateToken, verifyToken } = require('../others/jwtUtils');
 const User = require("../models/User");
 
-
 module.exports = function(io) {
     io.on('connection', (socket) => {
         console.log('a user connected');
