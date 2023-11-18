@@ -75,12 +75,25 @@ router.post('/setUserName', async (req, res) => {
 
 router.get('/user-servers', async (req, res) => {
     try {
+        const user = await User.findOne({ userId: req.userId });
+        if (user) {
+            const servers = await GameServer.find({ 'players.user': user._id }).populate('players.user');
+            res.json(servers);
+        } else {
+            res.status(403).json({ success: false, message: "Utilisateur introuvable." });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+});
+
+router.get('/public-servers', async (req, res) => {
+    try {
         const userId = req.headers.userid;
-
-        // Recherchez tous les serveurs où l'utilisateur est un joueur
-        const servers = await GameServer.find({ 'players.userId': userId });
-
+        const servers = await GameServer.find({ 'players.user': userId }).populate('players.user');
         res.json(servers);
+        console.log(servers)
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });

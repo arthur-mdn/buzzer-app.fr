@@ -5,8 +5,10 @@ import {useSocket} from "../../SocketContext";
 import config from "../../config";
 import {Link} from "react-router-dom";
 import {FaUserGroup} from "react-icons/fa6";
+import {useToken} from "../../TokenContext";
 
 function UserHistory() {
+    const token = useToken();
     const socket = useSocket();
     const { userId } = useUser();
     const [userServers, setUserServers] = useState([]);
@@ -32,9 +34,7 @@ function UserHistory() {
         const fetchUserServers = async () => {
             try {
                 const response = await fetch(config.serverUrl + '/user-servers', {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const servers = await response.json();
                 setUserServers(servers);
@@ -56,7 +56,7 @@ function UserHistory() {
     return (
         <div>
             {userServers.length <= 0 && (
-                <div>
+                <div className={"modal_content"}>
                     Vous n'avez rejoins aucun serveur pour le moment.
                 </div>
             )}
