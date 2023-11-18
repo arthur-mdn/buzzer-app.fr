@@ -90,13 +90,13 @@ router.get('/user-servers', async (req, res) => {
 
 router.get('/public-servers', async (req, res) => {
     try {
-        const userId = req.headers.userid;
-        const servers = await GameServer.find({ 'players.user': userId }).populate('players.user');
-        res.json(servers);
-        console.log(servers)
+        // Recherchez tous les serveurs publics
+        const publicServers = await GameServer.find({ 'options.isPublic': true });
+
+        res.json(publicServers);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 });
 

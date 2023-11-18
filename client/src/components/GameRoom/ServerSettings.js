@@ -15,6 +15,7 @@ function ServerSettings() {
     const [answerPoint, setAnswerPoint] = useState(options.answerPoint);
     const [deductPointOnWrongAnswer, setDeductPointOnWrongAnswer] = useState(options.deductPointOnWrongAnswer);
     const [autoRestartAfterDecline, setAutoRestartAfterDecline] = useState(options.autoRestartAfterDecline);
+    const [isPublic, setIsPublic] = useState(options.isPublic);
 
 
     const handleSaveSettings = () => {
@@ -22,9 +23,11 @@ function ServerSettings() {
             winPoint,
             answerPoint,
             deductPointOnWrongAnswer,
-            autoRestartAfterDecline
+            autoRestartAfterDecline,
+            isPublic
         };
 
+        console.log(newOptions)
         // Envoyer les nouvelles options au serveur
         socket.emit('updateServerOptions', { serverCode, newOptions });
 
@@ -90,6 +93,16 @@ function ServerSettings() {
                             onChange={(e) => setAutoRestartAfterDecline(e.target.checked)}
                         />
                        Engager une nouvelle manche lors d'une mauvaise réponse.
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={isPublic}
+                            onChange={(e) => setIsPublic(e.target.checked)}
+                        />
+                       Serveur public
                     </label>
                 </div>
                 <button type="button" onClick={handleSaveSettings} className={'btn-push btn-push-green'} style={{width: '100%', padding: '1rem'}}>Enregistrer</button>

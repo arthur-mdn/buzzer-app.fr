@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import UserHistory from "./UserHistory";
+import PublicServerList from "./PublicServerList";
 
 function ServerView() {
     const [serverActiveTab, setServerActiveTab] = useState('history'); // 'history' ou 'public'
@@ -21,7 +22,7 @@ function ServerView() {
                         Public
                     </button>
                 </div>
-                {serverActiveTab === 'history' ? <UserHistory/> : <></>}
+                {serverActiveTab === 'history' ? <UserHistory/> : <PublicServerList/>}
             </div>
         </div>
     );
