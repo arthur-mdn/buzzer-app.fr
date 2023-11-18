@@ -829,54 +829,6 @@ progress::-moz-progress-bar {
 }
 
 
-/*@media only screen and (min-width: 1200px) {*/
-/*  .btn {*/
-/*    !*gestion des couleurs rouges*!*/
-/*    --primary: 222, 64, 64;*/
-/*    --secondary: 174, 0, 3;*/
-/*    --white: 243, 243, 243;*/
-/*    --black: 0, 0, 0;*/
-/*    width: 470px;*/
-/*    height: 400px;*/
-/*    cursor: pointer;*/
-/*    border-radius: 100%;*/
-/*    position: relative;*/
-/*    will-change: transform;*/
-/*    transition: all .2s ease-in-out 0s;*/
-/*    z-index: 5;*/
-/*  }*/
-
-/*  .base {*/
-/*    display: flex;*/
-/*    flex-direction: column;*/
-/*    align-items: flex-start;*/
-/*    justify-content: flex-end;*/
-/*    color: #fff;*/
-/*    margin-top: -40px;*/
-/*    margin-left: -30px;*/
-/*    border: 0.5px solid rgba(0, 0, 0, 0.1);*/
-/*    height: 460px;*/
-/*    width: 490px;*/
-/*    padding: 12px;*/
-/*    border-radius: 100%;*/
-/*    cursor: pointer;*/
-/*    position: relative;*/
-/*    will-change: transform;*/
-/*    transition: all .1s ease-in-out 0s;*/
-/*    background-image: linear-gradient(to right, rgb(143 143 143 / 100%), rgba(143, 143, 143, 1)),*/
-/*    linear-gradient(to bottom, rgb(140 140 140 / 100%), rgba(149, 159, 149, 1)),*/
-/*    linear-gradient(to left, rgb(150 150 150 / 100%), rgba(255, 255, 255, 1));*/
-/*    background-position: bottom right;*/
-/*    background-size: 100% 100%, 100% 100%;*/
-/*    box-shadow: inset -6px -30px 0 rgba(255, 255, 255, 0.4),*/
-/*    inset -4px -25px 2px rgba(0, 0, 0, 0.7),*/
-/*    0 1px 1px rgba(0, 0, 0, 0.7),*/
-/*    0 8px 1px rgba(255, 255, 255, 0.1);*/
-/*    transform: rotateZ(2deg) translateY(-10.8px);*/
-/*    z-index: -5;*/
-/*  }*/
-/*}*/
-
 .btn:disabled .front{
   background-color: #656565;
   box-shadow: 0 .5em 1em -0.2em rgba(140, 140, 140, 0.5);
@@ -884,3 +836,59 @@ progress::-moz-progress-bar {
 .btn:disabled .back{
   background-color: #706c6c;
 }
+
+
+.navbar-bottom {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  padding: 1rem 0 3rem 0;
+  /*background: rgb(141,147,160);*/
+  /*background: linear-gradient(180deg, rgba(141,147,160,1) 0%, rgba(118,124,140,1) 10%, rgba(105,112,129,1) 12%, rgba(93,102,121,1) 21%, #435064 100%);*/
+
+}
+
+/*.navbar-bottom button {*/
+/*  padding: 2rem 0;*/
+/*  border: 0;*/
+/*  width: 100%;*/
+/*  height: 100%;*/
+/*  background: transparent;*/
+/*  color: white;*/
+/*  font-family: "Fredoka One";*/
+/*  top: 0px;*/
+/*  letter-spacing: 0.06rem;*/
+/*  text-decoration: none;*/
+/*  font-size: 20px;*/
+/*  cursor: pointer;*/
+/*}*/
+/*.navbar-bottom button:hover {*/
+/*  background: #49698a;*/
+/*  background: linear-gradient(180deg, #8fa6c5 0%, #6387ae 10%, #48698a 18%, #49698a 100%);*/
+
+/*}*/
+
+.navbar-bottom button {
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.navbar-bottom button svg{
+  width: 40px;
+  height: 40px;
+}
+
+/*.navbar-bottom button.active {*/
+/*  background: #49698a;*/
+/*  background: linear-gradient(180deg, #8fc1c5 0%, #63acae 10%, #488a8a 18%, #498a73 100%);*/
+
+
+/*}*/
+
+
+

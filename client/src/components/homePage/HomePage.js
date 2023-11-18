@@ -1,63 +1,72 @@
 // HomePage.js
-import React, { useState} from 'react';
+import React, {useRef, useState} from 'react';
 import { Link } from "react-router-dom";
 import { useSocket } from '../../SocketContext';
 import { useUser } from '../../UserContext';
-import UserHistory from "../GameRoom/UserHistory";
+import Slider from 'react-slick';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
+import ServerView from './ServerView'; // Composant pour la vue des serveurs
+import HomeView from './HomeView'; // Composant pour la vue d'accueil
+import SettingsView from './SettingsView';
+import {FaUserGroup} from "react-icons/fa6";
+import {FaCog, FaCogs, FaHome} from "react-icons/fa"; // Composant pour la vue des paramètres
 const config = require('../../config');
 
 function HomePage() {
-    const { userRole } = useUser();
-    const socket = useSocket();
-    const [serverActiveTab, setServerActiveTab] = useState('history'); // 'history' ou 'public'
+    const sliderRef = useRef();
+    const [currentTab, setCurrentTab] = useState(1); // Index du slider pour 'home'
 
-    const handleDisconnectAll = () => {
-        socket.emit('adminForceDisconnect');
+    const settings = {
+        initialSlide: currentTab,
+        infinite: false,
+        speed: 500,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        afterChange: current => setCurrentTab(current),
+    };
+
+    const goToSlide = (index) => {
+        sliderRef.current.slickGoTo(index);
+    };
+
+    const isActiveTab = (tabIndex) => {
+        return currentTab === tabIndex;
     };
 
     return (
-        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <img src={config.instanceUrl + '/logo.png'} alt="Logo" style={{width: '100%', maxWidth: '300px', marginTop:'3rem', aspectRatio: '1/1'}}/>
-            <nav>
-                <ul style={{listStyle: 'none', padding: '0'}}>
-                    <li className={'btn-push btn-push-green'}>
-                        <Link to="/host">Créer</Link>
-                    </li>
-                    <br/>
-                    <li className={'btn-push btn-push-green'}>
-                        <Link to="/join">Rejoindre</Link>
-                    </li>
-                </ul>
-            </nav>
+        <div>
+            <Slider ref={sliderRef} {...settings}>
+                <div><ServerView /></div>
+                <div><HomeView /></div>
+                <div><SettingsView /></div>
+            </Slider>
 
-            <div className={'modal'}>
-                <div className={'modal_content_title'}>
-                    <h2>Liens rapides</h2>
-                </div>
-                <div style={{marginLeft: '15px', display: 'flex', gap: '10px'}}>
-                    <button onClick={() => setServerActiveTab('history')}
-                            className={`modal-tab ${serverActiveTab === 'history' ? 'active' : ''}`}>
-                        Historique
-                    </button>
-                    <button onClick={() => setServerActiveTab('public')}
-                            className={`modal-tab ${serverActiveTab === 'public' ? 'active' : ''}`}>
-                        Public
-                    </button>
-                </div>
-                {serverActiveTab === 'history' ? <UserHistory/> : <></>}
+            {/* Barre de navigation en bas */}
+            <div className="navbar-bottom">
+                <button
+                    className={isActiveTab(0) ? "active btn-push btn-push-gray" : " btn-push btn-push-gray"}
+                    onClick={() => goToSlide(0)}
+                >
+                    <FaUserGroup/>
+                    Serveurs
+                </button>
+                <button
+                    className={isActiveTab(1) ? "active btn-push btn-push-gray" : " btn-push btn-push-gray"}
+                    onClick={() => goToSlide(1)}
+                >
+                    <FaHome/>
+                    Accueil
+                </button>
+                <button
+                    className={isActiveTab(2) ? "active btn-push btn-push-gray" : " btn-push btn-push-gray"}
+                    onClick={() => goToSlide(2)}
+                >
+                    <FaCogs/>
+                    Paramètres
+                </button>
             </div>
-
-
-            {userRole === "admin" &&
-                <div>
-                    <h3>YoADMIN</h3>
-                    <button onClick={handleDisconnectAll} className={'btn-push btn-push-red'}>
-                        Déconnecter tous les utilisateurs
-                    </button>
-                </div>
-            }
-
-
         </div>
     );
 }

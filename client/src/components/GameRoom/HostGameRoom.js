@@ -62,13 +62,13 @@ function HostGameRoom({ serverInfo }) {
                             </div>
                             <div className={'modal_content'}>
                                 <Podium players={players} />
-                                <button onClick={handleNewGame} className={'btn-push btn-push-green'} style={{padding: '1rem 1.5rem'}}>Nouvelle partie</button>
+                                <button onClick={handleNewGame} className={'btn-push btn-push-green'} style={{padding: '1rem 1.5rem'}}>Nouvelle manche</button>
                             </div>
                         </div>
                     </div>
                 )}
-                {gameState === 'waiting' && <button onClick={handleStartGame} className={'btn-push btn-push-green'} style={{padding: '1rem 1.5rem'}} >Démarrer la partie</button>}
-                {gameState === 'inProgress' && <button onClick={handleCancelGame} className={'btn-push'} style={{padding: '1rem 1.5rem'}} >Annuler la partie</button>}
+                {gameState === 'waiting' && <button onClick={handleStartGame} className={'btn-push btn-push-green'} style={{padding: '1rem 1.5rem'}} >Démarrer la manche</button>}
+                {gameState === 'inProgress' && <button onClick={handleCancelGame} className={'btn-push'} style={{padding: '1rem 1.5rem'}} >Annuler la manche</button>}
                 {gameState === 'buzzed' && (
                     <div className={'modal_bg'}>
                         <div className={'modal'}>

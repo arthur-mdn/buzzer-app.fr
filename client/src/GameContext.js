@@ -21,7 +21,7 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
 
         socket.on('gameStarted', () => {
             setGameState('inProgress');
-            setMessage('La partie a commencé !');
+            setMessage('La manche a commencé !');
         });
         socket.on('gameReStarted', ({server}) => {
             setGameState('waiting');
@@ -34,7 +34,7 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
 
         socket.on('gameCancelled', () => {
             setGameState('waiting');
-            setMessage('La partie a été annulée.');
+            setMessage('La manche a été annulée.');
         });
 
         socket.on('playerBuzzed', ({ server }) => {

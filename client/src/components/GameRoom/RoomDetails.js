@@ -38,7 +38,7 @@ function RoomDetails({ serverInfo }) {
                     }
                     {options.autoRestartAfterDecline &&
                         <div style={{width:"100%", textAlign:"center"}}>
-                            <h4 style={{margin:'0'}}>Partie relancée automatiquement en cas de mauvaise réponse</h4>
+                            <h4 style={{margin:'0'}}>Manche relancée automatiquement en cas de mauvaise réponse</h4>
                         </div>
                     }
                 <div className={"server-info-rules"}>
