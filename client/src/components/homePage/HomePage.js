@@ -44,27 +44,27 @@ function HomePage() {
             </Slider>
 
             {/* Barre de navigation en bas */}
-            <div className="navbar-bottom">
+            <div className="modal navbar-bottom">
                 <button
-                    className={isActiveTab(0) ? "active btn-push btn-push-gray" : " btn-push btn-push-gray"}
+                    className={isActiveTab(0) ? "active" : ""}
                     onClick={() => goToSlide(0)}
                 >
                     <FaUserGroup/>
-                    Serveurs
+                    <span>Serveurs</span>
                 </button>
                 <button
-                    className={isActiveTab(1) ? "active btn-push btn-push-gray" : " btn-push btn-push-gray"}
+                    className={isActiveTab(1) ? "active" : ""}
                     onClick={() => goToSlide(1)}
                 >
                     <FaHome/>
-                    Accueil
+                    <span>Accueil</span>
                 </button>
                 <button
-                    className={isActiveTab(2) ? "active btn-push btn-push-gray" : " btn-push btn-push-gray"}
+                    className={isActiveTab(2) ? "active" : ""}
                     onClick={() => goToSlide(2)}
                 >
                     <FaCogs/>
-                    Paramètres
+                    <span>Paramètres</span>
                 </button>
             </div>
         </div>
