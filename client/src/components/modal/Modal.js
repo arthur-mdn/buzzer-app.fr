@@ -1,13 +1,13 @@
 // Modal.js
 import React from "react";
 
-function Modal({ isOpen, onClose, children, title }) {
+function Modal({ isOpen, onClose, children, title, maxHeight = "none" }) {
     if (!isOpen) return null;
 
     return (
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             <div className={'modal_bg'}>
-                <div className={'modal'} style={{maxWidth:'95vw'}}>
+                <div className={'modal'} style={{maxWidth:'95vw', maxHeight: maxHeight}}>
                     <div className={'modal_content_title'}>
                         <div></div>
                         <h2>{title || 'Serveur'}</h2>
