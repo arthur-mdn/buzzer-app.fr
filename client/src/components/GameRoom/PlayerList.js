@@ -10,6 +10,7 @@ import {useParams} from "react-router-dom";
 import {useToken} from "../../TokenContext";
 import Modal from "../modal/Modal";
 import PlayerItem from "./PlayerItem";
+import { format } from 'date-fns';
 
 function PlayerList({ serverInfo }) {
     const socket = useSocket();
@@ -42,12 +43,16 @@ function PlayerList({ serverInfo }) {
     const PlayerDetailsPopup = ({ details }) => {
         if (!details) return null;
         return (
-            <Modal isOpen={showPlayerDetails} title={"Détails du joueur"} onClose={() => setShowPlayerDetails(false)} >
+            <Modal isOpen={showPlayerDetails} title={"Profil du joueur"} onClose={() => setShowPlayerDetails(false)} >
                 <div className={"modal_content"}>
-                    <ProfilePictureViewer imageIndex={ details.userPicture.smiley} imageColor={ details.userPicture.color}/>
-                    <h2>{details.userName}</h2>
-                    <h2>{details.creation}</h2>
-                    <h2>{details.userRole}</h2>
+                    <div style={{display:"flex", gap:"1rem"}}>
+                        <ProfilePictureViewer imageIndex={ details.userPicture.smiley} imageColor={ details.userPicture.color} size={"6rem"}/>
+                        <div style={{display:"flex", gap:"1rem", flexDirection:"column"}}>
+                            <h2 style={{margin: "0"}}>{details.userName}</h2>
+                            <h3 style={{margin: "0"}}>{details.userRole === "admin" ? "Administrateur" : "Utilisateur"}</h3>
+                        </div>
+                    </div>
+                    <h3 style={{margin: "0"}}>Inscrit le : { format(new Date(details.creation), "dd/MM/yyyy 'à' HH'h'mm")}</h3>
                 </div>
             </Modal>
         );

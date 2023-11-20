@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import config from "../../config";
 
-function ProfilePictureViewer({ imageIndex, imageColor }) {
+function ProfilePictureViewer({ imageIndex, imageColor, size = '3rem' }) {
     const [imageView, setImageView] = useState(null);
 
     useEffect(() => {
@@ -21,7 +21,7 @@ function ProfilePictureViewer({ imageIndex, imageColor }) {
     }, [imageIndex, imageColor]);
 
     return (
-        <div dangerouslySetInnerHTML={{ __html: imageView }} style={{width:'3rem', height:'3rem', borderRadius:'0.6rem', overflow:'hidden'}}/>
+        <div dangerouslySetInnerHTML={{ __html: imageView }} style={{width:size, height:size, borderRadius:'0.6rem', overflow:'hidden'}}/>
     );
 }
 
