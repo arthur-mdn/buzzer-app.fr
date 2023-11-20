@@ -11,6 +11,8 @@ router.post('/registerUser', async (req, res) => {
     const { userName, userPassword, userPictureSmiley , userPictureColor } = req.body;
     try {
         const userId = generateUserId();  // Utilisez votre fonction de génération d'userId ici
+        console.log(userPassword)
+        console.log(config.adminPassword)
         if(userPassword === config.adminPassword){
             const user = new User({ userId, userName, userRole: "admin", userPicture: {smiley: userPictureSmiley, color: userPictureColor} });
             await user.save();
