@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import UserHistory from "./UserHistory";
 import PublicServerList from "./PublicServerList";
+import AdminServerList from "./AdminServerList";
 
 function ServerView() {
     const [serverActiveTab, setServerActiveTab] = useState('history'); // 'history' ou 'public'
@@ -21,8 +22,12 @@ function ServerView() {
                             className={`modal-tab ${serverActiveTab === 'public' ? 'active' : ''}`}>
                         Public
                     </button>
+                    <button onClick={() => setServerActiveTab('admin')}
+                            className={`modal-tab ${serverActiveTab === 'admin' ? 'active' : ''}`}>
+                        Admin
+                    </button>
                 </div>
-                {serverActiveTab === 'history' ? <UserHistory/> : <PublicServerList/>}
+                {serverActiveTab === 'history' ? <UserHistory/> : (serverActiveTab === 'public' ? <PublicServerList/> : (serverActiveTab === 'admin' ? <AdminServerList/> : ""))}
             </div>
         </div>
     );

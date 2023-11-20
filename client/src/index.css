@@ -948,6 +948,9 @@ progress::-moz-progress-bar {
 
 .profile-picture-chooser {
   text-align: center; /* Centre le contenu */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .profile-picture-grid {

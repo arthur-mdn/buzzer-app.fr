@@ -97,6 +97,27 @@ router.get('/public-servers', async (req, res) => {
     }
 });
 
+router.get('/admin-servers', async (req, res) => {
+    try {
+        const user = await User.findOne({ userId: req.userId });
+        if (user) {
+            if(user.userRole === "admin"){
+                const servers = await GameServer.find({}).populate('players.user');
+                res.json(servers);
+            }else{
+                res.status(403).json({ success: false, message: "Rôle administrateur requis." });
+
+            }
+
+        } else {
+            res.status(403).json({ success: false, message: "Utilisateur introuvable." });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+});
+
 
 router.get('/user-profile/:userId', async (req, res) => {
     try {
