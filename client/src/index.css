@@ -298,6 +298,7 @@ span.online svg, span.offline svg{
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1;
 }
 
 .modal{
@@ -419,7 +420,7 @@ span.online svg, span.offline svg{
 
 
 .z_top{
-  /*position: fixed;*/
+  position: fixed;
   padding: 3rem;
   z-index: 9999;
 }
