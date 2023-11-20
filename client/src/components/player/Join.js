@@ -2,8 +2,9 @@
 import React, {useState} from 'react';
 import { Link } from "react-router-dom";
 import config from "../../config";
+import Modal from "../modal/Modal";
 
-function Join() {
+function Join({ onClose }) {
     const [tempJoinCode, setTempJoinCode] = useState('');
 
     const handleJoinSubmit = async (e) => {
@@ -32,11 +33,7 @@ function Join() {
 
     return (
     <div>
-        <nav className={'modal_bg'}>
-            <div className={'modal'}>
-                <div className={'modal_content_title'}>
-                    <h2>Rejoindre un serveur</h2>
-                </div>
+        <Modal isOpen={true} title={"Rejoindre un serveur"} onClose={onClose} style={{maxWidth:'none'}}>
                 <form className={'modal_content'} onSubmit={handleJoinSubmit} >
                     <label htmlFor={'name'}>Quel serveur rejoindre ?</label>
                     <div style={{display: 'flex', width: '100%', flexDirection:'column'}}>
@@ -44,12 +41,7 @@ function Join() {
                     </div>
                     <button type="submit" className={'btn-push btn-push-green'} style={{width: '100%', padding: '1rem'}}>Rejoindre</button>
                 </form>
-            </div>
-        </nav>
-        <div className={'z_top'}>
-            <Link to="/"  className={'btn-push'} style={{padding: '1rem 1.5rem'}} >{'<'}</Link>
-
-        </div>
+        </Modal>
 
     </div>
 

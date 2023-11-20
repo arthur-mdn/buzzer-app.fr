@@ -13,7 +13,7 @@ import {FaCogs, FaHome} from "react-icons/fa"; // Composant pour la vue des para
 function HomePage() {
     const sliderRef = useRef();
     const [currentTab, setCurrentTab] = useState(1); // Index du slider pour 'home'
-
+    
     const settings = {
         initialSlide: currentTab,
         infinite: false,

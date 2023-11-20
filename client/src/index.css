@@ -118,6 +118,10 @@ span.online svg, span.offline svg{
   padding: 0.1rem 0.7rem 0.3rem 0.75rem;
 
 }
+nav .btn-push{
+  text-align: center;
+  padding: 1rem 3rem
+}
 
 /* Style pour le bouton qui ouvre le menu */
 .openMenuButton {

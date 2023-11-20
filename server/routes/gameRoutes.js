@@ -67,7 +67,8 @@ router.post('/create-server', async (req, res) => {
                 autoRestartAfterDecline: options.autoRestartAfterDecline || true,
                 answerPoint: options.answerPoint || 1,
                 winPoint: options.winPoint || 10,
-                deductPointOnWrongAnswer: options.deductPointOnWrongAnswer || false
+                deductPointOnWrongAnswer: options.deductPointOnWrongAnswer || false,
+                isPublic: options.isPublic || false,
             }
         });
 

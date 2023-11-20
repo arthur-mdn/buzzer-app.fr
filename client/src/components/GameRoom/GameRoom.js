@@ -50,7 +50,6 @@ function GameRoom() {
                 }else{
                     setError('Serveur introuvable.');
                 }
-                console.log(data)
 
             } catch (error) {
                 console.error('There was an error fetching the server details:', error);
