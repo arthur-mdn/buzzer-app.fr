@@ -1,16 +1,13 @@
 // ServerSettings.js
 import React, {useState} from 'react';
-import {useUser} from "../../UserContext";
 import {useGame} from "../../GameContext";
 import {useSocket} from "../../SocketContext";
 import {useParams} from "react-router-dom";
 
 function ServerSettings() {
-    const { userId } = useUser();
     const { options } = useGame();
     const { serverCode } = useParams();
     const socket = useSocket();
-    const [serverName, setServerName] = useState('');
     const [winPoint, setWinPoint] = useState(options.winPoint);
     const [answerPoint, setAnswerPoint] = useState(options.answerPoint);
     const [deductPointOnWrongAnswer, setDeductPointOnWrongAnswer] = useState(options.deductPointOnWrongAnswer);

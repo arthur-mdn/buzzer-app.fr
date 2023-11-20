@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import ProfilePictureViewer from "../UserNameInput/ProfilePictureViewer";
 import {useSocket} from "../../SocketContext";
 import {useUser} from "../../UserContext";
@@ -31,7 +31,7 @@ function PlayerItem({ player, onShowDetails, serverInfo, onKickPlayer, onMenuTog
 
         document.addEventListener('click', handleOutsideClick);
         return () => document.removeEventListener('click', handleOutsideClick);
-    }, []);
+    }, [onMenuToggle]);
 
     return (
         <>

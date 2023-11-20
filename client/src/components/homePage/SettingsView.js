@@ -3,9 +3,6 @@ import {useUser} from "../../UserContext";
 import {useSocket} from "../../SocketContext";
 import ProfilePictureChooser from '../UserNameInput/ProfilePictureChooser';
 import ProfilePictureViewer from "../UserNameInput/ProfilePictureViewer";
-import RoomDetails from "../GameRoom/RoomDetails";
-import PlayerList from "../GameRoom/PlayerList";
-import ServerSettings from "../GameRoom/ServerSettings";
 import Modal from "../modal/Modal";
 
 function SettingsView() {

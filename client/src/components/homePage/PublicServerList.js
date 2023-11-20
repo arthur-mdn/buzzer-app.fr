@@ -50,7 +50,7 @@ function PublicServerList() {
         };
 
         fetchPublicServers();
-    }, [socket, userId]);
+    }, [socket, token, userId]);
 
 
     return (

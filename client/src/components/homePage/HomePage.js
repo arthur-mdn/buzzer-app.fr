@@ -1,8 +1,5 @@
 // HomePage.js
 import React, {useRef, useState} from 'react';
-import { Link } from "react-router-dom";
-import { useSocket } from '../../SocketContext';
-import { useUser } from '../../UserContext';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -11,8 +8,7 @@ import ServerView from './ServerView'; // Composant pour la vue des serveurs
 import HomeView from './HomeView'; // Composant pour la vue d'accueil
 import SettingsView from './SettingsView';
 import {FaUserGroup} from "react-icons/fa6";
-import {FaCog, FaCogs, FaHome} from "react-icons/fa"; // Composant pour la vue des paramètres
-const config = require('../../config');
+import {FaCogs, FaHome} from "react-icons/fa"; // Composant pour la vue des paramètres
 
 function HomePage() {
     const sliderRef = useRef();

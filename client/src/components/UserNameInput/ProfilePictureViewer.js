@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import config from "../../config";
 
 function ProfilePictureViewer({ imageIndex, imageColor, size = '3rem' }) {
     const [imageView, setImageView] = useState(null);

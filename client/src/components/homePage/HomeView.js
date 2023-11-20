@@ -1,8 +1,6 @@
-import React, {useState} from "react";
+import React from "react";
 import config from "../../config";
 import {Link} from "react-router-dom";
-import HomePage from "./HomePage";
-import UserHistory from "./UserHistory";
 
 function HomeView() {
 

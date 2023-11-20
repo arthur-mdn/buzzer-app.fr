@@ -50,7 +50,7 @@ function UserHistory() {
         };
 
         fetchUserServers();
-    }, [socket, userId]);
+    }, [socket, token, userId]);
 
 
     return (

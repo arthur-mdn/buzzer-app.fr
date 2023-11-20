@@ -1,22 +1,17 @@
 // PlayerList.js
-import React, {useEffect, useState} from 'react';
-import {FaCircle, FaEllipsisV} from 'react-icons/fa';
+import React, { useState} from 'react';
 import {useUser} from "../../UserContext";
 import {useGame} from "../../GameContext";
-import {useSocket} from "../../SocketContext";
 import ProfilePictureViewer from "../UserNameInput/ProfilePictureViewer";
 import config from "../../config";
-import {useParams} from "react-router-dom";
 import {useToken} from "../../TokenContext";
 import Modal from "../modal/Modal";
 import PlayerItem from "./PlayerItem";
 import { format } from 'date-fns';
 
 function PlayerList({ serverInfo }) {
-    const socket = useSocket();
     const { userId } = useUser();
     const { players } = useGame();
-    const { serverCode } = useParams();
     const token = useToken();
     const [showPlayerDetails, setShowPlayerDetails] = useState(false);
     const [playerDetails, setPlayerDetails] = useState(null);

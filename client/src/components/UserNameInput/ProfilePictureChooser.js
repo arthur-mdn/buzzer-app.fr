@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import config from "../../config";
 
 function ProfilePictureChooser({ onImageSelect, onColorSelect , initialImageIndex, initialColor }) {
     const totalSmileys = 30;
@@ -32,7 +31,7 @@ function ProfilePictureChooser({ onImageSelect, onColorSelect , initialImageInde
         const randomImageNumber = Math.floor(Math.random() * totalSmileys) + 1;
         fetchAndModifySvg(randomImageNumber, selectedColor);
         setSelectedImageIndex(randomImageNumber);
-    }, []);
+    }, [selectedColor]);
 
     useEffect(() => {
         if (initialImageIndex != null) {
@@ -46,7 +45,7 @@ function ProfilePictureChooser({ onImageSelect, onColorSelect , initialImageInde
             fetchAndModifySvg(randomImageNumber, selectedColor);
             setSelectedImageIndex(randomImageNumber);
         }
-    }, [initialImageIndex, initialColor]);
+    }, [initialImageIndex, initialColor, selectedColor]);
 
     useEffect(() => {
         if (selectedImageIndex != null) {
