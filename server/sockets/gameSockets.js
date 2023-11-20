@@ -383,5 +383,19 @@ module.exports = function(io) {
             });
         });
 
+        socket.on('adminForceResetProfilPictures', async () => {
+            try {
+                const user = await User.findOne({ userId: socket.userId });
+                if (user && user.userRole === 'admin') {
+                    const userPicture = { smiley: "1", color: "#999" };
+                    await User.updateMany({}, { $set: { userPicture } });
+                    // Vous pouvez également envoyer une confirmation ou une notification aux utilisateurs ici si nécessaire
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+
     });
 };

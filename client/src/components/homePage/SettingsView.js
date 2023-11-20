@@ -13,6 +13,9 @@ function SettingsView() {
     const handleDisconnectAll = () => {
         socket.emit('adminForceDisconnect');
     };
+    const handleRestPicturesAll = () => {
+        socket.emit('adminForceResetProfilPictures');
+    };
     const [tempImageIndex, setTempImageIndex] = useState(userPictureSmiley || 1);
     const [tempColor, setTempColor] = useState(userPictureColor || "#999");
 
@@ -51,6 +54,9 @@ function SettingsView() {
                         <h3>YoADMIN</h3>
                         <button onClick={handleDisconnectAll} className={'btn-push btn-push-red'}>
                             Déconnecter tous les utilisateurs
+                        </button>
+                        <button onClick={handleRestPicturesAll} className={'btn-push btn-push-red'}>
+                            Réinitialiser photos de profils
                         </button>
                     </div>
                 }
