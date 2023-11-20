@@ -109,12 +109,7 @@ width: fit-content;
   flex-direction: column;
   gap: 0.5rem;
 }
-.yourProfile .btn-push{
-  background: #f1cf24;
-  -ms-box-shadow: 0px 5px 0px #ab9e00;
-  -o-box-shadow: 0px 5px 0px #ab9e00;
-  box-shadow: 0px 5px 0px #ab9e00;
-}
+
 
 span.online svg, span.offline svg{
   width: 0.8em;
@@ -166,16 +161,7 @@ span.online svg, span.offline svg{
   border: 0;
 }
 
-.btn-push-green{
-  background: rgb(56,201,29);
-  background: linear-gradient(180deg, rgba(132,249,40,1) 0%, rgba(56,201,29,1) 100%);
-  -webkit-box-shadow: 0px 5px 0px #319244;
-  -moz-box-shadow: 0px 5px 0px #319244;
-  -ms-box-shadow: 0px 5px 0px #319244;
-  -o-box-shadow: 0px 5px 0px #319244;
-  box-shadow: 0px 5px 0px #319244;
-  text-shadow: 2px 4px 4px #319244;
-}
+
 .btn-push-gray{
   background: rgb(192,200,208);
   background: linear-gradient(180deg, rgb(226 235 241) 0%, rgb(205 205 205) 100%);
@@ -186,6 +172,23 @@ span.online svg, span.offline svg{
   box-shadow: 0px 5px 0px #949494;
   text-shadow: 1px 2px 4px #000000
 }
+.yourProfile .btn-push{
+  background: #f1cf24;
+  -ms-box-shadow: 0px 5px 0px #ab9e00;
+  -o-box-shadow: 0px 5px 0px #ab9e00;
+  box-shadow: 0px 5px 0px #ab9e00;
+}
+.btn-push-green, .yourProfile .btn-push-green{
+  background: rgb(56,201,29);
+  background: linear-gradient(180deg, rgba(132,249,40,1) 0%, rgba(56,201,29,1) 100%);
+  -webkit-box-shadow: 0px 5px 0px #319244;
+  -moz-box-shadow: 0px 5px 0px #319244;
+  -ms-box-shadow: 0px 5px 0px #319244;
+  -o-box-shadow: 0px 5px 0px #319244;
+  box-shadow: 0px 5px 0px #319244;
+  text-shadow: 2px 4px 4px #319244;
+}
+
 .btn-push-blue{
   background: rgb(64, 158, 255);
   background: linear-gradient(180deg, rgb(61, 179, 255) 0%, rgb(11, 146, 194) 100%);
@@ -230,12 +233,12 @@ span.online svg, span.offline svg{
   box-shadow: 0px 7px 0px #c0392b; /* ombre légèrement plus grande */
   color: #ffffff; /* couleur du texte blanche pour un contraste élevé */
 }
-.btn-push-green:hover {
-  box-shadow: 0px 7px 0px #14a12e; /* ombre légèrement plus grande */
-  color: #ffffff; /* couleur du texte blanche pour un contraste élevé */
-}
 .btn-push-gray:hover {
   box-shadow: 0px 7px 0px #757575; /* ombre légèrement plus grande */
+  color: #ffffff; /* couleur du texte blanche pour un contraste élevé */
+}
+.btn-push-green:hover {
+  box-shadow: 0px 7px 0px #14a12e; /* ombre légèrement plus grande */
   color: #ffffff; /* couleur du texte blanche pour un contraste élevé */
 }
 .btn-push-blue:hover {

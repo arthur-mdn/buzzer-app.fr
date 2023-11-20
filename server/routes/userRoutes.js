@@ -98,4 +98,19 @@ router.get('/public-servers', async (req, res) => {
 });
 
 
+router.get('/user-profile/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const user = await User.findOne({ userId: userId });
+        if (user) {
+            res.json({ success: true,user:user});
+        } else {
+            res.status(403).json({ success: false, message: "Utilisateur introuvable." });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+});
+
 module.exports = router;
