@@ -65,7 +65,7 @@ function SettingsView() {
             {isProfileModalOpen &&
             <div style={{position:"absolute", width:"100vw", height:"100vh", top:'0', bottom:'0'}}>
                 <div style={{position:"relative", width:"100%", height:"100%"}}>
-                    <Modal title={"Modifier profil"} isOpen={isProfileModalOpen} onClose={handleCancelChanges} >
+                    <Modal title={"Modifier profil"} isOpen={isProfileModalOpen} onClose={handleCancelChanges} maxHeight={"65vh"}>
                         <form style={{display:"flex", flexDirection:"column",gap:"1rem", alignItems:"center"}} className={"modal_content"}>
                             <div style={{backgroundColor:'red', position:"absolute", top:"0", zIndex:"99999"}}></div>
                             <ProfilePictureChooser

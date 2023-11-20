@@ -961,11 +961,12 @@ progress::-moz-progress-bar {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); /* Crée une grille responsive */
   gap: 10px; /* Espace entre les images */
-  padding: 10px;
-  max-width: 500px; /* Largeur maximale de la grille */
+  padding: 0.5rem 0.8rem 0.5rem 0.5rem;
   margin: 20px auto; /* Centre la grille horizontalement */
   overflow-Y: scroll;
   max-height: 25vh;
+  background-color: white;
+  border-radius: 0.5rem;
 }
 
 .profile-picture-grid img {

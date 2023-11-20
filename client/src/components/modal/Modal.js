@@ -1,7 +1,7 @@
 // Modal.js
 import React from "react";
 
-function Modal({ isOpen, onClose, children, title, maxHeight = "none" }) {
+function Modal({ isOpen, onClose, children, title, maxHeight = "90vh" }) {
     if (!isOpen) return null;
 
     return (

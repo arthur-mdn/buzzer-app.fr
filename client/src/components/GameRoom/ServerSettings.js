@@ -30,9 +30,9 @@ function ServerSettings() {
     };
 
     return (
-        <div className={"tab-content"} style={{height:'100%', overflowY:'scroll'}}>
+        <div className={"tab-content"} style={{height:'100%', overflowY:'scroll', padding:'0'}}>
 
-            <form className={'modal_content'}>
+            <form className={'modal_content'} style={{padding:'1rem', backgroundColor:'transparent'}}>
                 <div>
                     <label htmlFor="winPoint">Points pour gagner la partie :</label>
                     <input
