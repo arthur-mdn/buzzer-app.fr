@@ -25,6 +25,17 @@ const userSchema = new Schema({
         required: true,
         default: "user"
     },
+    userPicture:{
+        smiley:{
+            type: Number,
+            default: 1
+        },
+        color:{
+            type: String,
+            default: "#999"
+        }
+
+    }
 });
 
 module.exports = mongoose.model('User', userSchema);

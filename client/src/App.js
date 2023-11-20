@@ -17,6 +17,9 @@ function App() {
   const [statusMsg, setStatusMsg] = useState('');
   const [userId, setUserId] = useState(null);
   const [userRole, setUserRole] = useState('user');
+  const [userName, setUserName] = useState('Inconnu');
+  const [userPictureSmiley, setUserPictureSmiley] = useState('1');
+  const [userPictureColor, setUserPictureColor] = useState('#999');
 
   const socketRef = useRef();
   console.log("App rendered");
@@ -42,6 +45,9 @@ function App() {
         setupSocket(data.userId);
         setUserId(data.userId);
         setUserRole(data.userRole);
+        setUserName(data.userName);
+        setUserPictureSmiley(data.userPicture.smiley);
+        setUserPictureColor(data.userPicture.color);
       } else {
         setStatusMsg(data.message);
         setStatus('authError');
@@ -79,6 +85,19 @@ function App() {
       socketRef.current.disconnect(); // Fermer la connexion socket
       setStatus('adminForceDisconnect');
     });
+    socketRef.current.on('kickServer', () => {
+      socketRef.current.disconnect(); // Fermer la connexion socket
+      setStatus('kickServer');
+    });
+
+    socketRef.current.on('updateProfile', ({newUserRole, newUserName, newUserPicture}) => {
+      setUserRole(newUserRole);
+      setUserName(newUserName);
+      setUserPictureSmiley(newUserPicture.smiley);
+      setUserPictureColor(newUserPicture.color);
+    });
+
+
   };
 
   const onRegisterSuccess = () => {
@@ -154,10 +173,24 @@ function App() {
         </div>
       </div>
       );
+    case 'kickServer':
+      return (
+      <div className={'modal_bg'}>
+        <div className={'modal'}>
+          <div className={'modal_content_title'}>
+            <h2>Erreur !</h2>
+          </div>
+          <div className={'modal_content'}>
+            <label htmlFor={'name'} style={{width:'100%',textAlign:'center'}}> Vous avez été exclu du serveur.</label>
+            <button onClick={() => window.location.href = config.instanceUrl+"/"}  className={'btn-push'} style={{padding: '1rem 1.5rem'}}>Accueil</button>
+          </div>
+        </div>
+      </div>
+      );
     case 'socketReady':
       const token = localStorage.getItem('token'); // Récupérez le token
       return (
-          <UserProvider userId={userId} userRole={userRole}>
+          <UserProvider userId={userId} userRole={userRole} userName={userName} userPictureSmiley={userPictureSmiley} userPictureColor={userPictureColor}>
             <TokenProvider token={token}>
               <SocketProvider socket={socketRef}>
                 <Router>

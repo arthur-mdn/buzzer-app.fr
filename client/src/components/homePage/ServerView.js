@@ -6,7 +6,7 @@ function ServerView() {
     const [serverActiveTab, setServerActiveTab] = useState('history'); // 'history' ou 'public'
 
     return (
-        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', margin:'0 1rem'}}>
 
             <div className={'modal'}>
                 <div className={'modal_content_title'}>

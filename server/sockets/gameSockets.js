@@ -322,6 +322,52 @@ module.exports = function(io) {
         });
 
 
+        socket.on('updateUserProfile', async ({ userPicture }) => {
+            try {
+                console.log(userPicture);
+                // Mettre à jour l'image et la couleur de profil de l'utilisateur dans MongoDB
+                await User.findOneAndUpdate({ socketId: socket.id }, { $set: { userPicture } });
+                // Vous pouvez envoyer une réponse au client si nécessaire
+                const newUser = await User.findOne({ socketId: socket.id });
+
+                console.log(newUser)
+                socket.emit('updateProfile', { newUserRole:newUser.userRole, newUserName: newUser.userName, newUserPicture: newUser.userPicture });
+            } catch (error) {
+                console.error(error);
+                // Gérer l'erreur ici, par exemple, envoyer un message d'erreur au client
+            }
+        });
+
+
+        socket.on('kickPlayer', async ({ serverCode, playerId }) => {
+            const server = await GameServer.findOne({ code: serverCode }).populate('players.user');
+            if (!server) {
+                // Gérer l'erreur de serveur non trouvé
+                return;
+            }
+
+            // Vérifier si l'utilisateur actuel est l'hôte ou un admin
+            const user = await User.findOne({ userId: socket.userId });
+            if (user && (user.userId === server.hostId || user.userRole === 'admin')) {
+                const playerIndex = server.players.findIndex(p => p.user.userId === playerId);
+                if (playerIndex !== -1) {
+                    // Expulser le joueur
+                    server.players.splice(playerIndex, 1);
+                    await server.save();
+
+                    // Déconnecter le socket du joueur expulsé
+                    const kickedUser = await User.findOne({ userId: playerId });
+                    if (kickedUser && io.sockets.sockets.has(kickedUser.socketId)) {
+                        io.sockets.sockets.get(kickedUser.socketId).emit('kickServer');
+                    }
+
+                    // Informer tous les clients dans la salle des mises à jour
+                    io.to(serverCode).emit('playersUpdate', server);
+                }
+            }
+        });
+
+
 
         socket.on('adminForceDisconnect', () => {
             // Assurez-vous que seul un admin peut déclencher cet événement

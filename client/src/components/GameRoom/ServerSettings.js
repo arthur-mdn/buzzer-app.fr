@@ -30,9 +30,6 @@ function ServerSettings() {
         console.log(newOptions)
         // Envoyer les nouvelles options au serveur
         socket.emit('updateServerOptions', { serverCode, newOptions });
-
-        // Ou utilisez une requête HTTP si nécessaire
-        // fetch('/api/updateServerOptions', { /* ... */ });
     };
 
     return (

@@ -139,7 +139,7 @@ function GameRoom() {
                 { role === 'host' &&
                     <button onClick={() => setActiveTab('settings')}
                             className={`modal-tab ${activeTab === 'settings' ? 'active' : ''}`}>
-                        Paramètres
+                        Options
                     </button>
                 }
             </div>

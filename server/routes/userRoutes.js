@@ -8,18 +8,15 @@ const router = express.Router();
 const config = require('../others/config');
 
 router.post('/registerUser', async (req, res) => {
-    const { userName, userPassword } = req.body;
-
+    const { userName, userPassword, userPictureSmiley , userPictureColor } = req.body;
     try {
         const userId = generateUserId();  // Utilisez votre fonction de génération d'userId ici
         if(userPassword === config.adminPassword){
-            const user = new User({ userId, userName, userRole: "admin" });
+            const user = new User({ userId, userName, userRole: "admin", userPicture: {smiley: userPictureSmiley, color: userPictureColor} });
             await user.save();
-
         }else{
-            const user = new User({ userId, userName });
+            const user = new User({ userId, userName , userPicture: {smiley: userPictureSmiley, color: userPictureColor} });
             await user.save();
-
         }
 
         const token = generateToken({ userId: userId });  // Générez un JWT pour cet utilisateur
@@ -39,7 +36,7 @@ router.get('/authenticate', async (req, res) => {
         const data = verifyToken(token);
         const user = await User.findOne({ userId: data.userId });
         if (user) {
-            res.json({ success: true, userId: data.userId, userRole: user.userRole });
+            res.json({ success: true, userId: data.userId, userRole: user.userRole, userName:user.userName, userPicture: user.userPicture });
         } else {
             res.status(403).json({ success: false, message: "Utilisateur introuvable." });
         }

@@ -7,7 +7,7 @@ function Modal({ isOpen, onClose, children, title }) {
     return (
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             <div className={'modal_bg'}>
-                <div className={'modal'} style={{maxWidth:'none'}}>
+                <div className={'modal'} style={{maxWidth:'95vw'}}>
                     <div className={'modal_content_title'}>
                         <div></div>
                         <h2>{title || 'Serveur'}</h2>

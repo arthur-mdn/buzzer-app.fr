@@ -74,26 +74,46 @@ code {
 .sidebar.open {
   width: 250px;
 }
-span.offline{
-  color: red;
-  font-weight: bold;
-}
-span.online{
-  color: #16d216;
-  font-weight: bold;
+.btn-push-gray span.offline{
+  background-color: #f85656;
+  font-family: "Fredoka One";
+  color: #6b3c3c;
+  font-size: 10px;
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.3rem;
+  text-shadow: none;
+  letter-spacing: 0;
 
 }
-span.online, span.offline{
+.btn-push-gray span.online{
+  background-color: #56f85c;
+  font-family: "Fredoka One";
+  color: #446e44;
+  font-size: 10px;
+padding: 0.1rem 0.3rem;
+  border-radius: 0.3rem;
+  text-shadow: none;
+  letter-spacing: 0;
+}
+.btn-push-gray span.online, .btn-push-gray span.offline{
   display: flex;
   align-items: center;
   gap: 5px;
   text-wrap: nowrap;
   flex-wrap: nowrap;
-
+width: fit-content;
 }
 
-.yourProfile{
-  background-color: #d9ffda;
+.tab-content ul{
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.yourProfile .btn-push{
+  background: #f1cf24;
+  -ms-box-shadow: 0px 5px 0px #ab9e00;
+  -o-box-shadow: 0px 5px 0px #ab9e00;
+  box-shadow: 0px 5px 0px #ab9e00;
 }
 
 span.online svg, span.offline svg{
@@ -272,7 +292,7 @@ span.online svg, span.offline svg{
   left: 0;
   width: 100%;
   height: 100%;
-  position: fixed;
+  position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -281,7 +301,7 @@ span.online svg, span.offline svg{
 .modal{
   margin: 2rem;
   width: 100%;
-  max-width: 300px;
+  /*max-width: 300px;*/
   max-height: 90vh;
   overflow: hidden;
   background: rgb(141,147,160);
@@ -301,6 +321,7 @@ span.online svg, span.offline svg{
   gap: 1rem;
   border-radius: 0.5rem;
   position: relative;
+  overflow-y: scroll;
 }
 
 /*.modal .modal_content_title{*/
@@ -899,3 +920,64 @@ progress::-moz-progress-bar {
 }
 
 
+
+
+.player_dropdown{
+  position: absolute;
+  z-index: 1;
+  background-color: white ;
+  border-radius: 5px;
+  top: -25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 1rem;
+  font-size: 0.9rem;
+
+}
+
+
+
+
+
+
+
+
+
+.profile-picture-chooser {
+  text-align: center; /* Centre le contenu */
+}
+
+.profile-picture-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); /* Crée une grille responsive */
+  gap: 10px; /* Espace entre les images */
+  padding: 10px;
+  max-width: 500px; /* Largeur maximale de la grille */
+  margin: 20px auto; /* Centre la grille horizontalement */
+  overflow-Y: scroll;
+  max-height: 25vh;
+}
+
+.profile-picture-grid img {
+  width: 100%; /* Force toutes les images à avoir la même largeur */
+  border-radius: 5px; /* Arrondit les coins des images */
+  cursor: pointer; /* Change le curseur pour indiquer qu'il est cliquable */
+  border: 2px solid transparent; /* Prépare la bordure pour l'image sélectionnée */
+}
+
+.profile-picture-grid img:hover {
+  border-color: #007bff; /* Couleur de la bordure au survol */
+  transform: scale(1.05); /* Effet de zoom au survol */
+  transition: transform 0.3s, border-color 0.3s; /* Animation de transition */
+}
+
+.profile-picture-chooser .image-container{
+
+}
+.profile-picture-chooser .image-container svg{
+  width: 120px;
+}
+
+.slick-track{
+  height: 100vh;
+}
