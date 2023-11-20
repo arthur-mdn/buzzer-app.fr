@@ -32,20 +32,19 @@ function Join({ onClose }) {
     };
 
     return (
-    <div>
-        <Modal isOpen={true} title={"Rejoindre un serveur"} onClose={onClose} style={{maxWidth:'none'}}>
-                <form className={'modal_content'} onSubmit={handleJoinSubmit} >
-                    <label htmlFor={'name'}>Quel serveur rejoindre ?</label>
-                    <div style={{display: 'flex', width: '100%', flexDirection:'column'}}>
-                        <input type="text"  value={tempJoinCode} required id={'name'} placeholder={'XXXX - XXXX - XXXX'}  onChange={(e) => setTempJoinCode(e.target.value)}  />
-                    </div>
-                    <button type="submit" className={'btn-push btn-push-green'} style={{width: '100%', padding: '1rem'}}>Rejoindre</button>
-                </form>
-        </Modal>
-
-    </div>
-
-
+        <div style={{position:"absolute", width:"100vw", height:"100vh", top:'0', bottom:'0'}}>
+            <div style={{position:"relative", width:"100%", height:"100%"}}>
+                <Modal isOpen={true} title={"Rejoindre un serveur"} onClose={onClose} style={{maxWidth:'none'}}>
+                        <form className={'modal_content'} onSubmit={handleJoinSubmit} >
+                            <label htmlFor={'name'}>Quel serveur rejoindre ?</label>
+                            <div style={{display: 'flex', width: '100%', flexDirection:'column'}}>
+                                <input type="text"  value={tempJoinCode} required id={'name'} placeholder={'XXXX - XXXX - XXXX'}  onChange={(e) => setTempJoinCode(e.target.value)}  />
+                            </div>
+                            <button type="submit" className={'btn-push btn-push-green'} style={{width: '100%', padding: '1rem'}}>Rejoindre</button>
+                        </form>
+                </Modal>
+            </div>
+        </div>
     );
 }
 
