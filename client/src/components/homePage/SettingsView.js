@@ -1,3 +1,4 @@
+//SettingsView.js
 import React, {useState} from "react";
 import {useUser} from "../../UserContext";
 import {useSocket} from "../../SocketContext";

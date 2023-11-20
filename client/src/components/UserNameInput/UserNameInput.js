@@ -1,5 +1,5 @@
 // UserNameInput.js
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import config from "../../config";
 import ProfilePictureChooser from "./ProfilePictureChooser";
 
@@ -9,6 +9,12 @@ function UserNameInput({ onSuccess }) {
     const [tempPassword, setTempPassword] = useState('');
     const [selectedImageIndex, setSelectedImageIndex] = useState(null);
     const [selectedColor, setSelectedColor] = useState('#999');
+
+    useEffect(() => {
+        // Sélectionnez une image aléatoire lors du premier chargement
+        const randomImageNumber = Math.floor(Math.random() * 30) + 1;
+        setSelectedImageIndex(randomImageNumber);
+    }, []);
     const incrementShowPasswordCount = () => {
         setShowPasswordCount(showPasswordCount + 1 )
     }
@@ -80,14 +86,8 @@ function UserNameInput({ onSuccess }) {
         }
     };
 
-    const handleImageSelected = (imageIndex) => {
-        setSelectedImageIndex(imageIndex);
-    };
-
-    const handleColorSelected = (color) => {
-        setSelectedColor(color);
-    };
-
+    const handleImageSelect = (index) => setSelectedImageIndex(index);
+    const handleColorSelect = (color) => setSelectedColor(color);
     return (
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             <nav className={'modal_bg'}>
@@ -110,7 +110,10 @@ function UserNameInput({ onSuccess }) {
                         }
                         <label htmlFor={'name'} style={{width:'100%',textAlign:'left'}}>Photo de profil</label>
                         <div style={{display: 'flex', width: '100%', flexDirection:'column'}}>
-                            <ProfilePictureChooser onImageSelect={handleImageSelected} onColorSelect={handleColorSelected} />
+                            <ProfilePictureChooser onImageSelect={handleImageSelect}
+                                                   onColorSelect={handleColorSelect}
+                                                   initialImageIndex={selectedImageIndex}
+                                                   initialColor={selectedColor} />
                         </div>
 
                         <button type="submit" className={'btn-push btn-push-green'} style={{width: '100%', padding: '1rem'}}>Enregistrer</button>

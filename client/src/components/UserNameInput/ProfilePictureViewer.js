@@ -1,3 +1,4 @@
+// ProfilePictureViewer.js
 import React, { useState, useEffect } from 'react';
 
 function ProfilePictureViewer({ imageIndex, imageColor, size = '3rem' }) {

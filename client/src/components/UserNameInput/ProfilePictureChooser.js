@@ -1,3 +1,4 @@
+//ProfilePictureChooser.js
 import React, { useState, useEffect } from 'react';
 
 function ProfilePictureChooser({ onImageSelect, onColorSelect , initialImageIndex, initialColor }) {
@@ -31,7 +32,7 @@ function ProfilePictureChooser({ onImageSelect, onColorSelect , initialImageInde
         const randomImageNumber = Math.floor(Math.random() * totalSmileys) + 1;
         fetchAndModifySvg(randomImageNumber, selectedColor);
         setSelectedImageIndex(randomImageNumber);
-    }, [selectedColor]);
+    }, []);
 
     useEffect(() => {
         if (initialImageIndex != null) {
@@ -45,7 +46,7 @@ function ProfilePictureChooser({ onImageSelect, onColorSelect , initialImageInde
             fetchAndModifySvg(randomImageNumber, selectedColor);
             setSelectedImageIndex(randomImageNumber);
         }
-    }, [initialImageIndex, initialColor, selectedColor]);
+    }, [initialImageIndex, initialColor]);
 
     useEffect(() => {
         if (selectedImageIndex != null) {
