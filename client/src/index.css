@@ -78,7 +78,6 @@ code {
   background-color: #f85656;
   font-family: "Fredoka One";
   color: #6b3c3c;
-  font-size: 10px;
   padding: 0.1rem 0.3rem;
   border-radius: 0.3rem;
   text-shadow: none;
@@ -89,8 +88,7 @@ code {
   background-color: #56f85c;
   font-family: "Fredoka One";
   color: #446e44;
-  font-size: 10px;
-padding: 0.1rem 0.3rem;
+  padding: 0.1rem 0.3rem;
   border-radius: 0.3rem;
   text-shadow: none;
   letter-spacing: 0;
@@ -101,7 +99,8 @@ padding: 0.1rem 0.3rem;
   gap: 5px;
   text-wrap: nowrap;
   flex-wrap: nowrap;
-width: fit-content;
+  width: fit-content;
+  font-size: 0.8rem;
 }
 
 .tab-content ul{
@@ -209,7 +208,7 @@ span.online svg, span.offline svg{
 }
 .btn-push-gray span{
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 /*==========  Active State  ==========*/

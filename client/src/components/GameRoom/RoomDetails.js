@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import Modal from "../modal/Modal";
 import QRCode from 'qrcode.react';
 import {useGame} from "../../GameContext";
-import {FaShare} from "react-icons/fa6";
+import {FaEye, FaEyeSlash, FaShare} from "react-icons/fa6";
 
 const config = require('../../config');
 
@@ -31,16 +31,35 @@ function RoomDetails({ serverInfo }) {
                         </button>
                     </div>
                 </div>
-                    {options.deductPointOnWrongAnswer &&
-                        <div style={{width:"100%", textAlign:"center"}}>
-                            <h4 style={{margin:'0'}}>1 point retiré si mauvaise réponse</h4>
-                        </div>
-                    }
-                    {options.autoRestartAfterDecline &&
-                        <div style={{width:"100%", textAlign:"center"}}>
-                            <h4 style={{margin:'0'}}>Manche relancée automatiquement en cas de mauvaise réponse</h4>
-                        </div>
-                    }
+                   {/*<div style={ (options.deductPointOnWrongAnswer || options.autoRestartAfterDecline) ? {marginBottom: "10px"} }>*/}
+                   <div style={  {marginBottom: "10px"} }>
+                       {options.deductPointOnWrongAnswer &&
+                           <div style={{width:"100%", textAlign:"center"}}>
+                               <h4 style={{margin:'0'}}>1 point retiré si mauvaise réponse</h4>
+                           </div>
+                       }
+                       {options.autoRestartAfterDecline &&
+                           <div style={{width:"100%", textAlign:"center"}}>
+                               <h4 style={{margin:'0'}}>Manche relancée automatiquement en cas de mauvaise réponse</h4>
+                           </div>
+                       }
+                       
+                       <div style={{width:"100%", textAlign:"center"}}>
+                           <h4  style={{margin:'0', display:'flex', alignItems:"center", justifyContent:"center", gap:"5px"}}>
+                               {options.isPublic && <>
+                                    <FaEye/>
+                                   Serveur public
+                                   </>
+                               }
+                               {!options.isPublic && <>
+                                   <FaEyeSlash/>
+                                   Serveur privé
+                                   </>
+                               }
+                               </h4>
+                       </div>
+
+                   </div>
                 <div className={"server-info-rules"}>
                     <div className={"server-info-rule"}>
                         <h4 style={{margin:'0'}}>Points nécessaires pour gagner</h4>
