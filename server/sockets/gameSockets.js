@@ -21,7 +21,8 @@ module.exports = function(io) {
 
         async function setUserStateInServers(user, state) {
             try {
-                const servers = await GameServer.find({ 'players.user': user._id });
+                const servers = await GameServer.find({ 'players.user': user._id ,
+                    status: { $ne: 'del' }});
                 for (const server of servers) {
                     const player = server.players.find(player => player.user.equals(user._id));
                     if (player) {
@@ -64,7 +65,8 @@ module.exports = function(io) {
         socket.on('joinServer', async ({ serverCode }) => {
             try {
                 // console.log(socket.id)
-                const server = await GameServer.findOne({ code: serverCode }).populate('players.user').populate('buzzOrder');
+                const server = await GameServer.findOne({ code: serverCode,
+                    status: { $ne: 'del' } }).populate('players.user').populate('buzzOrder');
 
                 if (!server) {
                     socket.emit('serverError', { message: "Server does not exist" });
@@ -125,7 +127,8 @@ module.exports = function(io) {
 
 
         socket.on('startGame', async ({ serverCode }) => {
-            const server = await GameServer.findOne({ code: serverCode });
+            const server = await GameServer.findOne({ code: serverCode,
+                status: { $ne: 'del' } });
             if (!server) {
                 // Gérer l'erreur de serveur non trouvé
             } else {
@@ -136,7 +139,8 @@ module.exports = function(io) {
             }
         });
         socket.on('newGame', async ({ serverCode }) => {
-            const server = await GameServer.findOne({ code: serverCode }).populate('players.user').populate('buzzOrder');
+            const server = await GameServer.findOne({ code: serverCode,
+                status: { $ne: 'del' } }).populate('players.user').populate('buzzOrder');
             if (!server) {
                 // Gérer l'erreur de serveur non trouvé
             } else {
@@ -155,7 +159,8 @@ module.exports = function(io) {
 
 
         socket.on('cancelGame', async ({ serverCode }) => {
-            const server = await GameServer.findOne({ code: serverCode });
+            const server = await GameServer.findOne({ code: serverCode,
+                status: { $ne: 'del' } });
             if (!server) {
                 // Gérer l'erreur de serveur non trouvé
                 return;
@@ -182,7 +187,8 @@ module.exports = function(io) {
                 }
 
                 // Récupérez le serveur en question
-                const server = await GameServer.findOne({ code: serverCode }).populate('buzzOrder');
+                const server = await GameServer.findOne({ code: serverCode,
+                    status: { $ne: 'del' } }).populate('buzzOrder');
 
                 if (server && (server.gameStatus === 'inProgress' || server.gameStatus === 'buzzed')) {
 
@@ -195,7 +201,8 @@ module.exports = function(io) {
                     }
 
                     // Informer l'hôte et potentiellement les autres joueurs
-                    const serverUpdated = await GameServer.findOne({ code: serverCode }).populate('buzzOrder');
+                    const serverUpdated = await GameServer.findOne({ code: serverCode,
+                        status: { $ne: 'del' } }).populate('buzzOrder');
                     io.to(serverCode).emit('playerBuzzed', { server: serverUpdated });
                 }
             } catch (error) {
@@ -239,7 +246,8 @@ module.exports = function(io) {
         }
 
         async function handleAnswer(userId, serverCode, accept = true) {
-            const server = await GameServer.findOne({ code: serverCode }).populate('players.user').populate('buzzOrder');
+            const server = await GameServer.findOne({ code: serverCode,
+                status: { $ne: 'del' } }).populate('players.user').populate('buzzOrder');
             if (!server) {
                 // Gérer l'erreur de serveur non trouvé
                 return;
@@ -303,7 +311,8 @@ module.exports = function(io) {
 
         socket.on('updateServerOptions', async ({ serverCode, newOptions }) => {
             try {
-                const server = await GameServer.findOne({ code: serverCode });
+                const server = await GameServer.findOne({ code: serverCode,
+                    status: { $ne: 'del' } });
 
                 if (!server) {
                     socket.emit('serverError', { message: "Server not found" });
@@ -340,7 +349,8 @@ module.exports = function(io) {
 
 
         socket.on('kickPlayer', async ({ serverCode, playerId }) => {
-            const server = await GameServer.findOne({ code: serverCode }).populate('players.user');
+            const server = await GameServer.findOne({ code: serverCode,
+                status: { $ne: 'del' } }).populate('players.user');
             if (!server) {
                 // Gérer l'erreur de serveur non trouvé
                 return;
@@ -364,6 +374,24 @@ module.exports = function(io) {
                     // Informer tous les clients dans la salle des mises à jour
                     io.to(serverCode).emit('playersUpdate', server);
                 }
+            }
+        });
+
+
+        socket.on('delServer', async ({ serverCode, playerId }) => {
+            const server = await GameServer.findOne({
+                code: serverCode,
+                status: { $ne: 'del' }
+            }).populate('players.user');
+
+            if (!server) {
+                return;
+            }
+            const user = await User.findOne({ userId: socket.userId });
+            if (user && (user.userId === server.hostId || user.userRole === 'admin')) {
+                server.status = 'del';
+                await server.save();
+                io.to(serverCode).emit('serverDeleted');
             }
         });
 

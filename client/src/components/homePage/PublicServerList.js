@@ -62,7 +62,7 @@ function PublicServerList() {
                 </div>
             )}
             {userServers.length > 0 && (
-                <ul  style={{listStyle: 'none', padding: '1rem 0.5rem', margin:'0'}} className={"modal_content"}>
+                <ul  style={{listStyle: 'none', padding: '1rem 0.5rem', margin:'0',maxHeight:'60vh', overflowY:"scroll", height:'100%'}} className={"modal_content"}>
                     {userServers.map(server => {
                         const onlinePlayersCount = server.players.filter(player => player.state === "online").length;
                         return (

@@ -72,6 +72,12 @@ function GameRoom() {
         };
     }, [socket, userId]);
 
+    useEffect(() => {
+        socket.on('serverDeleted', () => {
+            setError('Serveur supprimé.');
+        });
+    }, [socket]);
+
     const handleBackClick = () => {
         socket.emit('userLeaving', { userId: userId });
     };

@@ -19,7 +19,8 @@ router.get('/server/:serverCode', async (req, res) => {
             const { serverCode } = req.params;
 
             // Rechercher le serveur par code
-            const server = await GameServer.findOne({ code: serverCode }).populate('players.user').populate('buzzOrder');
+            const server = await GameServer.findOne({ code: serverCode ,
+                status: { $ne: 'del' }}).populate('players.user').populate('buzzOrder');
 
             if (!server) {
                 return res.status(404).json({ success: false, message: "Server not found" });

@@ -92,6 +92,11 @@ const GameServerSchema = new mongoose.Schema({
             required: true,
             default: false
         }
+    },
+    status:{
+        type: String,
+        required:true,
+        default: "ok"
     }
 });
 
