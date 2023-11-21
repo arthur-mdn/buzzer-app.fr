@@ -13,6 +13,7 @@ import {FaUser} from "react-icons/fa";
 import RoomDetails from "./RoomDetails";
 import Modal from '../modal/Modal';
 import ServerSettings from "./ServerSettings";
+import BlasonServerViewer from "../host/BlasonServerViewer";
 
 const config = require('../../config');
 
@@ -111,7 +112,7 @@ function GameRoom() {
     return <GameProvider initialGameState={serverInfo.gameStatus} initialGameOptions={serverInfo.options} initialBuzzOrder={serverInfo.buzzOrder} >
         <div style={{display:'flex', padding:'2rem', flexDirection:'row', justifyContent:'space-between', gap:'2rem', alignItems:'center', zIndex:'1', position:'relative'}}>
             <button onClick={() => handleOpenModal('details')} className={"btn-push btn-push-gray"} style={{padding:'0.5rem 1rem', gap:'1rem', width:'100%', display:'flex', alignItems:'center'}}>
-                <img alt={'blason'} src={"/blasons/blason1.png"} style={{width:'50px'}}/>
+                <BlasonServerViewer imageIndex={serverInfo.blason.blason}/>
                 <div>
                     <h6 style={{textAlign:'left'}}>{serverInfo.name}</h6>
                     <span onClick={() => handleOpenModal('players')} style={{ display:'flex',gap:'5px'}}> <FaUser /> <PlayerCount /></span>

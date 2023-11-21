@@ -49,34 +49,38 @@ router.get('/server/:serverCode', async (req, res) => {
 
 router.post('/create-server', async (req, res) => {
     try {
-        const { serverName, userId, options } = req.body;
+        const authHeader = req.headers['authorization'];
+        const token = authHeader && authHeader.split(' ')[1];
 
-        // Validation des données ici, si nécessaire
+        if (!token) return res.status(401).json({ success: false, message: "No token provided." });
 
-        // Générer un code unique pour ce serveur
-        const serverCode = generateUniqueCode(); // Vous devez implémenter cette fonction
+        try {
+            const data = verifyToken(token);
+            const { serverName, options, selectedImageIndex } = req.body;
+            const serverCode = generateUniqueCode();
 
-        // Créer un nouvel objet serveur
-        const server = new GameServer({ // Ici, utilisez GameServer au lieu de Server
-            name: serverName,
-            code: serverCode,
-            hostId: userId,
-            gameStatus: "waiting",
-            players: [],
-            options: {
-                autoRestartAfterDecline: options.autoRestartAfterDecline || true,
-                answerPoint: options.answerPoint || 1,
-                winPoint: options.winPoint || 10,
-                deductPointOnWrongAnswer: options.deductPointOnWrongAnswer || false,
-                isPublic: options.isPublic || false,
-            }
-        });
-
-        // Sauvegarder le serveur dans la base de données
-        await server.save();
-
-        // Renvoyer une réponse avec les détails du serveur
-        res.json(server);
+            const server = new GameServer({
+                name: serverName,
+                code: serverCode,
+                hostId: data.userId,
+                gameStatus: "waiting",
+                players: [],
+                blason:{
+                    blason: selectedImageIndex
+                },
+                options: {
+                    autoRestartAfterDecline: options.autoRestartAfterDecline || true,
+                    answerPoint: options.answerPoint || 1,
+                    winPoint: options.winPoint || 10,
+                    deductPointOnWrongAnswer: options.deductPointOnWrongAnswer || false,
+                    isPublic: options.isPublic || false,
+                }
+            });
+            await server.save();
+            res.json(server);
+        }catch (err) {
+            res.status(403).json({ success: false, message: "Invalid token." });
+        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });

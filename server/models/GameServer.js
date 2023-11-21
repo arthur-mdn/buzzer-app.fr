@@ -59,6 +59,13 @@ const GameServerSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
+    blason:{
+        blason:{
+            type: Number,
+            required:true,
+            default: 1
+        } // anticipate a future blason object with color and blason number
+    },
     options: {
         autoRestartAfterDecline: {
             type: Boolean,

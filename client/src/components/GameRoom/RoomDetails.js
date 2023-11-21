@@ -5,6 +5,7 @@ import Modal from "../modal/Modal";
 import QRCode from 'qrcode.react';
 import {useGame} from "../../GameContext";
 import {FaEye, FaEyeSlash, FaShare} from "react-icons/fa6";
+import BlasonServerViewer from "../host/BlasonServerViewer";
 
 const config = require('../../config');
 
@@ -23,7 +24,7 @@ function RoomDetails({ serverInfo }) {
         <>
             <div className={"tab-content"} style={{padding:'0'}}>
                 <div className={"server-info"}>
-                    <img alt={'blason'} src={"/blasons/blason1.png"} style={{width:'50px'}}/>
+                    <BlasonServerViewer imageIndex={serverInfo.blason.blason}/>
                     <div>
                         <h2 style={{margin:'0'}}>{serverInfo.name}</h2>
                         <button onClick={() => handleShareServer()} style={{margin:'0', padding:'0.2rem 1rem', display:'flex', alignItems:'center', gap:'0.5rem'}} className={"btn-push btn-push-blue"}>

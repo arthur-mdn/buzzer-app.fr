@@ -6,6 +6,7 @@ import config from "../../config";
 import {Link} from "react-router-dom";
 import {FaUserGroup} from "react-icons/fa6";
 import {useToken} from "../../TokenContext";
+import BlasonServerViewer from "../host/BlasonServerViewer";
 
 function UserHistory() {
     const token = useToken();
@@ -67,7 +68,7 @@ function UserHistory() {
                         return (
                             <li key={server._id} className={'btn-push btn-push-green'}>
                                 <Link to={`/server/${server.code}`} style={{display:"flex",padding:'0',margin:'0.5rem 1rem', gap:'0.5rem'}}>
-                                    <img alt={'blason'} src={"/blasons/blason1.png"} style={{width:'35px'}}/>
+                                    <BlasonServerViewer imageIndex={server.blason.blason}/>
                                     <div>
                                         <h6 style={{margin:'0', fontSize:'1rem'}}>{server.name}</h6>
                                         <span style={{fontSize:'1.2rem'}}>{onlinePlayersCount} <FaUserGroup /></span>
