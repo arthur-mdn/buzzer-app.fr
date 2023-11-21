@@ -16,6 +16,7 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
     const [players, setPlayers] = useState(initialPlayers || []);
     // options of the server
     const [options, setOptions] = useState(initialGameOptions || {});
+    const [animationType, setAnimationType] = useState('none');
 
     useEffect(() => {
 
@@ -49,6 +50,7 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
             setPlayers(server.players);
             setOptions(server.options);
             setMessage('Réponse valide !')
+            setAnimationType('correct');
         });
         socket.on('answerWon', ({ server }) => {
             setBuzzOrder(server.buzzOrder);
@@ -63,7 +65,7 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
             setPlayers(server.players);
             setOptions(server.options);
             setMessage('Réponse incorrecte !')
-
+            setAnimationType('wrong');
         });
         const handlePlayersUpdate = (updatedServer) => {
             setPlayers(updatedServer.players);
@@ -93,7 +95,9 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
         buzzOrder,
         players,
         setPlayers,
-        options
+        options,
+        animationType,
+        setAnimationType
     };
 
     return <GameContext.Provider value={value}>{children}</GameContext.Provider>;

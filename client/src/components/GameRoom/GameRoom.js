@@ -109,7 +109,7 @@ function GameRoom() {
 
 
     return <GameProvider initialGameState={serverInfo.gameStatus} initialGameOptions={serverInfo.options} initialBuzzOrder={serverInfo.buzzOrder} >
-        <div style={{display:'flex', padding:'2rem', flexDirection:'row', justifyContent:'space-between', gap:'2rem', alignItems:'center'}}>
+        <div style={{display:'flex', padding:'2rem', flexDirection:'row', justifyContent:'space-between', gap:'2rem', alignItems:'center', zIndex:'1', position:'relative'}}>
             <button onClick={() => handleOpenModal('details')} className={"btn-push btn-push-gray"} style={{padding:'0.5rem 1rem', gap:'1rem', width:'100%', display:'flex', alignItems:'center'}}>
                 <img alt={'blason'} src={"/blasons/blason1.png"} style={{width:'50px'}}/>
                 <div>
