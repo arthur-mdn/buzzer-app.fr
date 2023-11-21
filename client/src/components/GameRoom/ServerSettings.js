@@ -88,7 +88,11 @@ function ServerSettings() {
                        Serveur public
                     </label>
                 </div>
-                <button type="button" onClick={handleSaveSettings} className={'btn-push btn-push-green'} style={{width: '100%', padding: '1rem'}}>Enregistrer</button>
+                { (winPoint === options.winPoint && answerPoint === options.answerPoint && deductPointOnWrongAnswer === options.deductPointOnWrongAnswer && autoRestartAfterDecline === options.autoRestartAfterDecline && isPublic === options.isPublic) ?
+                    <button type="button" onClick={handleSaveSettings} disabled className={'btn-push btn-push-green'} style={{width: '100%', padding: '1rem'}}>Enregistrer</button>
+                    :
+                    <button type="button" onClick={handleSaveSettings} className={'btn-push btn-push-green'} style={{width: '100%', padding: '1rem'}}>Enregistrer</button>
+                }
             </form>
         </div>
     );
