@@ -5,7 +5,24 @@ import AdminServerList from "./AdminServerList";
 
 function ServerView() {
     const [serverActiveTab, setServerActiveTab] = useState('history'); // 'history' ou 'public'
+    const [userRole, setUserRole] = useState('user');
 
+    const renderServerTab = () => {
+        switch(serverActiveTab){
+            case 'history':
+                return <UserHistory/>;
+            case 'public':
+                return <PublicServerList/>;
+            case 'admin':
+                if(userRole === 'admin'){
+                    return <AdminServerList/>;
+                }else{
+                    return "";
+                }
+            default:
+                return "";
+        }
+    }
     return (
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', margin:'0 1rem'}}>
 
@@ -22,12 +39,18 @@ function ServerView() {
                             className={`modal-tab ${serverActiveTab === 'public' ? 'active' : ''}`}>
                         Public
                     </button>
-                    <button onClick={() => setServerActiveTab('admin')}
-                            className={`modal-tab ${serverActiveTab === 'admin' ? 'active' : ''}`}>
-                        Admin
-                    </button>
+                    {
+                        userRole === 'admin' &&
+                        <button onClick={() => setServerActiveTab('admin')}
+                                className={`modal-tab ${serverActiveTab === 'admin' ? 'active' : ''}`}>
+                            Admin
+                        </button>
+                    }
+
                 </div>
-                {serverActiveTab === 'history' ? <UserHistory/> : (serverActiveTab === 'public' ? <PublicServerList/> : (serverActiveTab === 'admin' ? <AdminServerList/> : ""))}
+                {
+                    renderServerTab()
+                }
             </div>
         </div>
     );
