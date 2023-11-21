@@ -7,7 +7,7 @@ import Podium from './Podium';
 
 function HostGameRoom({ serverInfo }) {
     const { serverCode } = useParams();
-    const { gameState, message, setMessage, buzzOrder, players } = useGame();
+    const { gameState, message, setMessage, buzzOrder, players, options } = useGame();
     const socket = useSocket();
 
     useEffect(() => {
@@ -34,6 +34,10 @@ function HostGameRoom({ serverInfo }) {
     const handleAcceptAnswer = () => {
         console.log("accept")
         socket.emit('acceptAnswer', { userId: buzzOrder[0].userId, serverCode: serverCode });
+    };
+    const handleAcceptBonusAnswer = () => {
+        console.log("accept with bonus")
+        socket.emit('acceptAnswerBonus', { userId: buzzOrder[0].userId, serverCode: serverCode });
     };
 
 
@@ -77,8 +81,9 @@ function HostGameRoom({ serverInfo }) {
                             </div>
                             <div className={'modal_content'}>
                                 <label htmlFor={'name'} style={{width:'100%',textAlign:'left'}}>{message}</label>
-                                <button onClick={handleAcceptAnswer} className={'btn-push btn-push-green'} style={{padding: '1rem 1.5rem'}}>Accepter la réponse</button>
-                                <button onClick={handleDeclineAnswer} className={'btn-push'} style={{padding: '1rem 1.5rem'}}>Refuser la réponse</button>
+                                <button onClick={handleAcceptAnswer} className={'btn-push btn-push-green'} style={{padding: '1rem 1.5rem'}}>Bonne réponse (+{options.answerPoint} points)</button>
+                                <button onClick={handleAcceptBonusAnswer} className={'btn-push btn-push-green'} style={{padding: '1rem 1.5rem'}}>Point bonus (+{options.answerPoint + 1} points)</button>
+                                <button onClick={handleDeclineAnswer} className={'btn-push'} style={{padding: '1rem 1.5rem'}}>Mauvaise réponse {options.deductPointOnWrongAnswer ? "(-1 point)" : ""}</button>
                             </div>
                         </div>
                     </div>

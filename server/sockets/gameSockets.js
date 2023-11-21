@@ -224,6 +224,18 @@ module.exports = function(io) {
             }
 
         });
+        socket.on('acceptAnswerBonus', async ({ userId, serverCode }) => {
+            console.log("accept with bonus")
+            const server = await handleAnswer(userId, serverCode, true, true);
+            if(server.gameStatus === "win"){
+                // Informer tous les clients dans la salle des mises à jour
+                io.to(serverCode).emit('answerWon', { server: server });
+            }else{
+                // Informer tous les clients dans la salle des mises à jour
+                io.to(serverCode).emit('answerAccepted', { server: server });
+            }
+
+        });
 
         socket.on('declineAnswer', async ({ userId, serverCode }) => {
             console.log("decline")
@@ -245,7 +257,7 @@ module.exports = function(io) {
             }
         }
 
-        async function handleAnswer(userId, serverCode, accept = true) {
+        async function handleAnswer(userId, serverCode, accept = true, bonus = false) {
             const server = await GameServer.findOne({ code: serverCode,
                 status: { $ne: 'del' } }).populate('players.user').populate('buzzOrder');
             if (!server) {
@@ -257,7 +269,11 @@ module.exports = function(io) {
             if (accept) {
                 const player = server.players.find(p => p.user.userId === userId);
                 if (player) {
-                    player.score += server.options.answerPoint; // Augmentez le score du joueur
+                    if(bonus){
+                        player.score += (server.options.answerPoint + 1); // Augmentez le score du joueur avec le point bonus
+                    }else{
+                        player.score += server.options.answerPoint; // Augmentez le score du joueur
+                    }
                     if (player.score >= server.options.winPoint) {
                         server.gameStatus = 'win'; // Le joueur a atteint le seuil de victoire
                         player.wins += 1;
@@ -269,7 +285,7 @@ module.exports = function(io) {
                 if(server.options.deductPointOnWrongAnswer) {
                     const player = server.players.find(p => p.user.userId === userId);
                     if (player) {
-                        player.score -= server.options.answerPoint; // Déduire le score du joueur
+                        player.score -= 1; // Déduire le score du joueur
                     }
                 }
             }
