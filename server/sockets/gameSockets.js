@@ -425,5 +425,9 @@ module.exports = function(io) {
         });
 
 
+        socket.on('ping-server', (startTime) => {
+            socket.emit('pong-server', {startTime:startTime, endTime:Date.now()});
+        });
+
     });
 };

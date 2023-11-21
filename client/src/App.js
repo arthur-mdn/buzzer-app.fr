@@ -1,5 +1,5 @@
 //App.js
-import React, { useEffect, useState, useRef } from 'react';
+import React, {useEffect, useState, useRef, useCallback} from 'react';
 import io from 'socket.io-client';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Host from './components/host/Host';
@@ -21,9 +21,11 @@ function App() {
   const [userName, setUserName] = useState('Inconnu');
   const [userPictureSmiley, setUserPictureSmiley] = useState('1');
   const [userPictureColor, setUserPictureColor] = useState('#999');
+  const [isWaitingForPong, setIsWaitingForPong] = useState(false);
+  const [currentPing, setCurrentPing] = useState(0);
 
   const socketRef = useRef();
-  console.log("App rendered");
+
   useEffect(() => {
     const token = localStorage.getItem('token');
 
@@ -58,6 +60,19 @@ function App() {
     }
   };
 
+  const ping = useCallback(() => {
+    if (!isWaitingForPong && socketRef.current) {
+      const startTime = Date.now();
+      socketRef.current.emit('ping-server', startTime);
+      setIsWaitingForPong(true);
+    }
+  }, [isWaitingForPong, socketRef]);
+
+  useEffect(() => {
+    const interval = setInterval(ping, 5000);
+    return () => clearInterval(interval);
+  }, [ping]);
+
   const setupSocket = (userId) => {
     console.log('setup')
 
@@ -73,6 +88,12 @@ function App() {
 
     socketRef.current.on('connect', () => {
       socketRef.current.emit('updateSocketId', { userId });
+    });
+
+    socketRef.current.on('pong-server', ({startTime, endTime}) => {
+      const latency = endTime - startTime;
+      setCurrentPing(latency);
+      setIsWaitingForPong(false); // Réinitialisez le flag lorsque le pong est reçu
     });
 
     socketRef.current.on('forceDisconnect', () => {
@@ -196,8 +217,8 @@ function App() {
               <SocketProvider socket={socketRef}>
                 <Router>
                   <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/server/:serverCode" element={<GameRoom />} />
+                    <Route path="/" element={ <HomePage />} />
+                    <Route path="/server/:serverCode" element={<GameRoom currentPing={currentPing}/>} />
                   </Routes>
                 </Router>
               </SocketProvider>

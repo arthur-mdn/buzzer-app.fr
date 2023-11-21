@@ -14,10 +14,11 @@ import RoomDetails from "./RoomDetails";
 import Modal from '../modal/Modal';
 import ServerSettings from "./ServerSettings";
 import BlasonServerViewer from "../host/BlasonServerViewer";
+import PingViewer from "./PingViewer";
 
 const config = require('../../config');
 
-function GameRoom() {
+function GameRoom( {currentPing} ) {
     const socket = useSocket();
     const userId = useUser();
     const token = useToken();
@@ -116,6 +117,10 @@ function GameRoom() {
 
 
     return <GameProvider initialGameState={serverInfo.gameStatus} initialGameOptions={serverInfo.options} initialBuzzOrder={serverInfo.buzzOrder} >
+        {
+            config.sendPings === "true" &&
+            <PingViewer ping={currentPing}/>
+        }
         <div style={{display:'flex', padding:'2rem', flexDirection:'row', justifyContent:'space-between', gap:'2rem', alignItems:'center', zIndex:'1', position:'relative'}}>
             <button onClick={() => handleOpenModal('details')} className={"btn-push btn-push-gray"} style={{padding:'0.5rem 1rem', gap:'1rem', width:'100%', display:'flex', alignItems:'center'}}>
                 <BlasonServerViewer imageIndex={serverInfo.blason.blason}/>
