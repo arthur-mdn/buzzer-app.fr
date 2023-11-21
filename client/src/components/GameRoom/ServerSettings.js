@@ -3,8 +3,9 @@ import React, {useState} from 'react';
 import {useGame} from "../../GameContext";
 import {useSocket} from "../../SocketContext";
 import {useParams} from "react-router-dom";
-import {FaTrash} from "react-icons/fa6";
+import {FaArrowRotateLeft, FaTrash} from "react-icons/fa6";
 import Modal from "../modal/Modal";
+import {FaArrowAltCircleDown, FaArrowAltCircleLeft, FaArrowCircleLeft, FaStop} from "react-icons/fa";
 
 function ServerSettings() {
     const { options } = useGame();
@@ -16,6 +17,7 @@ function ServerSettings() {
     const [autoRestartAfterDecline, setAutoRestartAfterDecline] = useState(options.autoRestartAfterDecline);
     const [isPublic, setIsPublic] = useState(options.isPublic);
     const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
+    const [showConfirmResetModal, setShowConfirmResetModal] = useState(false);
 
     const handleSaveSettings = () => {
         const newOptions = {
@@ -31,18 +33,31 @@ function ServerSettings() {
     const handleDelServer = () => {
         socket.emit('delServer', { serverCode });
     };
+    const handleResetServer = () => {
+        socket.emit('resetScores', { serverCode });
+        setShowConfirmResetModal(false);
+    };
     const handleOpenConfirmDeleteModal = () => {
         setShowConfirmDeleteModal(true);
+    };
+    const handleOpenConfirmResetModal = () => {
+        setShowConfirmResetModal(true);
     };
 
     return (
         <>
-            <Modal isOpen={showConfirmDeleteModal} onClose={() => setShowConfirmDeleteModal(false)}>
+            <Modal isOpen={showConfirmDeleteModal} title={"Confirmer la suppression"} onClose={() => setShowConfirmDeleteModal(false)}>
                 <div className="modal_content">
-                    <h2>Confirmer la suppression</h2>
                     <p>Êtes-vous sûr de vouloir supprimer ce serveur ? vous allez supprimer toutes les données associées à ce serveur. Cette action est irréversible.</p>
-                    <button onClick={handleDelServer} className={"btn-push"}>Supprimer</button>
+                    <button onClick={handleDelServer} className={"btn-push"}>Supprimer le serveur</button>
                     <button onClick={() => setShowConfirmDeleteModal(false)} className={"btn-push btn-push-gray"}>Annuler</button>
+                </div>
+            </Modal>
+            <Modal isOpen={showConfirmResetModal} title={"Confirmer la réinitialisation"} onClose={() => setShowConfirmResetModal(false)}>
+                <div className="modal_content">
+                    <p>Êtes-vous sûr de vouloir réinitialiser les scores ? Vous allez supprimer tous les points actuellement gagnés par les joueurs. Cette action est irréversible.</p>
+                    <button onClick={handleResetServer} className={"btn-push"}>Réinitialiser les scores</button>
+                    <button onClick={() => setShowConfirmResetModal(false)} className={"btn-push btn-push-gray"}>Annuler</button>
                 </div>
             </Modal>
             <div className={"tab-content"} style={{height:'100%', overflowY:'scroll', padding:'0'}}>
@@ -109,6 +124,7 @@ function ServerSettings() {
                         <button type="button" onClick={handleSaveSettings} className={'btn-push btn-push-green'} style={{width: '100%', padding: '1rem'}}>Enregistrer</button>
                     }
                     <button type="button" onClick={handleOpenConfirmDeleteModal} className={'btn-push btn-push-red'} style={{padding:'0.5rem 1rem', display:"flex", alignItems:"center", gap:"10px"}}><FaTrash/>Supprimer le serveur</button>
+                    <button type="button" onClick={handleOpenConfirmResetModal} className={'btn-push btn-push-red'} style={{padding:'0.5rem 1rem', display:"flex", alignItems:"center", gap:"10px"}}><FaArrowRotateLeft/>Réinitialiser les scores</button>
                 </form>
             </div>
         </>

@@ -378,6 +378,31 @@ module.exports = function(io) {
         });
 
 
+        socket.on('resetScores', async ({ serverCode }) => {
+            const server = await GameServer.findOne({
+                code: serverCode,
+                status: { $ne: 'del' }
+            }).populate('players.user').populate('buzzOrder');
+
+            if (!server) {
+                return;
+            }
+            const user = await User.findOne({ userId: socket.userId });
+            if (user && (user.userId === server.hostId || user.userRole === 'admin')) {
+                server.gameStatus = 'waiting';
+                server.buzzOrder = [];
+
+                // Réinitialisez les scores de tous les joueurs à zéro
+                server.players.forEach(player => {
+                    player.score = 0;
+                });
+
+                await server.save();
+                io.to(serverCode).emit('gameReStarted', { server: server});
+            }
+        });
+
+
         socket.on('delServer', async ({ serverCode, playerId }) => {
             const server = await GameServer.findOne({
                 code: serverCode,
