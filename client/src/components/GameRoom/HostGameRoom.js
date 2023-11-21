@@ -67,7 +67,7 @@ function HostGameRoom({ serverInfo }) {
                         </div>
                     </div>
                 )}
-                {gameState === 'waiting' && <button onClick={handleStartGame} className={'btn-push btn-push-green'} style={{padding: '1rem 1.5rem'}} >Démarrer la manche</button>}
+                {(gameState === 'waiting' && players.length > 1) ? <button onClick={handleStartGame} className={'btn-push btn-push-green'} style={{padding: '1rem 1.5rem'}} >Démarrer la manche</button> : (gameState === 'waiting') ? "Attente de joueurs..." : ""}
                 {gameState === 'inProgress' && <button onClick={handleCancelGame} className={'btn-push'} style={{padding: '1rem 1.5rem'}} >Annuler la manche</button>}
                 {gameState === 'buzzed' && (
                     <div className={'modal_bg'}>
