@@ -35,6 +35,13 @@ const userSchema = new Schema({
             default: "#999"
         }
 
+    },
+    userTheme:{
+        background:{
+            type: String,
+            default: "default",
+            required:true
+        }
     }
 });
 

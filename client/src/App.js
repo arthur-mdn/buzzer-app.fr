@@ -10,6 +10,7 @@ import UserNameInput from './components/UserNameInput/UserNameInput';
 import { SocketProvider } from './SocketContext';
 import { TokenProvider } from './TokenContext';
 import { UserProvider } from './UserContext';
+import { ThemeProvider } from './ThemeContext';
 const config = require('./config');
 
 
@@ -21,6 +22,7 @@ function App() {
   const [userName, setUserName] = useState('Inconnu');
   const [userPictureSmiley, setUserPictureSmiley] = useState('1');
   const [userPictureColor, setUserPictureColor] = useState('#999');
+  const [userBackground, setUserBackground] = useState('default');
   const [isWaitingForPong, setIsWaitingForPong] = useState(false);
   const [currentPing, setCurrentPing] = useState(0);
 
@@ -51,6 +53,7 @@ function App() {
         setUserName(data.userName);
         setUserPictureSmiley(data.userPicture.smiley);
         setUserPictureColor(data.userPicture.color);
+        setUserBackground(data.userTheme.background);
       } else {
         setStatusMsg(data.message);
         setStatus('authError');
@@ -72,6 +75,11 @@ function App() {
     const interval = setInterval(ping, 5000);
     return () => clearInterval(interval);
   }, [ping]);
+
+  useEffect(() => {
+    console.log(userBackground)
+
+  }, [userBackground]);
 
   const setupSocket = (userId) => {
     console.log('setup')
@@ -215,12 +223,14 @@ function App() {
           <UserProvider userId={userId} userRole={userRole} userName={userName} userPictureSmiley={userPictureSmiley} userPictureColor={userPictureColor}>
             <TokenProvider token={token}>
               <SocketProvider socket={socketRef}>
-                <Router>
-                  <Routes>
-                    <Route path="/" element={ <HomePage />} />
-                    <Route path="/server/:serverCode" element={<GameRoom currentPing={currentPing}/>} />
-                  </Routes>
-                </Router>
+                <ThemeProvider>
+                  <Router>
+                    <Routes>
+                      <Route path="/" element={ <HomePage />} />
+                      <Route path="/server/:serverCode" element={<GameRoom currentPing={currentPing}/>} />
+                    </Routes>
+                  </Router>
+                </ThemeProvider>
               </SocketProvider>
             </TokenProvider>
           </UserProvider>
