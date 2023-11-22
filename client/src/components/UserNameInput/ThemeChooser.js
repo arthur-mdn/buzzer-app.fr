@@ -4,11 +4,12 @@ import { useTheme } from '../../ThemeContext';
 
 function ThemeChooser({ onBackgroundSelect , initialBackground }) {
     const backgrounds = ["default", "blue", "dark", "light", "gradient", "green", "purple", "yellow"];
-    const { background, setThemeBackground } = useTheme();
+    const [selectedBackground, setSelectedBackground ] = useState(initialBackground);
 
 
     const handleNewBackgroundSelect = (imageName) => {
-        setThemeBackground(imageName);
+        setSelectedBackground(imageName);
+        onBackgroundSelect(imageName);
     };
 
     return (
@@ -21,7 +22,7 @@ function ThemeChooser({ onBackgroundSelect , initialBackground }) {
                         src={`/backgrounds/${name}.svg`}
                         alt={`Smiley ${name}`}
                         onClick={() => handleNewBackgroundSelect(name)}
-                        style={{width: "55px", height:"55px", objectFit:"cover", border: name === background ? '2px solid blue' : ""}}
+                        style={{width: "55px", height:"55px", objectFit:"cover", border: name === selectedBackground ? '2px solid blue' : ""}}
                     />
                 ))}
             </div>

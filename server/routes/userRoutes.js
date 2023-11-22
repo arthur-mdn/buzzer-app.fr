@@ -36,7 +36,7 @@ router.get('/authenticate', async (req, res) => {
         const data = verifyToken(token);
         const user = await User.findOne({ userId: data.userId });
         if (user) {
-            res.json({ success: true, userId: data.userId, userRole: user.userRole, userName:user.userName, userPicture: user.userPicture });
+            res.json({ success: true, userId: data.userId, userRole: user.userRole, userName:user.userName, userPicture: user.userPicture, userTheme: user.userTheme });
         } else {
             res.status(403).json({ success: false, message: "Utilisateur introuvable." });
         }

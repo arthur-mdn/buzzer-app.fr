@@ -5,20 +5,19 @@ const ThemeContext = createContext();
 
 export const useTheme = () => useContext(ThemeContext);
 
-export const ThemeProvider = ({ children }) => {
-    const [background, setBackground] = useState('default');
+export const ThemeProvider = ({ children, userBackground, setUserBackground }) => {
 
     const setThemeBackground = (newBackground) => {
-        setBackground(newBackground);
+        setUserBackground(newBackground);
         document.documentElement.style.setProperty('--background-url', `url(/backgrounds/${newBackground}.svg)`);
     };
 
     useEffect(() => {
-        document.documentElement.style.setProperty('--background-url', `url(/backgrounds/${background}.svg)`);
-    }, [background]);
+        document.documentElement.style.setProperty('--background-url', `url(/backgrounds/${userBackground}.svg)`);
+    }, [userBackground]);
 
     return (
-        <ThemeContext.Provider value={{ background, setThemeBackground }}>
+        <ThemeContext.Provider value={{ userBackground, setThemeBackground }}>
             {children}
         </ThemeContext.Provider>
     );

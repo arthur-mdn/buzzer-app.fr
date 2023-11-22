@@ -76,10 +76,6 @@ function App() {
     return () => clearInterval(interval);
   }, [ping]);
 
-  useEffect(() => {
-    console.log(userBackground)
-
-  }, [userBackground]);
 
   const setupSocket = (userId) => {
     console.log('setup')
@@ -120,11 +116,12 @@ function App() {
       setStatus('kickServer');
     });
 
-    socketRef.current.on('updateProfile', ({newUserRole, newUserName, newUserPicture}) => {
+    socketRef.current.on('updateProfile', ({newUserRole, newUserName, newUserPicture, newUserTheme}) => {
       setUserRole(newUserRole);
       setUserName(newUserName);
       setUserPictureSmiley(newUserPicture.smiley);
       setUserPictureColor(newUserPicture.color);
+      setUserBackground(newUserTheme.background);
     });
 
 
@@ -144,7 +141,6 @@ function App() {
     localStorage.removeItem('userId');
     window.location.reload()
   };
-
   switch (status) {
     case 'noToken':
       return <UserNameInput onSuccess={onRegisterSuccess} />;
@@ -223,7 +219,7 @@ function App() {
           <UserProvider userId={userId} userRole={userRole} userName={userName} userPictureSmiley={userPictureSmiley} userPictureColor={userPictureColor}>
             <TokenProvider token={token}>
               <SocketProvider socket={socketRef}>
-                <ThemeProvider>
+                <ThemeProvider userBackground={userBackground} setUserBackground={setUserBackground}>
                   <Router>
                     <Routes>
                       <Route path="/" element={ <HomePage />} />

@@ -349,13 +349,9 @@ module.exports = function(io) {
 
         socket.on('updateUserProfile', async ({ userPicture }) => {
             try {
-                console.log(userPicture);
                 // Mettre à jour l'image et la couleur de profil de l'utilisateur dans MongoDB
                 await User.findOneAndUpdate({ socketId: socket.id }, { $set: { userPicture } });
-                // Vous pouvez envoyer une réponse au client si nécessaire
                 const newUser = await User.findOne({ socketId: socket.id });
-
-                console.log(newUser)
                 socket.emit('updateProfile', { newUserRole:newUser.userRole, newUserName: newUser.userName, newUserPicture: newUser.userPicture });
             } catch (error) {
                 console.error(error);
@@ -364,11 +360,21 @@ module.exports = function(io) {
         });
 
 
+        socket.on('updateUserTheme', async ({ userTheme }) => {
+            try {
+                await User.findOneAndUpdate({ socketId: socket.id }, { $set: { userTheme } });
+                const newUser = await User.findOne({ socketId: socket.id });
+                socket.emit('updateProfile', { newUserRole:newUser.userRole, newUserName: newUser.userName, newUserPicture: newUser.userPicture, newUserTheme: newUser.userTheme });
+            } catch (error) {
+                console.error(error);
+            }
+        });
+
+
         socket.on('kickPlayer', async ({ serverCode, playerId }) => {
             const server = await GameServer.findOne({ code: serverCode,
                 status: { $ne: 'del' } }).populate('players.user');
             if (!server) {
-                // Gérer l'erreur de serveur non trouvé
                 return;
             }
 

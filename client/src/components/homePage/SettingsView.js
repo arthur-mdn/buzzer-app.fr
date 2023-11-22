@@ -9,10 +9,9 @@ import ThemeChooser from "../UserNameInput/ThemeChooser";
 import {useTheme} from "../../ThemeContext";
 
 function SettingsView() {
-    const { userRole, userName, userPictureSmiley, userPictureColor, userBackground = 'default' } = useUser();
+    const { userRole, userName, userPictureSmiley, userPictureColor } = useUser();
+    const { userBackground, setThemeBackground } = useTheme();
     const socket = useSocket();
-    const { background, setThemeBackground } = useTheme();
-
 
     const handleDisconnectAll = () => {
         socket.emit('adminForceDisconnect');
@@ -36,6 +35,7 @@ function SettingsView() {
 
     const handleSaveTheme = () => {
         // Envoyer les nouvelles informations de profil au serveur
+        socket.emit('updateUserTheme', { userTheme: { background: tempBackground } });
         setIsThemeModalOpen(false);
     };
 

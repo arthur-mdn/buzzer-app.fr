@@ -8,8 +8,8 @@ export const useUser = () => {
     return useContext(UserContext);
 };
 
-export const UserProvider = ({ children, userId, userName, userRole, userPictureSmiley, userPictureColor}) => {
-    const value = {userId, userRole, userName, userPictureSmiley,userPictureColor }
+export const UserProvider = ({ children, userId, userName, userRole, userPictureSmiley, userPictureColor, userTheme}) => {
+    const value = {userId, userRole, userName, userPictureSmiley,userPictureColor, userTheme }
     return (
         <UserContext.Provider value={value} >
             {children}
