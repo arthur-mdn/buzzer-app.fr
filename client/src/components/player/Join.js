@@ -57,7 +57,7 @@ function Join({ onClose }) {
     return (
         <div style={{position:"absolute", width:"100vw", height:"100vh", top:'0', bottom:'0'}}>
             <div style={{position:"relative", width:"100%", height:"100%"}}>
-                <Modal isOpen={true} title={"Rejoindre un serveur"} onClose={onClose} style={{maxWidth:'none'}}>
+                <Modal isOpen={true} title={"Rejoindre un serveur"} onClose={onClose} marginBottom={"20vh"}  style={{maxWidth:'none'}}>
                         <form className={'modal_content'} onSubmit={handleJoinSubmit} >
                             <label htmlFor={'name'}>Quel serveur rejoindre ?</label>
                             <div style={{display: 'flex', width: '100%', flexDirection:'row', justifyContent:'space-between', gap:'15px'}}>
@@ -69,7 +69,7 @@ function Join({ onClose }) {
                         </form>
                 </Modal>
                 {showScanner &&
-                    <Modal isOpen={true} title={"Scanner pour rejoindre"} onClose={onClose} style={{maxWidth:'none'}}>
+                    <Modal isOpen={true} title={"Scanner pour rejoindre"} marginBottom={"20vh"}  onClose={onClose} style={{maxWidth:'none'}}>
                         <QRCodeScanner
                             qrCodeSuccessCallback={handleCodeScanned}
                             qrCodeErrorCallback={handleCodeScanError}

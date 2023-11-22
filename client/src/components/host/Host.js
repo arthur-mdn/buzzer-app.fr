@@ -89,7 +89,7 @@ function Host({ onClose }) {
     return (
         <div style={{position:"absolute", width:"100vw", height:"100vh", top:'0', bottom:'0'}}>
             <div style={{position:"relative", width:"100%", height:"100%"}}>
-                <Modal isOpen={true} title={"Créer un serveur"} onClose={onClose} maxHeight={"60vh"} style={{maxWidth:'none'}}>
+                <Modal isOpen={true} title={"Créer un serveur"} onClose={onClose} maxHeight={"60vh"} marginBottom={"20vh"} style={{maxWidth:'none'}}>
                     <form className={'modal_content'} onSubmit={handleSubmit}>
                         <div style={{width:'100%', display:"flex", gap:'15px'}}>
                             <div style={{width:'100%'}}>
