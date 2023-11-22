@@ -12,7 +12,6 @@ html, body {
   height: 100%; /* Fait en sorte que le html et le body prennent toute la hauteur de la fenêtre */
   margin: 0; /* Supprime la marge par défaut */
   padding: 0; /* Supprime le padding par défaut */
-  background-color: #5386f5; /* Mettez la couleur de fond souhaitée ici */
   box-sizing: inherit;
 }
 html{
@@ -34,6 +33,7 @@ body::before {
   background-attachment: fixed;
   background-position: center;
   background-size: cover;
+  z-index: -1;
   /*filter: grayscale(100%);*/
 }
 
