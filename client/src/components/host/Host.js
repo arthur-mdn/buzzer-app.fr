@@ -75,7 +75,12 @@ function Host({ onClose }) {
     };
 
     const handleImageSelect = (index) => setSelectedImageIndex(index);
-
+    const handleSliderMouseDown = (e) => {
+        e.stopPropagation();
+    };
+    const handleSliderTouchStart = (e) => {
+        e.stopPropagation();
+    };
 
     return (
         <div style={{position:"absolute", width:"100vw", height:"100vh", top:'0', bottom:'0'}}>
@@ -112,6 +117,8 @@ function Host({ onClose }) {
                                 max="50"
                                 value={winPoint}
                                 className={'slider'}
+                                onMouseDown={handleSliderMouseDown}
+                                onTouchStart={handleSliderTouchStart}
                                 onChange={(e) => setWinPoint(Number(e.target.value))}
                             />
                             <span>{winPoint}</span>
@@ -124,6 +131,8 @@ function Host({ onClose }) {
                                 max="5"
                                 value={answerPoint}
                                 className={'slider'}
+                                onMouseDown={handleSliderMouseDown}
+                                onTouchStart={handleSliderTouchStart}
                                 onChange={(e) => setAnswerPoint(Number(e.target.value))}
                             />
                             <span>{answerPoint}</span>
