@@ -81,6 +81,10 @@ function Host({ onClose }) {
     const handleSliderTouchStart = (e) => {
         e.stopPropagation();
     };
+    const handleTouchMove = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
 
     return (
         <div style={{position:"absolute", width:"100vw", height:"100vh", top:'0', bottom:'0'}}>
@@ -119,6 +123,7 @@ function Host({ onClose }) {
                                 className={'slider'}
                                 onMouseDown={handleSliderMouseDown}
                                 onTouchStart={handleSliderTouchStart}
+                                onTouchMove={handleTouchMove}
                                 onChange={(e) => setWinPoint(Number(e.target.value))}
                             />
                             <span>{winPoint}</span>
@@ -133,6 +138,7 @@ function Host({ onClose }) {
                                 className={'slider'}
                                 onMouseDown={handleSliderMouseDown}
                                 onTouchStart={handleSliderTouchStart}
+                                onTouchMove={handleTouchMove}
                                 onChange={(e) => setAnswerPoint(Number(e.target.value))}
                             />
                             <span>{answerPoint}</span>
