@@ -44,6 +44,7 @@ function Host({ onClose }) {
             }
 
             const token = localStorage.getItem('token');
+            console.log(autoRestartAfterDecline + " " + deductPointOnWrongAnswer + " " + isPublic + " " + answerPoint + " " + winPoint)
 
             const response = await fetch(config.serverUrl + '/create-server', { // Assurez-vous que l'URL est correcte
                 method: 'POST',
@@ -52,11 +53,11 @@ function Host({ onClose }) {
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({ serverName, selectedImageIndex, userId: userId, options: {
-                        winPoint,
-                        answerPoint,
-                        deductPointOnWrongAnswer,
-                        autoRestartAfterDecline,
-                        isPublic
+                        autoRestartAfterDecline: autoRestartAfterDecline,
+                        answerPoint: answerPoint,
+                        winPoint: winPoint,
+                        deductPointOnWrongAnswer: deductPointOnWrongAnswer,
+                        isPublic: isPublic
                     } })
             });
             if (!response.ok) {

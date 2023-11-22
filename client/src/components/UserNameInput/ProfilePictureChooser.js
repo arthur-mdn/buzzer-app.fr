@@ -67,7 +67,7 @@ function ProfilePictureChooser({ onImageSelect, onColorSelect , initialImageInde
 
     return (
         <div className="profile-picture-chooser">
-            <div dangerouslySetInnerHTML={{ __html: selectedImage }} onClick={handleImageClick} className={"image-container"} style={{width:"120px", height:"120px"}}/>
+            <div dangerouslySetInnerHTML={{ __html: selectedImage }} onClick={handleImageClick} className={"image-container editable"} style={{width:"120px", height:"120px", position:"relative"}}/>
             <div>
                 {['#FF5B37', '#0AA3BB', '#94C114', '#F8CF1D', '#745BB7', '#0CBA8C', '#999'].map(color => (
                     <button

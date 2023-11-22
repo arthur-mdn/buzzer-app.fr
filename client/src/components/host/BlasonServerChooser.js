@@ -1,5 +1,7 @@
 //BlasonServerChooser.js
 import React, { useState, useEffect } from 'react';
+import {FaEdit} from "react-icons/fa";
+import {FaPen} from "react-icons/fa6";
 
 function BlasonServerChooser({ onImageSelect, initialImageIndex }) {
     const totalBlasons = 6;
@@ -35,9 +37,12 @@ function BlasonServerChooser({ onImageSelect, initialImageIndex }) {
 
     return (
         <div className="profile-picture-chooser">
-            {
+
+            <div style={{position:"relative"}}>
                 <img src={`/blasons/blason${selectedImageIndex}.png`} alt={`Smiley ${selectedImageIndex}`} className={"image-container"} style={{width:"50px", height:"50px"}}  onClick={handleImageClick}/>
-            }
+                <FaPen style={{color:"white", position:"absolute", bottom:"-5px", right:'-5px', backgroundColor:"red", padding:'0.25rem', borderRadius:"0.5rem"}}/>
+            </div>
+
 
             {showAllImages && (
                 <div className="profile-picture-grid" style={{position:"absolute", zIndex:'1'}}>

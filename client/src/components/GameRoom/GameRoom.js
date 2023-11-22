@@ -9,12 +9,13 @@ import {useSocket} from "../../SocketContext";
 import { useUser } from '../../UserContext';
 import {useToken} from "../../TokenContext";
 import { GameProvider } from '../../GameContext';
-import {FaUser} from "react-icons/fa";
+import {FaInfoCircle, FaUser} from "react-icons/fa";
 import RoomDetails from "./RoomDetails";
 import Modal from '../modal/Modal';
 import ServerSettings from "./ServerSettings";
 import BlasonServerViewer from "../host/BlasonServerViewer";
 import PingViewer from "./PingViewer";
+import {FaInbox, FaInfo} from "react-icons/fa6";
 
 const config = require('../../config');
 

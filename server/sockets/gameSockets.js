@@ -352,7 +352,7 @@ module.exports = function(io) {
                 // Mettre à jour l'image et la couleur de profil de l'utilisateur dans MongoDB
                 await User.findOneAndUpdate({ socketId: socket.id }, { $set: { userPicture } });
                 const newUser = await User.findOne({ socketId: socket.id });
-                socket.emit('updateProfile', { newUserRole:newUser.userRole, newUserName: newUser.userName, newUserPicture: newUser.userPicture });
+                socket.emit('updateProfile', { newUserRole:newUser.userRole, newUserName: newUser.userName, newUserPicture: newUser.userPicture, newUserTheme: newUser.userTheme });
             } catch (error) {
                 console.error(error);
                 // Gérer l'erreur ici, par exemple, envoyer un message d'erreur au client

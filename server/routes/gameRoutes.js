@@ -70,7 +70,7 @@ router.post('/create-server', async (req, res) => {
                     blason: selectedImageIndex
                 },
                 options: {
-                    autoRestartAfterDecline: options.autoRestartAfterDecline || true,
+                    autoRestartAfterDecline: options.autoRestartAfterDecline,
                     answerPoint: options.answerPoint || 1,
                     winPoint: options.winPoint || 10,
                     deductPointOnWrongAnswer: options.deductPointOnWrongAnswer || false,

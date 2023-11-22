@@ -988,6 +988,18 @@ progress::-moz-progress-bar {
 .profile-picture-chooser .image-container{
 
 }
+.image-container.editable::after{
+  background-color: red;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    content: "Modifier";
+    color: white;
+    padding: 0.25rem;
+    border-radius: 0.5rem;
+
+
+}
 .profile-picture-chooser .image-container svg{
   width: 120px;
 }

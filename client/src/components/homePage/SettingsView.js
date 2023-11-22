@@ -7,6 +7,7 @@ import ProfilePictureViewer from "../UserNameInput/ProfilePictureViewer";
 import Modal from "../modal/Modal";
 import ThemeChooser from "../UserNameInput/ThemeChooser";
 import {useTheme} from "../../ThemeContext";
+import {FaEdit} from "react-icons/fa";
 
 function SettingsView() {
     const { userRole, userName, userPictureSmiley, userPictureColor } = useUser();
@@ -63,14 +64,16 @@ function SettingsView() {
         <>
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                 <button className={"btn-push btn-push-gray"} style={{display: "flex", flexDirection: "row", position:"relative", padding:"0.5rem 0.5rem", width:"95%", margin:"2rem 2rem"}}  onClick={handleProfileClick}>
-                    <div style={{display: "flex", flexDirection: "row", gap: "0.5rem",width:'100%'}}>
+                    <div style={{display: "flex", flexDirection: "row", gap: "0.5rem",width:'100%', alignItems:"center"}}>
                         <ProfilePictureViewer imageIndex={userPictureSmiley} imageColor={userPictureColor}/>
                         <span>{userName}</span>
+                        <FaEdit style={{marginLeft:"auto", color:"grey", paddingRight:"10px"}}/>
                     </div>
                 </button>
                 <button className={"btn-push btn-push-gray"} style={{display: "flex", flexDirection: "row", position:"relative", padding:"0.5rem 0.5rem", width:"95%", margin:"2rem 2rem"}}  onClick={handleThemeClick}>
                     <div style={{display: "flex", flexDirection: "row", gap: "0.5rem",width:'100%'}}>
                         <span>Thème de l'application</span>
+                        <FaEdit style={{marginLeft:"auto", color:"grey", paddingRight:"10px"}}/>
                     </div>
                 </button>
 
