@@ -34,25 +34,25 @@ function ProfilePictureChooser({ onImageSelect, onColorSelect , initialImageInde
         setSelectedImageIndex(randomImageNumber);
     }, []);
 
-    useEffect(() => {
-        if (initialImageIndex != null) {
-            // Utiliser l'index et la couleur initiaux si fournis
-            setSelectedImageIndex(initialImageIndex);
-            setSelectedColor(initialColor);
-            fetchAndModifySvg(initialImageIndex, initialColor);
-        } else {
-            // Sélectionnez une image aléatoire si aucun index initial n'est fourni
-            const randomImageNumber = Math.floor(Math.random() * totalSmileys) + 1;
-            fetchAndModifySvg(randomImageNumber, selectedColor);
-            setSelectedImageIndex(randomImageNumber);
-        }
-    }, [initialImageIndex, initialColor]);
 
     useEffect(() => {
         if (selectedImageIndex != null) {
             fetchAndModifySvg(selectedImageIndex, selectedColor);
         }
     }, [selectedColor, selectedImageIndex]);
+
+    useEffect(() => {
+        // Utiliser l'index et la couleur initiaux si fournis
+        const imageIndex = initialImageIndex != null ? initialImageIndex : Math.floor(Math.random() * totalSmileys) + 1;
+        const color = initialColor || '#999';
+
+        fetchAndModifySvg(imageIndex, color);
+        setSelectedImageIndex(imageIndex);
+        setSelectedColor(color);
+    }, []); // Les dépendances vides signifient que cet effet ne s'exécute qu'une fois à l'initialisation
+
+
+
 
     const fetchAndModifySvg = async (imageNumber, color) => {
         try {
