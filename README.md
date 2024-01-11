@@ -1,21 +1,39 @@
 # Getting Started with Buzzer-App
+A buzzer-app with a server and a client.
+Made with React, NodeJS and Socket.io.
+Usefull for quizzes and games for your parties like blindtest.
 
-This project was created by Arthur MONDON.
+## Installation
+```bash
+git clone https://github.com/arthur-mdn/buzzer-app.git
+cd buzzer-app
+```
+### Install the server dependencies
+```bash
+cd server
+npm install
+```
+### Install the client dependencies
+```bash
+cd client
+npm install
+```
+## Execution
 
-## Launch the client app
+### Launch the server script
+> ⚠️ You will need to duplicate the `.env.example` file in the server AND in the client folders to `.env` and update the environment variables.
 
-In the client directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
+> ⚠️ You will also need to create a MongoDB database and update the `DB_URI` variable in the server .env file.
+```bash
+In the server directory, you can run this to run the server and listen for connections / sockets.
+```bash
+cd server
+node server.js
+```
+### Launch the client script
+In the client directory, you can run this to run the app in development mode :
+```bash
+cd client
+npm start
+```
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-
-## Launch the server script
-
-In the server directory, you can run:
-
-### `node server.js`
-
-Runs the server and listen for connections / sockets.
