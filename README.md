@@ -13,19 +13,22 @@ cd buzzer-app
 cd server
 npm install
 ```
+> ⚠️ You will need to duplicate the `.env.example` file to `.env` and update the environment variables.
+
+> ⚠️ You will also need to create a MongoDB database and update the `DB_URI` variable in the server .env file.
+
 ### Install the client dependencies
 ```bash
 cd client
 npm install
 ```
+> ⚠️ You will need to duplicate the `.env.example` file in to `.env` and update the environment variables.
+
 ## Execution
 
 ### Launch the server script
-> ⚠️ You will need to duplicate the `.env.example` file in the server AND in the client folders to `.env` and update the environment variables.
-
-> ⚠️ You will also need to create a MongoDB database and update the `DB_URI` variable in the server .env file.
-```bash
 In the server directory, you can run this to run the server and listen for connections / sockets.
+
 ```bash
 cd server
 node server.js
