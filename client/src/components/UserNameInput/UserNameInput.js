@@ -2,6 +2,7 @@
 import React, {useEffect, useState} from 'react';
 import config from "../../config";
 import ProfilePictureChooser from "./ProfilePictureChooser";
+import AboutApp from "../homePage/AboutApp";
 
 function UserNameInput({ onSuccess }) {
     const [tempUserName, setTempUserName] = useState('');
@@ -94,6 +95,8 @@ function UserNameInput({ onSuccess }) {
                 <div className={'modal'}>
                     <div className={'modal_content_title'}>
                         <h2 onClick={incrementShowPasswordCount}>Bienvenue !</h2>
+                        <AboutApp />
+
                     </div>
                     <form onSubmit={handleUsernameSubmit} className={'modal_content'}>
                         <label htmlFor={'name'} style={{width:'100%',textAlign:'left'}}>Comment dois-je t'appeler ?</label>
