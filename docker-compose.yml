@@ -10,7 +10,7 @@ services:
       context: ./client
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.buzzer-client.rule=Host(`CLIENT_URL`)"
+      - "traefik.http.routers.buzzer-client.rule=Host(`buzzer-app.fr`)"
       - "traefik.http.routers.buzzer-client.entrypoints=websecure"
       - "traefik.http.routers.buzzer-client.tls.certresolver=myresolver"
 
@@ -22,7 +22,7 @@ services:
       DB_URI: mongodb://buzzer-mongodb:27017/buzzer
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.buzzer-server.rule=Host(`SERVER_URL`)"
+      - "traefik.http.routers.buzzer-server.rule=Host(`api.buzzer-app.fr`)"
       - "traefik.http.services.buzzer-server.loadbalancer.server.port=3001"
       - "traefik.http.routers.buzzer-server.entrypoints=websecure"
       - "traefik.http.routers.buzzer-server.tls.certresolver=myresolver"
