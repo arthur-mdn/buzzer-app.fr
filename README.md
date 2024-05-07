@@ -1,7 +1,7 @@
 # Getting Started with Buzzer-App
 A buzzer-app with a server and a client.
 Made with React, NodeJS and Socket.io.
-Usefull for quizzes and games for your parties like blindtest.
+Useful for quizzes and games for your parties like blind-test.
 
 ## Installation
 ```bash
@@ -37,6 +37,6 @@ node server.js
 In the client directory, you can run this to run the app in development mode :
 ```bash
 cd client
-npm start
+npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Open [http://localhost:5173](http://localhost:5173) to view it in your browser.

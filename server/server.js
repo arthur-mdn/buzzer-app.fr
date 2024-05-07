@@ -16,13 +16,15 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: config.clientUrl,  // Remplacez par l'URL de votre client, ici c'est l'URL par défaut de create-react-app
-        methods: ["GET", "POST"]
+        origin: config.clientUrl
     }
 });
 
 database.connect();
-app.use(cors());
+app.use(cors({
+    origin: config.clientUrl,
+    credentials: true
+}));
 app.use(express.json());
 async function setAllUsersOffline() {
     try {

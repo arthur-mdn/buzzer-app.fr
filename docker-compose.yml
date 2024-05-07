@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  buzzer-mongodb:
+    image: mongo
+    volumes:
+      - buzzer_mongodb_data:/data/db
+  buzzer-client:
+    build:
+      context: ./client
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.buzzer-client.rule=Host(`buzzer-app.fr`)"
+      - "traefik.http.routers.buzzer-client.entrypoints=websecure"
+      - "traefik.http.routers.buzzer-client.tls.certresolver=myresolver"
+
+  buzzer-server:
+    build:
+      context: ./server
+    env_file: ./server/.env
+    environment:
+      DB_URI: mongodb://buzzer-mongodb:27017/buzzer
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.buzzer-server.rule=Host(`api.buzzer-app.fr`)"
+      - "traefik.http.services.buzzer-server.loadbalancer.server.port=3001"
+      - "traefik.http.routers.buzzer-server.entrypoints=websecure"
+      - "traefik.http.routers.buzzer-server.tls.certresolver=myresolver"
+
+volumes:
+  buzzer_mongodb_data:
+    driver: local
+
+
+
