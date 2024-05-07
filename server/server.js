@@ -21,7 +21,10 @@ const io = new Server(server, {
 });
 
 database.connect();
-app.use(cors());
+app.use(cors({
+    origin: config.clientUrl,
+    credentials: true
+}));
 app.use(express.json());
 async function setAllUsersOffline() {
     try {
