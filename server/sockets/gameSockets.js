@@ -355,7 +355,7 @@ module.exports = function(io) {
                 socket.emit('updateProfile', { newUserRole:newUser.userRole, newUserName: newUser.userName, newUserPicture: newUser.userPicture, newUserTheme: newUser.userTheme });
             } catch (error) {
                 console.error(error);
-                // Gérer l'erreur ici, par exemple, envoyer un message d'erreur au client
+                // Gérer l'erreur ici, par exemple, envoyer un message d'erreur au client-old
             }
         });
 

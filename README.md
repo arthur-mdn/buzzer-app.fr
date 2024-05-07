@@ -19,7 +19,7 @@ npm install
 
 ### Install the client dependencies
 ```bash
-cd client
+cd client-old
 npm install
 ```
 > ⚠️ You will need to duplicate the `.env.example` file in to `.env` and update the environment variables.
@@ -36,7 +36,7 @@ node server.js
 ### Launch the client script
 In the client directory, you can run this to run the app in development mode :
 ```bash
-cd client
+cd client-old
 npm start
 ```
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.

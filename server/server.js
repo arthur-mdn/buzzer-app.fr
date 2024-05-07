@@ -16,7 +16,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: config.clientUrl,  // Remplacez par l'URL de votre client, ici c'est l'URL par défaut de create-react-app
+        origin: config.clientUrl,  // Remplacez par l'URL de votre client-old, ici c'est l'URL par défaut de create-react-app
         methods: ["GET", "POST"]
     }
 });
