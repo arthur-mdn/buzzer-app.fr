@@ -7,7 +7,9 @@ import ProfilePictureViewer from "../UserNameInput/ProfilePictureViewer.jsx";
 import Modal from "../modal/Modal.jsx";
 import ThemeChooser from "../UserNameInput/ThemeChooser.jsx";
 import {useTheme} from "../../ThemeContext.jsx";
-import {FaEdit} from "react-icons/fa";
+import {FaEdit, FaInfoCircle} from "react-icons/fa";
+import AboutApp from "./AboutApp.jsx";
+import {FaGithub, FaPaypal} from "react-icons/fa6";
 
 function SettingsView() {
     const { userRole, userName, userPictureSmiley, userPictureColor } = useUser();
@@ -51,6 +53,7 @@ function SettingsView() {
     };
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
     const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
+    const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
 
     const handleProfileClick = (event) => {
         setIsProfileModalOpen(true)
@@ -59,6 +62,9 @@ function SettingsView() {
     const handleThemeClick = (event) => {
         setIsThemeModalOpen(true)
         event.stopPropagation(); // Pour éviter la propagation du clic aux éléments parents
+    };
+    const handleCancelAbout = () => {
+        setIsAboutModalOpen(false);
     };
     return (
         <>
@@ -76,6 +82,14 @@ function SettingsView() {
                         <FaEdit style={{marginLeft:"auto", color:"grey", paddingRight:"10px"}}/>
                     </div>
                 </button>
+                <button className={"btn-push btn-push-gray"} style={{display: "flex", flexDirection: "row", position:"relative", padding:"0.5rem 0.5rem", width:"95%", margin:"2rem 2rem"}}  onClick={() => setIsAboutModalOpen(true)}>
+                    <div style={{display: "flex", flexDirection: "row", gap: "0.5rem",width:'100%'}}>
+                        <span>À propos</span>
+                        <FaInfoCircle style={{marginLeft:"auto", color:"grey", paddingRight:"10px"}}/>
+                    </div>
+                </button>
+
+
 
                 {userRole === "admin" &&
                     <div>
@@ -123,6 +137,80 @@ function SettingsView() {
                             <button type="button" onClick={handleSaveTheme} className={'btn-push btn-push-green'} style={{width:"fit-content", padding:"0.5rem 2rem"}}>
                                 Enregistrer
                             </button>
+                        </form>
+                    </Modal>
+                </div>
+
+            </div>
+            }
+            {isAboutModalOpen &&
+            <div style={{position:"absolute", width:"100vw", height:"100vh", top:'0', bottom:'0'}}>
+                <div style={{position:"relative", width:"100%", height:"100%"}}>
+                    <Modal title={"À Propos"} isOpen={isAboutModalOpen} onClose={handleCancelAbout} maxHeight={"65vh"} marginBottom={"20vh"} >
+                        <form style={{display:"flex", flexDirection:"column",gap:"1rem", alignItems:"center"}} className={"modal_content"}>
+                            <div style={{textAlign: "justify", padding: '1rem', overflowY: "scroll"}}>
+                                <div>
+                                    "Buzzer-App" révolutionne les soirées jeux avec une expérience interactive et
+                                    dynamique, transformant chaque rencontre en une compétition palpitante de rapidité
+                                    et d'esprit.
+                                    <br/>
+                                    <br/>
+                                    Cette application web innovante est conçue pour animer vos soirées blind-test, quizz
+                                    et bien d'autres jeux de groupe, en introduisant un élément compétitif captivant :
+                                    qui appuiera sur le buzzer en premier ?
+                                    <br/>
+                                    <br/>
+                                    Avec "Buzzer-App", l'hôte crée facilement un groupe et invite les participants via
+                                    un code ou un lien d’invitation.
+                                    <br/>
+                                    <br/>
+                                    Chaque joueur, muni de son buzzer virtuel, est prêt à relever le défi dès que l'hôte
+                                    lance la partie.
+                                    <br/>
+                                    <br/>
+                                    Les points en jeu, définis par l'hôte, ajoutent une couche stratégique à chaque
+                                    question.
+                                    <br/>
+                                    <br/>
+                                    L'application affiche en temps réel le nom du joueur le plus rapide, tandis que
+                                    l'hôte garde le contrôle pour valider ou refuser les réponses.
+                                    <br/>
+                                    <br/>
+                                    "Buzzer-App" ne se contente pas de mesurer la rapidité ; elle offre aussi un aperçu
+                                    de la connexion réseau de chaque participant, garantissant ainsi une compétition
+                                    équitable.
+                                    <br/>
+                                    <br/>
+                                    Rejoignez la communauté "Buzzer-App" pour transformer vos rencontres en moments
+                                    inoubliables d'amusement et de compétition.
+                                    <br/>
+                                    <br/>
+                                    Crédits : Arthur Mondon, 2023 <a href={"https://mondon.pro/projet/buzzer-app"}
+                                                                     target={"_blank"}>Voir le projet</a>
+                                    <br/>
+                                    <br/>
+                                    <div style={{display: "flex", gap: '1rem'}}>
+                                        <a className={"btn-push"} style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            gap: '0.5rem'
+                                        }} href={"https://github.com/arthur-mdn/buzzer-app"} target={"_blank"}>
+                                            <FaGithub/>
+                                            GitHub
+                                        </a>
+                                        <a className={"btn-push btn-push-green"} style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            gap: '0.5rem'
+                                        }} href={"https://www.paypal.com/paypalme/arthurmondon"} target={"_blank"}>
+                                            <FaPaypal/>
+                                            PayPal
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </form>
                     </Modal>
                 </div>
