@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Modal from "../modal/Modal.jsx";
-import QRCode from 'qrcode.react';
+import { QRCodeSVG } from 'qrcode.react';
 import {useGame} from "../../GameContext.jsx";
 import {FaEye, FaEyeSlash, FaShare} from "react-icons/fa6";
 import BlasonServerViewer from "../host/BlasonServerViewer.jsx";
@@ -75,7 +75,7 @@ function RoomDetails({ serverInfo }) {
             <Modal title={'Partager'} isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)} style={{maxWidth:'none'}}>
                 <div style={{ display:"flex", flexDirection:"column",alignItems:'center', justifyContent:'center',padding:'0 0 2rem 0', gap:'2rem'}}>
                     <div style={{backgroundColor:'white',borderRadius:'1rem',padding:'1rem', maxWidth: '300px'}}>
-                        <QRCode value={`${config.instanceUrl}/server/${serverCode}`} size={512} style={{width: '100%', height: 'auto'}}/>
+                        <QRCodeSVG value={`${config.instanceUrl}/server/${serverCode}`} size={512} style={{width: '100%', height: 'auto'}}/>
                     </div>
                     <button style={{margin:'0', padding:'0.2rem 1rem', fontSize:'2rem'}} className={"btn-push btn-push-blue"}>
                         {serverCode}

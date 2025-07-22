@@ -17,7 +17,7 @@ html, body {
 html{
   --primary-buzzer-button-color: 222, 64, 64;
   --secondary-buzzer-button-color: 174, 0, 3;
-  --background-url: url("../public/backgrounds/default.svg");
+  --background-url: url("../backgrounds/default.svg");
 }
 body {
 
