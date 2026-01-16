@@ -4,6 +4,8 @@ services:
     image: mongo
     volumes:
       - buzzer_mongodb_data:/data/db
+      - ./mongo/mongod.conf:/etc/mongo/mongod.conf:ro
+    command: ["mongod", "--config", "/etc/mongo/mongod.conf"]
 
   buzzer-client:
     container_name: buzzer-client
