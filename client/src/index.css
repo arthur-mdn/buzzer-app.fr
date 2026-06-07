@@ -869,66 +869,237 @@ progress::-moz-progress-bar {
 }
 
 
+.home-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.home-page__content {
+  flex: 1;
+  padding-bottom: calc(8.5rem + env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .navbar-bottom {
   position: fixed;
   bottom: 0;
-  width: 100%;
-  max-width: none;
-  margin: 0 0 2rem 0;
-  display: flex;
-  justify-content: space-around;
-  flex-direction: row;
-  padding: 1rem 0 1rem 0;
-  align-items: center;
-  transition: 0.2s all;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 0 0.75rem calc(0.65rem + env(safe-area-inset-bottom, 0px));
+  pointer-events: none;
+  overflow: visible;
 }
 
+.navbar-bottom__glow {
+  position: absolute;
+  left: 50%;
+  bottom: 0.5rem;
+  width: min(22rem, 70vw);
+  height: 5rem;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(255, 70, 90, 0.35) 0%, transparent 70%);
+  pointer-events: none;
+  filter: blur(8px);
+}
 
-.navbar-bottom button {
-  font-size: 18px;
-  cursor: pointer;
-  padding: 0.5rem 1rem;
+.navbar-bottom__track {
+  position: relative;
+  max-width: 26rem;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 2rem 0.85rem 0.9rem;
+  overflow: visible;
+  background: linear-gradient(180deg, #4a5368 0%, #2b3140 45%, #1e2330 100%);
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  border-bottom-width: 4px;
+  border-bottom-color: #12151c;
+  border-radius: 1.35rem 1.35rem 1rem 1rem;
+  box-shadow:
+    0 -10px 28px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  pointer-events: auto;
+}
+
+.navbar-bottom__item {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: transparent!important;
-  border: 0;
-  color: white;
-  font-family: "Fredoka One";
+  gap: 0.35rem;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: "Fredoka One", sans-serif;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.04rem;
+  overflow: visible;
+  transition: color 0.2s ease;
+}
+
+.navbar-bottom__item:active .navbar-bottom__icon-shell {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #2a2f3a, inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.navbar-bottom__icon-shell {
   position: relative;
-  top: 0px;
-  letter-spacing: 0.1rem;
-  text-decoration: none;
-  transition: 0.2s all;
-
-}
-.navbar-bottom button span{
-  opacity: 0.4;
-  transition: 0.2s all;
-
-}
-.navbar-bottom button svg{
-  width: 40px;
-  height: 40px;
-  opacity: 0.4;
-  transition: 0.2s all;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.1rem;
+  height: 3.1rem;
+  border-radius: 1rem;
+  background: linear-gradient(180deg, #6b758a 0%, #454d5f 100%);
+  box-shadow:
+    0 4px 0 #2a2f3a,
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-.navbar-bottom button.active {
-  background: rgb(43, 148, 24);
+.navbar-bottom__icon {
+  width: 1.45rem;
+  height: 1.45rem;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+}
+
+.navbar-bottom__label {
+  font-size: 0.72rem;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  opacity: 0.75;
+}
+
+.navbar-bottom__item--home {
+  margin-bottom: 0.15rem;
+}
+
+.navbar-bottom__item--home .navbar-bottom__icon-shell {
+  width: 4.6rem;
+  height: 4.6rem;
+  margin-top: -1.5rem;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ff7b84 0%, #de2e48 55%, #b81830 100%);
+  box-shadow:
+    0 7px 0 #8f1428,
+    0 0 22px rgba(222, 46, 72, 0.45),
+    inset 0 3px 8px rgba(255, 255, 255, 0.25);
+}
+
+.navbar-bottom__item--home:active .navbar-bottom__icon-shell {
+  transform: translateY(5px);
+  box-shadow:
+    0 2px 0 #8f1428,
+    0 0 16px rgba(222, 46, 72, 0.35),
+    inset 0 2px 6px rgba(255, 255, 255, 0.2);
+}
+
+.navbar-bottom__item--home .navbar-bottom__icon {
+  width: 1.85rem;
+  height: 1.85rem;
+}
+
+.navbar-bottom__ring {
+  position: absolute;
+  inset: 0.35rem;
+  border-radius: 50%;
+  border: 2px dashed rgba(255, 255, 255, 0.28);
+  pointer-events: none;
+  animation: navbar-buzzer-spin 12s linear infinite;
+}
+
+.navbar-bottom__item--servers.active .navbar-bottom__icon-shell {
+  background: linear-gradient(180deg, #5fd4ff 0%, #0b92c2 100%);
+  box-shadow: 0 4px 0 #1c6186, 0 0 16px rgba(11, 146, 194, 0.45);
+  transform: translateY(-2px);
+}
+
+.navbar-bottom__item--servers.active:active .navbar-bottom__icon-shell {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #1c6186;
+}
+
+.navbar-bottom__item--settings.active .navbar-bottom__icon-shell {
+  background: linear-gradient(180deg, #ffd54f 0%, #f5a623 100%);
+  box-shadow: 0 4px 0 #b87400, 0 0 16px rgba(245, 166, 35, 0.4);
+  transform: translateY(-2px);
+}
+
+.navbar-bottom__item--settings.active:active .navbar-bottom__icon-shell {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #b87400;
+}
+
+.navbar-bottom__item--home.active .navbar-bottom__icon-shell {
+  animation: navbar-buzzer-pulse 1.6s ease-in-out infinite;
+  transform: translateY(-2px);
+}
+
+.navbar-bottom__item--home.active:active .navbar-bottom__icon-shell {
+  animation: none;
+  transform: translateY(5px);
+}
+
+.navbar-bottom__item.active {
+  color: #fff;
+}
+
+.navbar-bottom__item.active .navbar-bottom__label {
   opacity: 1;
-}
-.navbar-bottom button.active span{
-  opacity: 1;
-  transition: 0.2s all;
-
-}
-.navbar-bottom button.active svg{
-  opacity: 1;
-  transition: 0.2s all;
-
+  transform: translateY(-1px);
 }
 
+.navbar-bottom__item--home.active .navbar-bottom__label {
+  color: #ffe08a;
+  font-size: 0.78rem;
+}
+
+@keyframes navbar-buzzer-pulse {
+  0%, 100% {
+    box-shadow:
+      0 7px 0 #8f1428,
+      0 0 20px rgba(222, 46, 72, 0.45),
+      inset 0 3px 8px rgba(255, 255, 255, 0.25);
+  }
+  50% {
+    box-shadow:
+      0 7px 0 #8f1428,
+      0 0 32px rgba(255, 90, 110, 0.75),
+      inset 0 3px 10px rgba(255, 255, 255, 0.35);
+  }
+}
+
+@keyframes navbar-buzzer-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 380px) {
+  .navbar-bottom__track {
+    padding-left: 0.55rem;
+    padding-right: 0.55rem;
+    padding-top: 1.75rem;
+  }
+
+  .navbar-bottom__item--home .navbar-bottom__icon-shell {
+    width: 4.1rem;
+    height: 4.1rem;
+    margin-top: -1.25rem;
+  }
+
+  .navbar-bottom__label {
+    font-size: 0.65rem;
+  }
+}
 
 
 
