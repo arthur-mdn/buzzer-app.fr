@@ -1,75 +1,76 @@
-//ProfilePictureChooser.jsx
 import React, { useState, useEffect } from 'react';
+import {
+    PROFILE_COLORS,
+    DEFAULT_PROFILE_COLOR,
+    TOTAL_PROFILE_SMILEYS,
+    normalizeProfileImageIndex,
+    normalizeProfileColor,
+    fetchColoredProfileSvg,
+} from '../../utils/profilePicture.js';
 
-function ProfilePictureChooser({ onImageSelect, onColorSelect , initialImageIndex, initialColor }) {
-    const totalSmileys = 30;
+function ProfilePictureChooser({ onImageSelect, onColorSelect, initialImageIndex, initialColor }) {
+    const [selectedImageIndex, setSelectedImageIndex] = useState(() =>
+        normalizeProfileImageIndex(initialImageIndex, initialImageIndex == null)
+    );
+    const [selectedColor, setSelectedColor] = useState(() =>
+        normalizeProfileColor(initialColor ?? DEFAULT_PROFILE_COLOR)
+    );
     const [selectedImage, setSelectedImage] = useState(null);
     const [showAllImages, setShowAllImages] = useState(false);
-    const [selectedImageIndex, setSelectedImageIndex] = useState(null);
-    const [selectedColor, setSelectedColor] = useState('#999'); // Utiliser #999 comme couleur par défaut
+
+    useEffect(() => {
+        if (initialImageIndex != null) {
+            setSelectedImageIndex(normalizeProfileImageIndex(initialImageIndex, false));
+        }
+        if (initialColor != null) {
+            setSelectedColor(normalizeProfileColor(initialColor));
+        }
+    }, [initialImageIndex, initialColor]);
+
+    useEffect(() => {
+        onImageSelect?.(selectedImageIndex);
+        onColorSelect?.(selectedColor);
+    }, [selectedImageIndex, selectedColor]);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        fetchColoredProfileSvg(selectedImageIndex, selectedColor)
+            .then((svg) => {
+                if (!cancelled) {
+                    setSelectedImage(svg);
+                }
+            })
+            .catch((error) => {
+                if (!cancelled) {
+                    console.error('Error fetching SVG:', error);
+                }
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [selectedImageIndex, selectedColor]);
 
     const handleColorSelect = (color) => {
-        setSelectedColor(color);
-        if (onColorSelect) {
-            onColorSelect(color); // Appeler le callback avec la couleur sélectionnée
-        }
+        setSelectedColor(normalizeProfileColor(color));
     };
 
     const handleNewImageSelect = (imageNumber) => {
-        fetchAndModifySvg(imageNumber, selectedColor);
-        setSelectedImageIndex(imageNumber);
+        setSelectedImageIndex(normalizeProfileImageIndex(imageNumber, false));
         setShowAllImages(false);
-        if (onImageSelect) {
-            onImageSelect(imageNumber); // Appeler le callback avec l'index de l'image sélectionnée
-        }
-    };
-
-    const handleImageClick = () => {
-        setShowAllImages(!showAllImages);
-    };
-
-    useEffect(() => {
-        const randomImageNumber = Math.floor(Math.random() * totalSmileys) + 1;
-        fetchAndModifySvg(randomImageNumber, selectedColor);
-        setSelectedImageIndex(randomImageNumber);
-    }, []);
-
-
-    useEffect(() => {
-        if (selectedImageIndex != null) {
-            fetchAndModifySvg(selectedImageIndex, selectedColor);
-        }
-    }, [selectedColor, selectedImageIndex]);
-
-    useEffect(() => {
-        // Utiliser l'index et la couleur initiaux si fournis
-        const imageIndex = initialImageIndex != null ? initialImageIndex : Math.floor(Math.random() * totalSmileys) + 1;
-        const color = initialColor || '#999';
-
-        fetchAndModifySvg(imageIndex, color);
-        setSelectedImageIndex(imageIndex);
-        setSelectedColor(color);
-    }, []); // Les dépendances vides signifient que cet effet ne s'exécute qu'une fois à l'initialisation
-
-
-
-
-    const fetchAndModifySvg = async (imageNumber, color) => {
-        try {
-            const response = await fetch(`/smileys/smiley_${imageNumber}.svg`);
-            let svgText = await response.text();
-            svgText = svgText.replace(/(\.cls-1\s*\{\s*fill\s*:)[^;}]*(;?\s*\})/, `$1 ${color}$2`);
-            setSelectedImage(svgText);
-        } catch (error) {
-            console.error('Error fetching SVG:', error);
-        }
     };
 
     return (
         <div className="profile-picture-chooser">
-            <div dangerouslySetInnerHTML={{ __html: selectedImage }} onClick={handleImageClick} className={"image-container editable"} style={{width:"120px", height:"120px", position:"relative"}}/>
+            <div
+                dangerouslySetInnerHTML={{ __html: selectedImage }}
+                onClick={() => setShowAllImages((open) => !open)}
+                className="image-container editable"
+                style={{ width: '120px', height: '120px', position: 'relative' }}
+            />
             <div>
-                {['#FF5B37', '#0AA3BB', '#94C114', '#F8CF1D', '#745BB7', '#0CBA8C', '#999'].map(color => (
+                {PROFILE_COLORS.map((color) => (
                     <button
                         type="button"
                         key={color}
@@ -80,7 +81,7 @@ function ProfilePictureChooser({ onImageSelect, onColorSelect , initialImageInde
                             height: '20px',
                             borderRadius: '50%',
                             margin: '5px',
-                            cursor: "pointer"
+                            cursor: 'pointer',
                         }}
                         onClick={() => handleColorSelect(color)}
                     />
@@ -88,7 +89,7 @@ function ProfilePictureChooser({ onImageSelect, onColorSelect , initialImageInde
             </div>
             {showAllImages && (
                 <div className="profile-picture-grid">
-                    {Array.from({ length: totalSmileys }, (_, i) => i + 1).map((number) => (
+                    {Array.from({ length: TOTAL_PROFILE_SMILEYS }, (_, i) => i + 1).map((number) => (
                         <img
                             key={number}
                             src={`/smileys/smiley_${number}.svg`}

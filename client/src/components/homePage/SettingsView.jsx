@@ -10,6 +10,7 @@ import {useTheme} from "../../ThemeContext.jsx";
 import {FaEdit, FaInfoCircle} from "react-icons/fa";
 import AboutApp from "./AboutApp.jsx";
 import {FaGithub, FaPaypal} from "react-icons/fa6";
+import { normalizeProfileColor, normalizeProfileImageIndex } from "../../utils/profilePicture.js";
 
 function SettingsView() {
     const { userRole, userName, userPictureSmiley, userPictureColor } = useUser();
@@ -22,8 +23,8 @@ function SettingsView() {
     const handleRestPicturesAll = () => {
         socket.emit('adminForceResetProfilPictures');
     };
-    const [tempImageIndex, setTempImageIndex] = useState(userPictureSmiley || 1);
-    const [tempColor, setTempColor] = useState(userPictureColor || "#999");
+    const [tempImageIndex, setTempImageIndex] = useState(() => normalizeProfileImageIndex(userPictureSmiley, false));
+    const [tempColor, setTempColor] = useState(() => normalizeProfileColor(userPictureColor));
     const [tempBackground, setTempBackground] = useState( "default");
 
     const handleImageSelect = (index) => setTempImageIndex(index);
@@ -43,9 +44,9 @@ function SettingsView() {
     };
 
     const handleCancelChanges = () => {
-        setIsProfileModalOpen(false)
-        setTempImageIndex(userPictureSmiley);
-        setTempColor(userPictureColor);
+        setIsProfileModalOpen(false);
+        setTempImageIndex(normalizeProfileImageIndex(userPictureSmiley, false));
+        setTempColor(normalizeProfileColor(userPictureColor));
     };
     const handleCancelThemeChanges = () => {
         setIsThemeModalOpen(false);
@@ -56,8 +57,10 @@ function SettingsView() {
     const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
 
     const handleProfileClick = (event) => {
-        setIsProfileModalOpen(true)
-        event.stopPropagation(); // Pour éviter la propagation du clic aux éléments parents
+        setTempImageIndex(normalizeProfileImageIndex(userPictureSmiley, false));
+        setTempColor(normalizeProfileColor(userPictureColor));
+        setIsProfileModalOpen(true);
+        event.stopPropagation();
     };
     const handleThemeClick = (event) => {
         setIsThemeModalOpen(true)
@@ -112,8 +115,8 @@ function SettingsView() {
                             <ProfilePictureChooser
                                 onImageSelect={handleImageSelect}
                                 onColorSelect={handleColorSelect}
-                                initialImageIndex={userPictureSmiley} // Ajout de l'image initiale
-                                initialColor={userPictureColor} // Ajout de la couleur initiale
+                                initialImageIndex={tempImageIndex}
+                                initialColor={tempColor}
                             />
                             <button type="button" onClick={handleSaveProfile} className={'btn-push btn-push-green'} style={{width:"fit-content", padding:"0.5rem 2rem"}}>
                                 Enregistrer

@@ -1,27 +1,40 @@
-// ProfilePictureViewer.jsx
 import React, { useState, useEffect } from 'react';
+import {
+    fetchColoredProfileSvg,
+    normalizeProfileColor,
+    normalizeProfileImageIndex,
+} from '../../utils/profilePicture.js';
 
 function ProfilePictureViewer({ imageIndex, imageColor, size = '3rem' }) {
     const [imageView, setImageView] = useState(null);
+    const normalizedIndex = normalizeProfileImageIndex(imageIndex, false);
+    const normalizedColor = normalizeProfileColor(imageColor);
 
     useEffect(() => {
-        const fetchAndModifySvg = async (imageNumber, color) => {
-            try {
-                const uniqueClassId = `cls-1-${imageNumber}-${color.replace(/#/g, '')}`;
-                const response = await fetch(`/smileys/smiley_${imageNumber}.svg`);
-                let svgText = await response.text();
-                svgText = svgText.replace(/cls-1/g, uniqueClassId);
-                svgText = svgText.replace(new RegExp(`(\\.${uniqueClassId}\\s*\\{\\s*fill\\s*:)[^;}]*(;?\\s*\\})`, 'g'), `$1 ${color}$2`);
-                setImageView(svgText);
-            } catch (error) {
-                console.error('Error fetching SVG:', error);
-            }
+        let cancelled = false;
+
+        fetchColoredProfileSvg(normalizedIndex, normalizedColor)
+            .then((svg) => {
+                if (!cancelled) {
+                    setImageView(svg);
+                }
+            })
+            .catch((error) => {
+                if (!cancelled) {
+                    console.error('Error fetching SVG:', error);
+                }
+            });
+
+        return () => {
+            cancelled = true;
         };
-        fetchAndModifySvg(imageIndex, imageColor);
-    }, [imageIndex, imageColor]);
+    }, [normalizedIndex, normalizedColor]);
 
     return (
-        <div dangerouslySetInnerHTML={{ __html: imageView }} style={{width:size, height:size, borderRadius:'0.6rem', overflow:'hidden'}}/>
+        <div
+            dangerouslySetInnerHTML={{ __html: imageView }}
+            style={{ width: size, height: size, borderRadius: '0.6rem', overflow: 'hidden' }}
+        />
     );
 }
 

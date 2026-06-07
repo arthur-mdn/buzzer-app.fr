@@ -1,8 +1,9 @@
 // UserNameInput.jsx
-import React, {useEffect, useState} from 'react';
+import React, { useState } from 'react';
 import config from "../../config";
 import ProfilePictureChooser from "./ProfilePictureChooser.jsx";
 import AboutApp from "../homePage/AboutApp.jsx";
+import { normalizeProfileColor, PROFILE_COLORS } from "../../utils/profilePicture.js";
 
 function UserNameInput({ onSuccess }) {
     const [tempUserName, setTempUserName] = useState('');
@@ -10,12 +11,6 @@ function UserNameInput({ onSuccess }) {
     const [tempPassword, setTempPassword] = useState('');
     const [selectedImageIndex, setSelectedImageIndex] = useState(null);
     const [selectedColor, setSelectedColor] = useState('#999');
-
-    useEffect(() => {
-        // Sélectionnez une image aléatoire lors du premier chargement
-        const randomImageNumber = Math.floor(Math.random() * 30) + 1;
-        setSelectedImageIndex(randomImageNumber);
-    }, []);
     const incrementShowPasswordCount = () => {
         setShowPasswordCount(showPasswordCount + 1 )
     }
@@ -54,7 +49,7 @@ function UserNameInput({ onSuccess }) {
             return;
         }
 
-        if (selectedColor == null || ['#FF5B37', '#0AA3BB', '#94C114', '#F8CF1D', '#745BB7', '#0CBA8C', '#999'].includes(selectedColor) === false) {
+        if (selectedColor == null || !PROFILE_COLORS.includes(normalizeProfileColor(selectedColor))) {
             alert("Couleur de profil invalide.");
             return;
         }
@@ -113,10 +108,10 @@ function UserNameInput({ onSuccess }) {
                         }
                         <label htmlFor={'name'} style={{width:'100%',textAlign:'left'}}>Photo de profil</label>
                         <div style={{display: 'flex', width: '100%', flexDirection:'column'}}>
-                            <ProfilePictureChooser onImageSelect={handleImageSelect}
-                                                   onColorSelect={handleColorSelect}
-                                                   initialImageIndex={selectedImageIndex}
-                                                   initialColor={selectedColor} />
+                            <ProfilePictureChooser
+                                onImageSelect={handleImageSelect}
+                                onColorSelect={handleColorSelect}
+                            />
                         </div>
 
                         <button type="submit" className={'btn-push btn-push-green'} style={{width: '100%', padding: '1rem'}}>Enregistrer</button>

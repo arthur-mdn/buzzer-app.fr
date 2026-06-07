@@ -12,6 +12,7 @@ import { TokenProvider } from './TokenContext.jsx';
 import { UserProvider } from './UserContext.jsx';
 import { ThemeProvider } from './ThemeContext.jsx';
 import config from './config.js';
+import { normalizeProfileColor, normalizeProfileImageIndex } from './utils/profilePicture.js';
 
 
 function App() {
@@ -20,7 +21,7 @@ function App() {
     const [userId, setUserId] = useState(null);
     const [userRole, setUserRole] = useState('user');
     const [userName, setUserName] = useState('Inconnu');
-    const [userPictureSmiley, setUserPictureSmiley] = useState('1');
+    const [userPictureSmiley, setUserPictureSmiley] = useState(1);
     const [userPictureColor, setUserPictureColor] = useState('#999');
     const [userBackground, setUserBackground] = useState('default');
     const [isWaitingForPong, setIsWaitingForPong] = useState(false);
@@ -51,8 +52,8 @@ function App() {
                 setUserId(data.userId);
                 setUserRole(data.userRole);
                 setUserName(data.userName);
-                setUserPictureSmiley(data.userPicture.smiley);
-                setUserPictureColor(data.userPicture.color);
+                setUserPictureSmiley(normalizeProfileImageIndex(data.userPicture.smiley, false));
+                setUserPictureColor(normalizeProfileColor(data.userPicture.color));
                 setUserBackground(data.userTheme.background);
             } else {
                 setStatusMsg(data.message);
@@ -119,8 +120,8 @@ function App() {
         socketRef.current.on('updateProfile', ({newUserRole, newUserName, newUserPicture, newUserTheme}) => {
             setUserRole(newUserRole);
             setUserName(newUserName);
-            setUserPictureSmiley(newUserPicture.smiley);
-            setUserPictureColor(newUserPicture.color);
+            setUserPictureSmiley(normalizeProfileImageIndex(newUserPicture.smiley, false));
+            setUserPictureColor(normalizeProfileColor(newUserPicture.color));
             setUserBackground(newUserTheme.background);
         });
 
