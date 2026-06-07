@@ -17,6 +17,12 @@ services:
     container_name: buzzer-client
     build:
       context: ./client
+      args:
+        VITE_PORT: "3000"
+        VITE_INSTANCE_URL: https://buzzer-app.fr
+        VITE_SERVER_URL: https://api.buzzer-app.fr
+        VITE_SERVER_SOCKET_URL: https://api.buzzer-app.fr
+        VITE_SEND_PINGS: "true"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.buzzer-client.rule=Host(`buzzer-app.fr`)"
