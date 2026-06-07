@@ -5,6 +5,12 @@ services:
       - buzzer_mongodb_data:/data/db
     ports:
       - "27018:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   buzzer-client:
     build:
@@ -20,6 +26,11 @@ services:
       context: ./server
       dockerfile: Dockerfile.dev
     env_file: ./server/.env
+    environment:
+      DB_URI: mongodb://buzzer-mongodb:27017/buzzer
+    depends_on:
+      buzzer-mongodb:
+        condition: service_healthy
     ports:
       - "3001:3001"
     volumes:

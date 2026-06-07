@@ -20,32 +20,39 @@ const io = new Server(server, {
     }
 });
 
-database.connect();
 app.use(cors({
     origin: config.clientUrl,
     credentials: true
 }));
 app.use(express.json());
+
 async function setAllUsersOffline() {
+    const servers = await GameServer.find();
+    for (const server of servers) {
+        server.players.forEach(player => {
+            player.state = 'offline';
+        });
+        await server.save();
+    }
+    console.log("all servers members set to offline");
+}
+
+async function start() {
     try {
-        const servers = await GameServer.find();
-        for (const server of servers) {
-            server.players.forEach(player => {
-                player.state = 'offline';
-            });
-            await server.save();
-        }
-        console.log("all servers members set to offline");
+        await database.connect();
+        await setAllUsersOffline();
+
+        app.use(userRoutes);
+        app.use(gameRoutes);
+        gameSockets(io);
+
+        server.listen(config.port, () => {
+            console.log(`Server is running on port ${config.port}`);
+        });
     } catch (error) {
-        console.error("Error setting users to offline:", error);
+        console.error('Failed to start server:', error);
+        process.exit(1);
     }
 }
-setAllUsersOffline();
 
-app.use(userRoutes);
-app.use(gameRoutes);
-gameSockets(io);
-
-server.listen(config.port, () => {
-    console.log(`Server is running on port ${config.port}`);
-});
+start();

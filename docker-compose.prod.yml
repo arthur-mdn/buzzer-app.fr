@@ -6,6 +6,12 @@ services:
       - buzzer_mongodb_data:/data/db
       - ./mongo/mongod.conf:/etc/mongo/mongod.conf:ro
     command: ["mongod", "--config", "/etc/mongo/mongod.conf"]
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   buzzer-client:
     container_name: buzzer-client
@@ -24,6 +30,9 @@ services:
     env_file: ./server/.env
     environment:
       DB_URI: mongodb://buzzer-mongodb:27017/buzzer
+    depends_on:
+      buzzer-mongodb:
+        condition: service_healthy
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.buzzer-server.rule=Host(`api.buzzer-app.fr`)"
