@@ -29,7 +29,19 @@ function registerProcessErrorHandlers() {
     });
 }
 
+function safeSocketOn(socket, event, handler, errorMessage = 'An unexpected error occurred') {
+    socket.on(event, async (payload) => {
+        try {
+            await handler(payload ?? {});
+        } catch (error) {
+            console.error(`Socket ${event} error:`, error);
+            socket.emit('serverError', { message: errorMessage });
+        }
+    });
+}
+
 module.exports = {
     retryOnVersionError,
     registerProcessErrorHandlers,
+    safeSocketOn,
 };

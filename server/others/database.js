@@ -1,7 +1,23 @@
 const mongoose = require('mongoose');
 const config = require('./config');
 
+function registerConnectionHandlers() {
+    mongoose.connection.on('error', (err) => {
+        console.error('MongoDB connection error:', err);
+    });
+
+    mongoose.connection.on('disconnected', () => {
+        console.warn('MongoDB disconnected');
+    });
+
+    mongoose.connection.on('reconnected', () => {
+        console.log('MongoDB reconnected');
+    });
+}
+
 module.exports.connect = async () => {
+    registerConnectionHandlers();
+
     const maxRetries = 10;
     const delayMs = 3000;
 

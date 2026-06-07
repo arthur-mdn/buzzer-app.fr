@@ -1,6 +1,6 @@
 //server.js
 require('dotenv').config();
-const { registerProcessErrorHandlers } = require('./others/mongoUtils');
+const { registerProcessErrorHandlers, retryOnVersionError } = require('./others/mongoUtils');
 const config = require('./others/config');
 
 registerProcessErrorHandlers();
@@ -37,7 +37,7 @@ async function setAllUsersOffline() {
                 player.state = 'offline';
             });
             try {
-                await server.save();
+                await retryOnVersionError(() => server.save());
             } catch (error) {
                 console.error(`Failed to set users offline for server ${server.code}:`, error);
             }
@@ -55,7 +55,19 @@ async function start() {
 
         app.use(userRoutes);
         app.use(gameRoutes);
+
+        app.use((err, req, res, next) => {
+            console.error('Express error:', err);
+            if (!res.headersSent) {
+                res.status(500).json({ success: false, message: 'Internal Server Error' });
+            }
+        });
+
         gameSockets(io);
+
+        server.on('error', (err) => {
+            console.error('HTTP server error:', err);
+        });
 
         server.listen(config.port, () => {
             console.log(`Server is running on port ${config.port}`);

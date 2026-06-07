@@ -57,7 +57,7 @@ router.post('/create-server', async (req, res) => {
 
         try {
             const data = verifyToken(token);
-            const { serverName, options, selectedImageIndex } = req.body;
+            const { serverName, options = {}, selectedImageIndex } = req.body;
             const serverCode = generateUniqueCode();
 
             const server = new GameServer({
@@ -70,7 +70,7 @@ router.post('/create-server', async (req, res) => {
                     blason: selectedImageIndex
                 },
                 options: {
-                    autoRestartAfterDecline: options.autoRestartAfterDecline,
+                    autoRestartAfterDecline: options.autoRestartAfterDecline ?? true,
                     answerPoint: options.answerPoint || 1,
                     winPoint: options.winPoint || 10,
                     deductPointOnWrongAnswer: options.deductPointOnWrongAnswer || false,
@@ -79,7 +79,8 @@ router.post('/create-server', async (req, res) => {
             });
             await server.save();
             res.json(server);
-        }catch (err) {
+        } catch (err) {
+            console.error(err);
             res.status(403).json({ success: false, message: "Invalid token." });
         }
     } catch (error) {
