@@ -1,6 +1,9 @@
 //server.js
 require('dotenv').config();
+const { registerProcessErrorHandlers } = require('./others/mongoUtils');
 const config = require('./others/config');
+
+registerProcessErrorHandlers();
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -27,14 +30,22 @@ app.use(cors({
 app.use(express.json());
 
 async function setAllUsersOffline() {
-    const servers = await GameServer.find();
-    for (const server of servers) {
-        server.players.forEach(player => {
-            player.state = 'offline';
-        });
-        await server.save();
+    try {
+        const servers = await GameServer.find();
+        for (const server of servers) {
+            server.players.forEach(player => {
+                player.state = 'offline';
+            });
+            try {
+                await server.save();
+            } catch (error) {
+                console.error(`Failed to set users offline for server ${server.code}:`, error);
+            }
+        }
+        console.log("all servers members set to offline");
+    } catch (error) {
+        console.error('Failed to set users offline:', error);
     }
-    console.log("all servers members set to offline");
 }
 
 async function start() {
