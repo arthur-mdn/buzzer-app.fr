@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
     PROFILE_COLORS,
     DEFAULT_PROFILE_COLOR,
@@ -16,7 +16,6 @@ function ProfilePictureChooser({ onImageSelect, onColorSelect, initialImageIndex
         normalizeProfileColor(initialColor ?? DEFAULT_PROFILE_COLOR)
     );
     const [selectedImage, setSelectedImage] = useState(null);
-    const [showAllImages, setShowAllImages] = useState(false);
 
     useEffect(() => {
         if (initialImageIndex != null) {
@@ -56,50 +55,63 @@ function ProfilePictureChooser({ onImageSelect, onColorSelect, initialImageIndex
         setSelectedColor(normalizeProfileColor(color));
     };
 
-    const handleNewImageSelect = (imageNumber) => {
+    const handleImageSelect = (imageNumber) => {
         setSelectedImageIndex(normalizeProfileImageIndex(imageNumber, false));
-        setShowAllImages(false);
     };
 
     return (
-        <div className="profile-picture-chooser">
-            <div
-                dangerouslySetInnerHTML={{ __html: selectedImage }}
-                onClick={() => setShowAllImages((open) => !open)}
-                className="image-container editable"
-                style={{ width: '120px', height: '120px', position: 'relative' }}
-            />
-            <div>
-                {PROFILE_COLORS.map((color) => (
-                    <button
-                        type="button"
-                        key={color}
-                        style={{
-                            backgroundColor: color,
-                            border: selectedColor === color ? '2px solid black' : '0',
-                            width: '20px',
-                            height: '20px',
-                            borderRadius: '50%',
-                            margin: '5px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => handleColorSelect(color)}
-                    />
-                ))}
+        <div className="avatar-picker avatar-picker--profile">
+            <p className="avatar-picker__section-title">Aperçu</p>
+            <div className="avatar-picker__preview">
+                <div
+                    className="avatar-picker__preview-inner"
+                    dangerouslySetInnerHTML={{ __html: selectedImage }}
+                />
             </div>
-            {showAllImages && (
-                <div className="profile-picture-grid">
-                    {Array.from({ length: TOTAL_PROFILE_SMILEYS }, (_, i) => i + 1).map((number) => (
-                        <img
-                            key={number}
-                            src={`/smileys/smiley_${number}.svg`}
-                            alt={`Smiley ${number}`}
-                            onClick={() => handleNewImageSelect(number)}
-                            style={number === selectedImageIndex ? { border: '2px solid blue' } : null}
+
+            <p className="avatar-picker__section-title">Couleur</p>
+            <div className="avatar-picker__colors" role="listbox" aria-label="Couleurs du profil">
+                {PROFILE_COLORS.map((color) => {
+                    const isSelected = selectedColor === color;
+                    return (
+                        <button
+                            key={color}
+                            type="button"
+                            role="option"
+                            aria-selected={isSelected}
+                            aria-label={`Couleur ${color}`}
+                            className={`avatar-picker__color${isSelected ? ' avatar-picker__color--selected' : ''}`}
+                            style={{ backgroundColor: color }}
+                            onClick={() => handleColorSelect(color)}
                         />
-                    ))}
-                </div>
-            )}
+                    );
+                })}
+            </div>
+
+            <p className="avatar-picker__section-title">Smiley</p>
+            <p className="avatar-picker__hint">Fais défiler pour voir tous les avatars</p>
+            <div className="avatar-picker__grid" role="listbox" aria-label="Smileys disponibles">
+                {Array.from({ length: TOTAL_PROFILE_SMILEYS }, (_, i) => i + 1).map((number) => {
+                    const isSelected = number === selectedImageIndex;
+                    return (
+                        <button
+                            key={number}
+                            type="button"
+                            role="option"
+                            aria-selected={isSelected}
+                            aria-label={`Smiley ${number}`}
+                            className={`avatar-picker__option${isSelected ? ' avatar-picker__option--selected' : ''}`}
+                            onClick={() => handleImageSelect(number)}
+                        >
+                            <img
+                                src={`/smileys/smiley_${number}.svg`}
+                                alt=""
+                                draggable={false}
+                            />
+                        </button>
+                    );
+                })}
+            </div>
         </div>
     );
 }

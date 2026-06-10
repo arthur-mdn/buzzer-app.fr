@@ -1,60 +1,73 @@
-//BlasonServerChooser.jsx
-import React, { useState, useEffect } from 'react';
-import {FaEdit} from "react-icons/fa";
-import {FaPen} from "react-icons/fa6";
+import { useEffect, useState } from 'react';
+import { FaPen } from 'react-icons/fa6';
 
-function BlasonServerChooser({ onImageSelect, initialImageIndex }) {
-    const totalBlasons = 6;
-    const [showAllImages, setShowAllImages] = useState(false);
-    const [selectedImageIndex, setSelectedImageIndex] = useState(null);
+const TOTAL_BLASONS = 6;
 
-    const handleNewImageSelect = (imageNumber) => {
-        setSelectedImageIndex(imageNumber);
-        setShowAllImages(false);
-        if (onImageSelect) {
-            onImageSelect(imageNumber); // Appeler le callback avec l'index de l'image sélectionnée
-        }
-    };
-
-    const handleImageClick = () => {
-        setShowAllImages(!showAllImages);
-    };
-
-    useEffect(() => {
-        const randomImageNumber = Math.floor(Math.random() * totalBlasons) + 1;
-        setSelectedImageIndex(randomImageNumber);
-    }, []);
+function BlasonServerChooser({ onImageSelect, initialImageIndex = 1 }) {
+    const [selectedImageIndex, setSelectedImageIndex] = useState(initialImageIndex);
+    const [showGrid, setShowGrid] = useState(false);
 
     useEffect(() => {
         if (initialImageIndex != null) {
             setSelectedImageIndex(initialImageIndex);
-        } else {
-            // Sélectionnez une image aléatoire si aucun index initial n'est fourni
-            const randomImageNumber = Math.floor(Math.random() * totalBlasons) + 1;
-            setSelectedImageIndex(randomImageNumber);
         }
     }, [initialImageIndex]);
 
+    const handleSelect = (imageNumber) => {
+        setSelectedImageIndex(imageNumber);
+        setShowGrid(false);
+        onImageSelect?.(imageNumber);
+    };
+
     return (
-        <div className="profile-picture-chooser">
-
-            <div style={{position:"relative"}}>
-                <img src={`/blasons/blason${selectedImageIndex}.png`} alt={`Smiley ${selectedImageIndex}`} className={"image-container"} style={{width:"50px", height:"50px"}}  onClick={handleImageClick}/>
-                <FaPen style={{color:"white", position:"absolute", bottom:"-5px", right:'-5px', backgroundColor:"red", padding:'0.25rem', borderRadius:"0.5rem"}}/>
-            </div>
-
-
-            {showAllImages && (
-                <div className="profile-picture-grid" style={{position:"absolute", zIndex:'1'}}>
-                    {Array.from({ length: totalBlasons }, (_, i) => i + 1).map((number) => (
+        <div className="avatar-picker avatar-picker--blason">
+            <button
+                type="button"
+                className="avatar-picker__preview-btn"
+                onClick={() => setShowGrid((open) => !open)}
+                aria-expanded={showGrid}
+                aria-label={showGrid ? 'Fermer le choix de blason' : 'Modifier le blason'}
+            >
+                <div className="avatar-picker__preview">
+                    <div className="avatar-picker__preview-inner">
                         <img
-                            key={number}
-                            src={`/blasons/blason${number}.png`}
-                            alt={`Smiley ${number}`}
-                            onClick={() => handleNewImageSelect(number)}
-                            style={number === selectedImageIndex ? { border: '2px solid blue' } : null}
+                            src={`/blasons/blason${selectedImageIndex}.png`}
+                            alt=""
+                            className="avatar-picker__preview-img"
                         />
-                    ))}
+                    </div>
+                </div>
+                <span className="avatar-picker__edit-badge" aria-hidden="true">
+                    <FaPen />
+                </span>
+            </button>
+
+            {!showGrid && (
+                <p className="avatar-picker__hint">Touche le blason pour le modifier</p>
+            )}
+
+            {showGrid && (
+                <div className="avatar-picker__grid avatar-picker__grid--compact" role="listbox" aria-label="Blasons disponibles">
+                    {Array.from({ length: TOTAL_BLASONS }, (_, i) => i + 1).map((number) => {
+                        const isSelected = number === selectedImageIndex;
+                        return (
+                            <button
+                                key={number}
+                                type="button"
+                                role="option"
+                                aria-selected={isSelected}
+                                aria-label={`Blason ${number}`}
+                                className={`avatar-picker__option${isSelected ? ' avatar-picker__option--selected' : ''}`}
+                                onClick={() => handleSelect(number)}
+                            >
+                                <img
+                                    src={`/blasons/blason${number}.png`}
+                                    alt=""
+                                    draggable={false}
+                                />
+                            </button>
+                        );
+                    })}
                 </div>
             )}
         </div>

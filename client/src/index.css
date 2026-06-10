@@ -1225,55 +1225,224 @@ progress::-moz-progress-bar {
 
 
 
-.profile-picture-chooser {
-  text-align: center; /* Centre le contenu */
+.host-form__field {
+  width: 100%;
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
+  align-self: stretch;
+}
+
+.host-form__field label {
+  align-self: stretch;
+}
+
+.avatar-picker {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.65rem;
+}
+
+.avatar-picker__section-title,
+.avatar-picker__hint {
+  margin: 0;
+  font-family: "Fredoka One", sans-serif;
+  letter-spacing: 0.03rem;
+}
+
+.avatar-picker__section-title {
+  font-size: 0.92rem;
+  color: #3d4a5c;
+  text-align: left;
+}
+
+.avatar-picker__hint {
+  font-size: 0.78rem;
+  color: #6b7a8f;
+  text-align: center;
+}
+
+.avatar-picker__preview {
+  align-self: center;
+  width: 6.75rem;
+  height: 6.75rem;
+  padding: 0.4rem;
+  border-radius: 1.1rem;
+  background: linear-gradient(180deg, #6b758a 0%, #454d5f 100%);
+  box-shadow:
+    0 4px 0 #2a2f3a,
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.avatar-picker__preview-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.8rem;
+  overflow: hidden;
+  background: #fff;
+}
+
+.avatar-picker__preview-inner svg {
+  width: 100%;
+  height: 100%;
+}
+
+.avatar-picker__preview-img {
+  width: 88%;
+  height: 88%;
+  object-fit: contain;
+}
+
+.avatar-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(3.25rem, 1fr));
+  gap: 0.45rem;
+  max-height: 11.5rem;
+  padding: 0.6rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 0.75rem;
+  border: 2px solid #b8c9d9;
+  border-bottom-width: 3px;
+  border-bottom-color: #8aa4ba;
+  background: #fff;
+}
+
+.avatar-picker__grid--compact {
+  grid-template-columns: repeat(3, 1fr);
+  max-height: none;
+}
+
+.avatar-picker__option {
+  aspect-ratio: 1;
+  margin: 0;
+  padding: 0.35rem;
+  border: 2px solid transparent;
+  border-radius: 0.65rem;
+  background: #f3f7fb;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.avatar-picker__option img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.avatar-picker__option:hover {
+  transform: translateY(-1px);
+  border-color: #5fd4ff;
+}
+
+.avatar-picker__option:active {
+  transform: translateY(1px);
+}
+
+.avatar-picker__option--selected {
+  border-color: #0b92c2;
+  background: linear-gradient(180deg, #e8f6ff 0%, #d4edfc 100%);
+  box-shadow:
+    0 0 0 1px rgba(11, 146, 194, 0.2),
+    0 3px 0 #1c6186;
+}
+
+.avatar-picker__colors {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.65rem;
+  border-radius: 0.75rem;
+  border: 2px solid #b8c9d9;
+  background: #fff;
+}
+
+.avatar-picker__color {
+  width: 2.15rem;
+  height: 2.15rem;
+  margin: 0;
+  padding: 0;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 0 rgba(42, 47, 58, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.avatar-picker__color:hover {
+  transform: scale(1.06);
+}
+
+.avatar-picker__color--selected {
+  transform: scale(1.1);
+  box-shadow:
+    0 0 0 2px #0b92c2,
+    0 3px 0 #1c6186;
+}
+
+.avatar-picker--blason {
   align-items: center;
 }
 
-.profile-picture-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); /* Crée une grille responsive */
-  gap: 10px; /* Espace entre les images */
-  padding: 0.5rem 0.8rem 0.5rem 0.5rem;
-  margin: 20px auto; /* Centre la grille horizontalement */
-  overflow-Y: scroll;
-  max-height: 25vh;
-  background-color: white;
+.avatar-picker__preview-btn {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.avatar-picker__preview-btn .avatar-picker__preview {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.avatar-picker__preview-btn:hover .avatar-picker__preview,
+.avatar-picker__preview-btn:focus-visible .avatar-picker__preview {
+  transform: translateY(-1px);
+  box-shadow:
+    0 5px 0 #2a2f3a,
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.avatar-picker__preview-btn:active .avatar-picker__preview {
+  transform: translateY(2px);
+  box-shadow:
+    0 2px 0 #2a2f3a,
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.avatar-picker__edit-badge {
+  position: absolute;
+  right: -0.35rem;
+  bottom: -0.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.65rem;
+  height: 1.65rem;
   border-radius: 0.5rem;
+  color: #fff;
+  font-size: 0.75rem;
+  background: linear-gradient(180deg, #ff7b84 0%, #de2e48 55%, #b81830 100%);
+  box-shadow: 0 3px 0 #8f1428;
+  pointer-events: none;
 }
 
-.profile-picture-grid img {
-  width: 100%; /* Force toutes les images à avoir la même largeur */
-  border-radius: 5px; /* Arrondit les coins des images */
-  cursor: pointer; /* Change le curseur pour indiquer qu'il est cliquable */
-  border: 2px solid transparent; /* Prépare la bordure pour l'image sélectionnée */
-}
-
-.profile-picture-grid img:hover {
-  border-color: #007bff; /* Couleur de la bordure au survol */
-  transform: scale(1.05); /* Effet de zoom au survol */
-  transition: transform 0.3s, border-color 0.3s; /* Animation de transition */
-}
-
-.profile-picture-chooser .image-container{
-
-}
-.image-container.editable::after{
-  background-color: red;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    content: "Modifier";
-    color: white;
-    padding: 0.25rem;
-    border-radius: 0.5rem;
-
-
-}
-.profile-picture-chooser .image-container svg{
-  width: 120px;
+.avatar-picker--profile {
+  width: 100%;
+  max-width: 22rem;
+  align-self: center;
 }
 
 

@@ -3,7 +3,6 @@ import React, {useEffect, useState} from 'react';
 import { useNavigate } from "react-router-dom";
 import { useUser } from '../../UserContext.jsx';
 import Modal from "../modal/Modal.jsx";
-import ProfilePictureChooser from "../UserNameInput/ProfilePictureChooser.jsx";
 import BlasonServerChooser from "./BlasonServerChooser.jsx";
 import config from '../../config.js';
 
@@ -89,27 +88,24 @@ function Host({ onClose }) {
     return (
                 <Modal isOpen={true} title={"Créer un serveur"} onClose={onClose}>
                     <form className={'modal_content'} onSubmit={handleSubmit}>
-                        <div style={{width:'100%', display:"flex", gap:'15px'}}>
-                            <div style={{width:'100%'}}>
-                                <label htmlFor={'name'}>Nom du serveur</label>
-                                <div style={{display: 'flex', width: '100%', flexDirection:'column'}}>
-                                    <input type="text"
-                                           value={serverName}
-                                           onChange={(e) => setServerName(e.target.value)}
-                                           required id={'name'} placeholder={'Serveur trop fun'}   />
-                                </div>
-                            </div>
+                        <div className="host-form__field">
+                            <label htmlFor="name">Nom du serveur</label>
+                            <input
+                                type="text"
+                                id="name"
+                                value={serverName}
+                                onChange={(e) => setServerName(e.target.value)}
+                                required
+                                placeholder="Serveur trop fun"
+                            />
+                        </div>
 
-                            <div>
-                                <label htmlFor={'name'} style={{width:'100%',textAlign:'left'}}>Blason</label>
-                                <div style={{display: 'flex', width: '100%', flexDirection:'column'}}>
-                                    <BlasonServerChooser onImageSelect={handleImageSelect}
-                                                         initialImageIndex={selectedImageIndex}/>
-                                </div>
-                            </div>
-
-
-
+                        <div className="host-form__field">
+                            <label>Blason du serveur</label>
+                            <BlasonServerChooser
+                                onImageSelect={handleImageSelect}
+                                initialImageIndex={selectedImageIndex}
+                            />
                         </div>
                         <div>
                             <label htmlFor="winPoint">Points pour gagner la partie :</label>
