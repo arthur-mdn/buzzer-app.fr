@@ -18,6 +18,7 @@ import PingViewer from "./PingViewer.jsx";
 import {FaInbox, FaInfo} from "react-icons/fa6";
 
 import config from '../../config.js';
+import GameWaitMessage from './GameWaitMessage.jsx';
 
 function GameRoom( {currentPing} ) {
     const socket = useSocket();
@@ -110,10 +111,22 @@ function GameRoom( {currentPing} ) {
 
     // console.log(serverInfo)
     if (!serverInfo) {
-        return <div>Récupération des informations du serveur...</div>;
+        return (
+            <GameWaitMessage
+                fullScreen
+                title="Connexion au salon"
+                subtitle="Récupération des informations en cours..."
+            />
+        );
     }
-    if(role !== "host" && role !== "participant"){
-        return <div>Rôle invalide.</div>;
+    if (role !== 'host' && role !== 'participant') {
+        return (
+            <GameWaitMessage
+                fullScreen
+                title="Accès refusé"
+                subtitle="Ton rôle sur ce salon est invalide."
+            />
+        );
     }
 
 

@@ -1176,6 +1176,54 @@ progress::-moz-progress-bar {
   opacity: 0.75;
 }
 
+.game-wait {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem 0 2rem;
+}
+
+.game-wait--fullscreen {
+  min-height: 70dvh;
+  align-items: center;
+  padding: 2rem 1.25rem;
+}
+
+.game-wait__card {
+  width: min(100%, 22rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.35rem 1.25rem 1.5rem;
+  border-radius: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  border-bottom-width: 4px;
+  border-bottom-color: #12151c;
+  background: linear-gradient(180deg, #4a5368 0%, #2b3140 48%, #1e2330 100%);
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.game-wait__title {
+  margin: 0;
+  font-family: "Fredoka One", sans-serif;
+  font-size: 1.15rem;
+  color: #fff;
+  letter-spacing: 0.04rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+}
+
+.game-wait__subtitle {
+  margin: 0;
+  font-family: "Fredoka One", sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.68);
+  letter-spacing: 0.02rem;
+}
+
 .navbar-bottom {
   position: fixed;
   bottom: 0;

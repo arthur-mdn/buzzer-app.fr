@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import {useSocket} from "../../SocketContext.jsx";
 import { useGame } from '../../GameContext.jsx';
 import Podium from './Podium.jsx';
+import GameWaitMessage from './GameWaitMessage.jsx';
 
 function PlayerGameRoom({ serverInfo}) {
     const socket = useSocket();
@@ -74,7 +75,12 @@ function PlayerGameRoom({ serverInfo}) {
                                 <span className="base"></span>
                             </button>}
                     </div>}
-                {gameState === 'waiting' && <div>En attente de l'hôte...</div>}
+                {gameState === 'waiting' && (
+                    <GameWaitMessage
+                        title="En attente de l'hôte"
+                        subtitle="Prépare toi, la manche va bientôt commencer"
+                    />
+                )}
             </div>
         </>
 

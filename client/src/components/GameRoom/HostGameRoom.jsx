@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import {useSocket} from "../../SocketContext.jsx";
 import { useGame } from '../../GameContext.jsx';
 import Podium from './Podium.jsx';
+import GameWaitMessage from './GameWaitMessage.jsx';
 
 function HostGameRoom({ serverInfo }) {
     const { serverCode } = useParams();
@@ -71,7 +72,17 @@ function HostGameRoom({ serverInfo }) {
                         </div>
                     </div>
                 )}
-                {(gameState === 'waiting' && players.length > 1) ? <button onClick={handleStartGame} className={'btn-push btn-push-green'} style={{padding: '1rem 1.5rem'}} >Démarrer la manche</button> : (gameState === 'waiting') ? "Attente de joueurs..." : ""}
+                {gameState === 'waiting' && players.length > 1 && (
+                    <button onClick={handleStartGame} className="btn-push btn-push-green" style={{ padding: '1rem 1.5rem' }}>
+                        Démarrer la manche
+                    </button>
+                )}
+                {gameState === 'waiting' && players.length <= 1 && (
+                    <GameWaitMessage
+                        title="En attente de joueurs"
+                        subtitle="Partage le code du salon pour qu'on puisse commencer"
+                    />
+                )}
                 {gameState === 'inProgress' && <button onClick={handleCancelGame} className={'btn-push'} style={{padding: '1rem 1.5rem'}} >Annuler la manche</button>}
                 {gameState === 'buzzed' && (
                     <div className={'modal_bg'}>
