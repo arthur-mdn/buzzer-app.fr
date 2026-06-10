@@ -10,12 +10,17 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "overrides": {
+    "path-to-regexp": "8.4.0",
+    "socket.io-parser": "4.2.6",
+    "ws": "8.20.1"
+  },
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.6.3",
+    "mongoose": "^9.7.0",
     "socket.io": "^4.8.3"
   }
 }
