@@ -11,7 +11,7 @@ function PlayerGameRoom({ serverInfo}) {
     const socket = useSocket();
     const userId = useUser();
     const { serverCode } = useParams();
-    const { gameState, message, setMessage, buzzOrder, players, animationType, setAnimationType } = useGame();
+    const { gameState, message, setMessage, buzzOrder, players } = useGame();
 
 
     useEffect(() => {
@@ -25,16 +25,6 @@ function PlayerGameRoom({ serverInfo}) {
         }
     }, [buzzOrder, gameState, serverInfo, setMessage, userId]);
 
-    useEffect(() => {
-        if (animationType !== 'none') {
-            const timer = setTimeout(() => {
-                setAnimationType('none');
-            }, 1000); // Réinitialiser l'animation après 1 seconde
-
-            return () => clearTimeout(timer);
-        }
-    }, [animationType, setAnimationType]);
-
     const handleBuzz = () => {
         if (socket) {
             socket.emit('buzz', { serverCode });
@@ -43,8 +33,6 @@ function PlayerGameRoom({ serverInfo}) {
 
     return (
         <>
-            {animationType === 'wrong' && <div className={"animation wrong"}></div>}
-            {animationType === 'correct' && <div className={"animation correct"}></div>}
             <div style={{padding:'2rem 2rem 0 2rem'}}>
 
                 <p>{message}</p>

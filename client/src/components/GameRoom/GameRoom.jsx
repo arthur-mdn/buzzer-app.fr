@@ -19,6 +19,7 @@ import {FaInbox, FaInfo} from "react-icons/fa6";
 
 import config from '../../config.js';
 import GameWaitMessage from './GameWaitMessage.jsx';
+import GameFeedbackCard from './GameFeedbackCard.jsx';
 
 function GameRoom( {currentPing} ) {
     const socket = useSocket();
@@ -131,6 +132,7 @@ function GameRoom( {currentPing} ) {
 
 
     return <GameProvider initialGameState={serverInfo.gameStatus} initialGameOptions={serverInfo.options} initialBuzzOrder={serverInfo.buzzOrder} >
+        <GameFeedbackCard />
         {
             config.sendPings === "true" &&
             <PingViewer ping={currentPing}/>
