@@ -107,11 +107,8 @@ function SettingsView() {
                 }
             </div>
             {isProfileModalOpen &&
-            <div style={{position:"absolute", width:"100vw", height:"100vh", top:'0', bottom:'0'}}>
-                <div style={{position:"relative", width:"100%", height:"100%"}}>
-                    <Modal title={"Modifier profil"} isOpen={isProfileModalOpen} onClose={handleCancelChanges} maxHeight={"65vh"} marginBottom={"20vh"} >
+                    <Modal title={"Modifier profil"} isOpen={isProfileModalOpen} onClose={handleCancelChanges}>
                         <form style={{display:"flex", flexDirection:"column",gap:"1rem", alignItems:"center"}} className={"modal_content"}>
-                            <div style={{backgroundColor:'red', position:"absolute", top:"0", zIndex:"99999"}}></div>
                             <ProfilePictureChooser
                                 onImageSelect={handleImageSelect}
                                 onColorSelect={handleColorSelect}
@@ -123,16 +120,10 @@ function SettingsView() {
                             </button>
                         </form>
                     </Modal>
-                </div>
-
-            </div>
             }
             {isThemeModalOpen &&
-            <div style={{position:"absolute", width:"100vw", height:"100vh", top:'0', bottom:'0'}}>
-                <div style={{position:"relative", width:"100%", height:"100%"}}>
-                    <Modal title={"Modifier thème"} isOpen={isThemeModalOpen} onClose={handleCancelThemeChanges} maxHeight={"65vh"} marginBottom={"20vh"} >
+                    <Modal title={"Modifier thème"} isOpen={isThemeModalOpen} onClose={handleCancelThemeChanges}>
                         <form style={{display:"flex", flexDirection:"column",gap:"1rem", alignItems:"center"}} className={"modal_content"}>
-                            <div style={{backgroundColor:'red', position:"absolute", top:"0", zIndex:"99999"}}></div>
                             <ThemeChooser
                                 onBackgroundSelect={handleBackgroundSelect}
                                 initialBackground={userBackground}
@@ -142,16 +133,11 @@ function SettingsView() {
                             </button>
                         </form>
                     </Modal>
-                </div>
-
-            </div>
             }
             {isAboutModalOpen &&
-            <div style={{position:"absolute", width:"100vw", height:"100vh", top:'0', bottom:'0'}}>
-                <div style={{position:"relative", width:"100%", height:"100%"}}>
-                    <Modal title={"À Propos"} isOpen={isAboutModalOpen} onClose={handleCancelAbout} maxHeight={"65vh"} marginBottom={"20vh"} >
+                    <Modal title={"À Propos"} isOpen={isAboutModalOpen} onClose={handleCancelAbout}>
                         <form style={{display:"flex", flexDirection:"column",gap:"1rem", alignItems:"center"}} className={"modal_content"}>
-                            <div style={{textAlign: "justify", padding: '1rem', overflowY: "scroll"}}>
+                            <div style={{textAlign: "justify", padding: '1rem', width: '100%'}}>
                                 <div>
                                     "Buzzer-App" révolutionne les soirées jeux avec une expérience interactive et
                                     dynamique, transformant chaque rencontre en une compétition palpitante de rapidité
@@ -216,9 +202,6 @@ function SettingsView() {
                             </div>
                         </form>
                     </Modal>
-                </div>
-
-            </div>
             }
 
         </>

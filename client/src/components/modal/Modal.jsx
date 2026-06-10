@@ -1,22 +1,25 @@
-// Modal.jsx
-import React from "react";
+import { createPortal } from 'react-dom';
 
-function Modal({ isOpen, onClose, children, title, maxHeight = "90vh", marginBottom = "0" }) {
+function Modal({ isOpen, onClose, children, title, maxHeight = 'min(90dvh, calc(100dvh - 2rem))' }) {
     if (!isOpen) return null;
 
-    return (
-        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <div className={'modal_bg'}>
-                <div className={'modal'} style={{maxWidth:'95vw', maxHeight: maxHeight, marginBottom: marginBottom}}>
-                    <div className={'modal_content_title'}>
-                        <div></div>
-                        <h2>{title || 'Serveur'}</h2>
-                        <button className={"close btn-push"} onClick={onClose}>&times;</button>
-                    </div>
-                    {children}
+    return createPortal(
+        <div className="modal_bg" onClick={onClose}>
+            <div
+                className="modal"
+                style={{ maxHeight }}
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="modal_content_title">
+                    <div />
+                    <h2>{title || 'Serveur'}</h2>
+                    <button type="button" className="close btn-push" onClick={onClose}>&times;</button>
                 </div>
+                {children}
             </div>
-    </div>
+        </div>,
+        document.body
     );
 }
+
 export default Modal;
