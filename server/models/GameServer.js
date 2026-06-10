@@ -98,7 +98,7 @@ const GameServerSchema = new mongoose.Schema({
         required:true,
         default: "ok"
     }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('GameServer', GameServerSchema);
 

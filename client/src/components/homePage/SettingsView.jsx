@@ -71,7 +71,7 @@ function SettingsView() {
     };
     return (
         <>
-            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            <div className="tab-screen">
                 <button className={"btn-push btn-push-gray"} style={{display: "flex", flexDirection: "row", position:"relative", padding:"0.5rem 0.5rem", width:"95%", margin:"2rem 2rem"}}  onClick={handleProfileClick}>
                     <div style={{display: "flex", flexDirection: "row", gap: "0.5rem",width:'100%', alignItems:"center"}}>
                         <ProfilePictureViewer imageIndex={userPictureSmiley} imageColor={userPictureColor}/>

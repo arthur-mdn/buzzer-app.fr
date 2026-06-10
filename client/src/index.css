@@ -983,6 +983,199 @@ progress::-moz-progress-bar {
   -webkit-overflow-scrolling: touch;
 }
 
+.tab-screen {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 2rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.salons-view {
+  min-height: 100%;
+}
+
+.salons-panel {
+  width: 100%;
+  max-width: 28rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.salons-panel__title {
+  margin: 0;
+  font-family: "Fredoka One", sans-serif;
+  font-size: 1.35rem;
+  color: #fff;
+  text-align: center;
+  letter-spacing: 0.05rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+}
+
+.salons-panel__shell {
+  display: flex;
+  flex-direction: column;
+}
+
+.salons-panel__tabs {
+  display: flex;
+  gap: 0.35rem;
+  padding: 0 0.4rem;
+  align-items: flex-end;
+  position: relative;
+  z-index: 2;
+}
+
+.salons-panel__tab {
+  flex: 1;
+  font-family: "Fredoka One", sans-serif;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.42);
+  border: 2px solid rgba(0, 0, 0, 0.35);
+  border-bottom: none;
+  border-radius: 0.65rem 0.65rem 0 0;
+  padding: 0.38rem 0.55rem 0.42rem;
+  background: linear-gradient(180deg, #353b4a 0%, #252a36 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  text-shadow: none;
+  cursor: pointer;
+  transform: translateY(5px);
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.salons-panel__tab.active {
+  color: #1e2a38;
+  padding: 0.55rem 0.7rem 0.62rem;
+  background: linear-gradient(180deg, #ffffff 0%, #e8f2fb 100%);
+  border-color: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.18);
+  transform: translateY(2px);
+  position: relative;
+  z-index: 3;
+}
+
+.salons-panel__body {
+  overflow: visible;
+  margin-top: -2px;
+  padding: 0.65rem 0.55rem 0.75rem;
+  border-radius: 0.85rem;
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  border-bottom-width: 4px;
+  border-bottom-color: #12151c;
+  background: linear-gradient(180deg, #4a5368 0%, #2b3140 48%, #1e2330 100%);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 3;
+}
+
+.server-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.2rem 0.1rem 0.45rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  max-height: 55dvh;
+  overflow-x: visible;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.server-list__empty {
+  margin: 0;
+  padding: 1.25rem 0.75rem;
+  text-align: center;
+  font-family: "Fredoka One", sans-serif;
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.45;
+}
+
+.server-list__item {
+  margin: 0;
+  padding: 0 0.1rem;
+}
+
+.server-list__link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.85rem;
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  border-bottom: 4px solid #1a5f2a;
+  background: linear-gradient(180deg, #84f928 0%, #38c91d 55%, #2ea818 100%);
+  box-shadow:
+    0 4px 0 #1f6b2f,
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-family: "Fredoka One", sans-serif;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.server-list__link:active {
+  transform: translateY(3px);
+  box-shadow:
+    0 1px 0 #1f6b2f,
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.server-list__blason-img {
+  flex-shrink: 0;
+  object-fit: contain;
+  border-radius: 0.55rem;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.2rem;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+}
+
+.server-list__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.server-list__name {
+  font-family: "Fredoka One", sans-serif;
+  font-size: 1rem;
+  line-height: 1.15;
+  letter-spacing: 0.02rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.server-list__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: "Fredoka One", sans-serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.02rem;
+  opacity: 0.92;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.server-list__meta svg {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.server-list__chevron {
+  flex-shrink: 0;
+  width: 0.85rem;
+  height: 0.85rem;
+  opacity: 0.75;
+}
+
 .navbar-bottom {
   position: fixed;
   bottom: 0;
