@@ -111,6 +111,7 @@ function UserNameInput({ onSuccess }) {
                             <ProfilePictureChooser
                                 onImageSelect={handleImageSelect}
                                 onColorSelect={handleColorSelect}
+                                collapsibleSmileys
                             />
                         </div>
 

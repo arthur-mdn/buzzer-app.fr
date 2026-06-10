@@ -42,10 +42,6 @@ function BlasonServerChooser({ onImageSelect, initialImageIndex = 1 }) {
                 </span>
             </button>
 
-            {!showGrid && (
-                <p className="avatar-picker__hint">Touche le blason pour le modifier</p>
-            )}
-
             {showGrid && (
                 <div className="avatar-picker__grid avatar-picker__grid--compact" role="listbox" aria-label="Blasons disponibles">
                     {Array.from({ length: TOTAL_BLASONS }, (_, i) => i + 1).map((number) => {

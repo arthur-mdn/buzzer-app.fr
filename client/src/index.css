@@ -1540,6 +1540,8 @@ progress::-moz-progress-bar {
 }
 
 .avatar-picker__grid {
+  width: 100%;
+  box-sizing: border-box;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(3.25rem, 1fr));
   gap: 0.45rem;
@@ -1552,6 +1554,11 @@ progress::-moz-progress-bar {
   border-bottom-width: 3px;
   border-bottom-color: #8aa4ba;
   background: #fff;
+}
+
+.avatar-picker__grid--full {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  max-height: 13rem;
 }
 
 .avatar-picker__grid--compact {
@@ -1683,6 +1690,21 @@ progress::-moz-progress-bar {
 .avatar-picker--profile {
   width: 100%;
   max-width: 22rem;
+  align-self: center;
+}
+
+.avatar-picker--compact {
+  width: 100%;
+  max-width: none;
+  align-self: stretch;
+  align-items: stretch;
+}
+
+.avatar-picker--compact .avatar-picker__preview-btn {
+  align-self: center;
+}
+
+.avatar-picker--compact .avatar-picker__hint {
   align-self: center;
 }
 

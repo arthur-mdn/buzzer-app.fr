@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { FaPen } from 'react-icons/fa6';
 import {
     PROFILE_COLORS,
     DEFAULT_PROFILE_COLOR,
@@ -8,7 +9,13 @@ import {
     fetchColoredProfileSvg,
 } from '../../utils/profilePicture.js';
 
-function ProfilePictureChooser({ onImageSelect, onColorSelect, initialImageIndex, initialColor }) {
+function ProfilePictureChooser({
+    onImageSelect,
+    onColorSelect,
+    initialImageIndex,
+    initialColor,
+    collapsibleSmileys = false,
+}) {
     const [selectedImageIndex, setSelectedImageIndex] = useState(() =>
         normalizeProfileImageIndex(initialImageIndex, initialImageIndex == null)
     );
@@ -16,6 +23,7 @@ function ProfilePictureChooser({ onImageSelect, onColorSelect, initialImageIndex
         normalizeProfileColor(initialColor ?? DEFAULT_PROFILE_COLOR)
     );
     const [selectedImage, setSelectedImage] = useState(null);
+    const [showSmileyGrid, setShowSmileyGrid] = useState(false);
 
     useEffect(() => {
         if (initialImageIndex != null) {
@@ -57,17 +65,78 @@ function ProfilePictureChooser({ onImageSelect, onColorSelect, initialImageIndex
 
     const handleImageSelect = (imageNumber) => {
         setSelectedImageIndex(normalizeProfileImageIndex(imageNumber, false));
+        if (collapsibleSmileys) {
+            setShowSmileyGrid(false);
+        }
     };
 
+    const smileyGrid = (
+        <div
+            className={`avatar-picker__grid${collapsibleSmileys ? ' avatar-picker__grid--full' : ''}`}
+            role="listbox"
+            aria-label="Smileys disponibles"
+        >
+            {Array.from({ length: TOTAL_PROFILE_SMILEYS }, (_, i) => i + 1).map((number) => {
+                const isSelected = number === selectedImageIndex;
+                return (
+                    <button
+                        key={number}
+                        type="button"
+                        role="option"
+                        aria-selected={isSelected}
+                        aria-label={`Smiley ${number}`}
+                        className={`avatar-picker__option${isSelected ? ' avatar-picker__option--selected' : ''}`}
+                        onClick={() => handleImageSelect(number)}
+                    >
+                        <img
+                            src={`/smileys/smiley_${number}.svg`}
+                            alt=""
+                            draggable={false}
+                        />
+                    </button>
+                );
+            })}
+        </div>
+    );
+
     return (
-        <div className="avatar-picker avatar-picker--profile">
-            <p className="avatar-picker__section-title">Aperçu</p>
-            <div className="avatar-picker__preview">
-                <div
-                    className="avatar-picker__preview-inner"
-                    dangerouslySetInnerHTML={{ __html: selectedImage }}
-                />
-            </div>
+        <div className={`avatar-picker avatar-picker--profile${collapsibleSmileys ? ' avatar-picker--compact' : ''}`}>
+            {collapsibleSmileys ? (
+                <>
+                    <button
+                        type="button"
+                        className="avatar-picker__preview-btn"
+                        onClick={() => setShowSmileyGrid((open) => !open)}
+                        aria-expanded={showSmileyGrid}
+                        aria-label={showSmileyGrid ? 'Fermer le choix de smiley' : 'Modifier le smiley'}
+                    >
+                        <div className="avatar-picker__preview">
+                            <div
+                                className="avatar-picker__preview-inner"
+                                dangerouslySetInnerHTML={{ __html: selectedImage }}
+                            />
+                        </div>
+                        <span className="avatar-picker__edit-badge" aria-hidden="true">
+                            <FaPen />
+                        </span>
+                    </button>
+
+                    {showSmileyGrid && smileyGrid}
+                </>
+            ) : (
+                <>
+                    <p className="avatar-picker__section-title">Aperçu</p>
+                    <div className="avatar-picker__preview">
+                        <div
+                            className="avatar-picker__preview-inner"
+                            dangerouslySetInnerHTML={{ __html: selectedImage }}
+                        />
+                    </div>
+
+                    <p className="avatar-picker__section-title">Smiley</p>
+                    {smileyGrid}
+                </>
+            )}
 
             <p className="avatar-picker__section-title">Couleur</p>
             <div className="avatar-picker__colors" role="listbox" aria-label="Couleurs du profil">
@@ -84,31 +153,6 @@ function ProfilePictureChooser({ onImageSelect, onColorSelect, initialImageIndex
                             style={{ backgroundColor: color }}
                             onClick={() => handleColorSelect(color)}
                         />
-                    );
-                })}
-            </div>
-
-            <p className="avatar-picker__section-title">Smiley</p>
-            <p className="avatar-picker__hint">Fais défiler pour voir tous les avatars</p>
-            <div className="avatar-picker__grid" role="listbox" aria-label="Smileys disponibles">
-                {Array.from({ length: TOTAL_PROFILE_SMILEYS }, (_, i) => i + 1).map((number) => {
-                    const isSelected = number === selectedImageIndex;
-                    return (
-                        <button
-                            key={number}
-                            type="button"
-                            role="option"
-                            aria-selected={isSelected}
-                            aria-label={`Smiley ${number}`}
-                            className={`avatar-picker__option${isSelected ? ' avatar-picker__option--selected' : ''}`}
-                            onClick={() => handleImageSelect(number)}
-                        >
-                            <img
-                                src={`/smileys/smiley_${number}.svg`}
-                                alt=""
-                                draggable={false}
-                            />
-                        </button>
                     );
                 })}
             </div>
