@@ -4,6 +4,7 @@ import config from "../../config";
 import ProfilePictureChooser from "./ProfilePictureChooser.jsx";
 import AboutApp from "../homePage/AboutApp.jsx";
 import { normalizeProfileColor, PROFILE_COLORS } from "../../utils/profilePicture.js";
+import { STORAGE_KEYS, setStorageItem } from "../../utils/storage.js";
 
 function UserNameInput({ onSuccess }) {
     const [tempUserName, setTempUserName] = useState('');
@@ -67,8 +68,8 @@ function UserNameInput({ onSuccess }) {
             if (response.ok) {
                 const data = await response.json();
                 if (data.success) {
-                    localStorage.setItem('userName', trimmedUserName);
-                    localStorage.setItem('token', data.token);
+                    setStorageItem(STORAGE_KEYS.userName, trimmedUserName);
+                    setStorageItem(STORAGE_KEYS.token, data.token);
                     onSuccess(true);
                 } else {
                     alert(data.message || "Une erreur s'est produite lors de l'enregistrement de l'utilisateur.");

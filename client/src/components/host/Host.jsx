@@ -5,6 +5,7 @@ import { useUser } from '../../UserContext.jsx';
 import Modal from "../modal/Modal.jsx";
 import BlasonServerChooser from "./BlasonServerChooser.jsx";
 import config from '../../config.js';
+import { STORAGE_KEYS, getStorageItem } from '../../utils/storage.js';
 
 function Host({ onClose }) {
     const { userId } = useUser();
@@ -42,7 +43,7 @@ function Host({ onClose }) {
                 return;
             }
 
-            const token = localStorage.getItem('token');
+            const token = getStorageItem(STORAGE_KEYS.token);
             console.log(autoRestartAfterDecline + " " + deductPointOnWrongAnswer + " " + isPublic + " " + answerPoint + " " + winPoint)
 
             const response = await fetch(config.serverUrl + '/create-server', { // Assurez-vous que l'URL est correcte

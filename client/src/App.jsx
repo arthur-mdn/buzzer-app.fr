@@ -12,6 +12,7 @@ import { UserProvider } from './UserContext.jsx';
 import { ThemeProvider } from './ThemeContext.jsx';
 import config from './config.js';
 import { normalizeProfileColor, normalizeProfileImageIndex } from './utils/profilePicture.js';
+import { STORAGE_KEYS, clearAuthStorage, getStorageItem } from './utils/storage.js';
 
 
 function App() {
@@ -33,7 +34,7 @@ function App() {
         console.log(config.serverSocketUrl)
         socketRef.current = io(config.serverSocketUrl, {
             transports: ['websocket', 'polling'],
-            query: { token: localStorage.getItem('token') }
+            query: { token: getStorageItem(STORAGE_KEYS.token) }
         });
 
         socketRef.current.on('socketIdUpdated', () => {
@@ -104,7 +105,7 @@ function App() {
     }, [setupSocket]);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const token = getStorageItem(STORAGE_KEYS.token);
 
         if (token) {
             authenticateUser(token);
@@ -128,16 +129,14 @@ function App() {
 
     const onRegisterSuccess = () => {
         console.log("Register success...");
-        const token = localStorage.getItem('token');
+        const token = getStorageItem(STORAGE_KEYS.token);
         if (token) {
             authenticateUser(token);
         }
     };
     const onLogout = () => {
         console.log("logout...");
-        localStorage.removeItem('token');
-        localStorage.removeItem('userName');
-        localStorage.removeItem('userId');
+        clearAuthStorage();
         window.location.reload()
     };
     switch (status) {
@@ -213,7 +212,7 @@ function App() {
                 </div>
             );
         case 'socketReady': {
-            const token = localStorage.getItem('token');
+            const token = getStorageItem(STORAGE_KEYS.token);
             return (
                 <UserProvider userId={userId} userRole={userRole} userName={userName} userPictureSmiley={userPictureSmiley} userPictureColor={userPictureColor}>
                     <TokenProvider token={token}>
