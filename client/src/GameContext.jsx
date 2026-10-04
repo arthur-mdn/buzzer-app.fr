@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useSocket } from './SocketContext.jsx';
+import { eventMatchesServer } from './utils/serverEvent.js';
 
 const GameContext = createContext();
 
@@ -34,7 +35,14 @@ export function useGame() {
     return useContext(GameContext);
 }
 
-export function GameProvider({ children , initialGameState, initialGameOptions, initialBuzzOrder, initialPlayers }) {
+export function GameProvider({
+    children,
+    serverCode,
+    initialGameState,
+    initialGameOptions,
+    initialBuzzOrder,
+    initialPlayers,
+}) {
     const socket = useSocket();
     const [gameState, setGameState] = useState(initialGameState || 'waiting');
     const [message, setMessage] = useState('');
@@ -45,12 +53,15 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
     const [serverError, setServerError] = useState(null);
 
     useEffect(() => {
-        const handleGameStarted = () => {
+        const handleGameStarted = (payload) => {
+            if (!eventMatchesServer(payload ?? { serverCode }, serverCode)) return;
             setGameState('inProgress');
             setMessage('La manche a commencé !');
         };
 
-        const handleGameReStarted = ({ server }) => {
+        const handleGameReStarted = (payload) => {
+            if (!eventMatchesServer(payload, serverCode)) return;
+            const server = payload.server;
             setMessage('La partie va recommencer !');
             setGameState(server.gameStatus);
             setOptions(server.options);
@@ -60,18 +71,23 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
             }
         };
 
-        const handleGameCancelled = () => {
+        const handleGameCancelled = (payload) => {
+            if (!eventMatchesServer(payload ?? { serverCode }, serverCode)) return;
             setGameState('waiting');
             setMessage('La manche a été annulée.');
         };
 
-        const handlePlayerBuzzed = ({ server }) => {
+        const handlePlayerBuzzed = (payload) => {
+            if (!eventMatchesServer(payload, serverCode)) return;
+            const server = payload.server;
             setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
             setOptions(server.options);
         };
 
-        const handleAnswerAccepted = ({ server }) => {
+        const handleAnswerAccepted = (payload) => {
+            if (!eventMatchesServer(payload, serverCode)) return;
+            const server = payload.server;
             setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
             setPlayers(dedupePlayers(server.players));
@@ -80,7 +96,9 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
             setAnimationType('correct');
         };
 
-        const handleAnswerWon = ({ server }) => {
+        const handleAnswerWon = (payload) => {
+            if (!eventMatchesServer(payload, serverCode)) return;
+            const server = payload.server;
             setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
             setPlayers(dedupePlayers(server.players));
@@ -88,7 +106,9 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
             setMessage('Réponse gagnante !');
         };
 
-        const handleAnswerDeclined = ({ server }) => {
+        const handleAnswerDeclined = (payload) => {
+            if (!eventMatchesServer(payload, serverCode)) return;
+            const server = payload.server;
             setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
             setPlayers(dedupePlayers(server.players));
@@ -98,6 +118,7 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
         };
 
         const handlePlayersUpdate = (updatedServer) => {
+            if (!eventMatchesServer(updatedServer, serverCode)) return;
             if (Array.isArray(updatedServer?.players)) {
                 setPlayers(dedupePlayers(updatedServer.players));
             }
@@ -112,8 +133,9 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
             }
         };
 
-        const handleOptionsUpdate = (newOptions) => {
-            setOptions(newOptions);
+        const handleOptionsUpdate = (payload) => {
+            if (!eventMatchesServer(payload, serverCode)) return;
+            setOptions(payload.options ?? payload);
         };
 
         const handleServerError = ({ message: errorMessage } = {}) => {
@@ -151,7 +173,7 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
             socket.off('serverError', handleServerError);
             socket.off('error', handleSocketError);
         };
-    }, [socket]);
+    }, [socket, serverCode]);
 
     const value = {
         gameState,

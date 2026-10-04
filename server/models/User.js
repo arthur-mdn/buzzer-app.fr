@@ -1,6 +1,18 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
+const THEME_BACKGROUNDS = [
+    'default',
+    'blue',
+    'dark',
+    'light',
+    'gradient',
+    'green',
+    'purple',
+    'yellow',
+    'dark-green',
+];
+
 const userSchema = new Schema({
     userId: {
         type: String,
@@ -32,18 +44,23 @@ const userSchema = new Schema({
     userPicture: {
         smiley: {
             type: Number,
-            default: 1
+            default: 1,
+            min: 1,
+            max: 30,
         },
         color: {
             type: String,
-            default: "#999"
+            default: "#999",
+            match: /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/,
         }
     },
     userTheme: {
         background: {
             type: String,
             default: "default",
-            required: true
+            required: true,
+            enum: THEME_BACKGROUNDS,
+            maxlength: 32,
         }
     }
 });

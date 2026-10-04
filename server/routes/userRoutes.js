@@ -1,4 +1,5 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const { generateToken, verifyToken } = require('../others/jwtUtils');
 const { generateUserId, authenticateToken } = require('../others/utils');
 const GameServer = require('../models/GameServer');
@@ -11,7 +12,15 @@ const { isAdminRegistration, normalizeUserName } = require('../others/sanitizeOp
 const MIN_USERNAME_LENGTH = 1;
 const MAX_USERNAME_LENGTH = 32;
 
-router.post('/registerUser', async (req, res) => {
+const registerUserLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: 'Too many registration attempts, try again later' },
+});
+
+router.post('/registerUser', registerUserLimiter, async (req, res) => {
     const { userName, userPassword, userPictureSmiley, userPictureColor } = req.body;
     try {
         const normalizedName = normalizeUserName(userName, {

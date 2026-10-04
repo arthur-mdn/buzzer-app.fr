@@ -1,10 +1,20 @@
 const express = require('express');
+const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 const GameServer = require('../models/GameServer');
 const router = express.Router();
 const { generateUniqueCode, authenticateToken } = require('../others/utils');
 const { verifyToken } = require('../others/jwtUtils');
 const { USER_PUBLIC_FIELDS } = require('../others/userPublicFields');
 const { sanitizeOptions } = require('../others/sanitizeOptions');
+
+const createServerLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    keyGenerator: (req) => (req.userId ? String(req.userId) : ipKeyGenerator(req.ip)),
+    message: { success: false, message: 'Too many servers created, try again later' },
+});
 
 router.get('/server/:serverCode', async (req, res) => {
     try {
@@ -47,7 +57,7 @@ router.get('/server/:serverCode', async (req, res) => {
     }
 });
 
-router.post('/create-server', authenticateToken, async (req, res) => {
+router.post('/create-server', authenticateToken, createServerLimiter, async (req, res) => {
     try {
         const { serverName, options = {}, selectedImageIndex } = req.body;
         if (typeof serverName !== 'string' || !serverName.trim() || serverName.trim().length > 64) {

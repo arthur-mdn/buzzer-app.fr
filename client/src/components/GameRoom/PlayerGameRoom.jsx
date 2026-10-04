@@ -82,6 +82,7 @@ function PlayerGameRoom({ serverInfo }) {
                         id="big-red-button"
                         aria-label="Buzzer"
                         onPointerDown={handleBuzz}
+                        onClick={handleBuzz}
                         disabled={gameState !== 'inProgress'}
                     >
                         <span className="back" aria-hidden="true"></span>

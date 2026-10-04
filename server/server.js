@@ -29,6 +29,9 @@ const io = new Server(server, {
     }
 });
 
+// Needed for correct client IPs behind Traefik/reverse proxies (rate limits).
+app.set('trust proxy', 1);
+
 app.use(cors({
     origin: config.clientUrl,
     credentials: true
@@ -47,10 +50,26 @@ async function setAllUsersOffline() {
     }
 }
 
+async function clampNegativeScores() {
+    try {
+        const result = await GameServer.updateMany(
+            { status: { $ne: 'del' }, 'players.score': { $lt: 0 } },
+            { $set: { 'players.$[p].score': 0 } },
+            { arrayFilters: [{ 'p.score': { $lt: 0 } }] }
+        );
+        if (result.modifiedCount > 0) {
+            console.log(`clamped negative scores on ${result.modifiedCount} server(s)`);
+        }
+    } catch (error) {
+        console.error('Failed to clamp negative scores:', error);
+    }
+}
+
 async function start() {
     try {
         await database.connect();
         await setAllUsersOffline();
+        await clampNegativeScores();
 
         app.use(userRoutes);
         app.use(gameRoutes);

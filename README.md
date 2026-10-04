@@ -15,7 +15,7 @@ cd buzzer-app
 cd server
 npm install
 ```
-> Duplicate `.env.example` to `.env` and set `DB_URI`, `CLIENT_URL=http://localhost:5174`, and a strong `JWT_SECRET` (32+ characters). Changing `JWT_SECRET` invalidates existing tokens.
+> Duplicate `.env.example` to `.env` and set `DB_URI`, `CLIENT_URL=http://localhost:5174`, and a strong `JWT_SECRET` (32+ characters). Changing `JWT_SECRET` invalidates existing tokens. Leave `ADMIN_PASSWORD` empty to disable admin registration. In production, set `CLIENT_URL=https://buzzer-app.fr` (CORS). Known placeholder secrets are rejected at boot.
 
 > Create a MongoDB database and update `DB_URI` in the server `.env` file.
 

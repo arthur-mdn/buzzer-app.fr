@@ -106,7 +106,11 @@ function GameRoom( {currentPing} ) {
     }, []);
 
     useEffect(() => {
-        const handleServerDeleted = () => {
+        const handleServerDeleted = (payload) => {
+            const code = payload?.serverCode ?? payload?.code;
+            if (code && code !== serverCode) {
+                return;
+            }
             setError('Serveur supprimé.');
         };
 
@@ -114,7 +118,7 @@ function GameRoom( {currentPing} ) {
         return () => {
             socket.off('serverDeleted', handleServerDeleted);
         };
-    }, [socket]);
+    }, [socket, serverCode]);
 
     const handleBackClick = () => {
         emitUserLeaving();
@@ -165,7 +169,7 @@ function GameRoom( {currentPing} ) {
     }
 
 
-    return <GameProvider initialGameState={serverInfo.gameStatus} initialGameOptions={serverInfo.options} initialBuzzOrder={serverInfo.buzzOrder} initialPlayers={serverInfo.players} >
+    return <GameProvider serverCode={serverCode} initialGameState={serverInfo.gameStatus} initialGameOptions={serverInfo.options} initialBuzzOrder={serverInfo.buzzOrder} initialPlayers={serverInfo.players} >
         <GameFeedbackCard />
         {
             config.sendPings === "true" &&

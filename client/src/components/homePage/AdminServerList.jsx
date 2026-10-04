@@ -4,12 +4,15 @@ import { useSocket } from '../../SocketContext.jsx';
 import config from '../../config';
 import { useToken } from '../../TokenContext.jsx';
 import ServerList from './ServerList.jsx';
+import { useWatchedServers } from '../../hooks/useWatchedServers.js';
 
 function AdminServerList() {
     const token = useToken();
     const socket = useSocket();
     const { userId } = useUser();
     const [userServers, setUserServers] = useState([]);
+
+    useWatchedServers(socket, userServers);
 
     useEffect(() => {
         const onPlayersUpdate = (updatedServer) => {
@@ -31,8 +34,7 @@ function AdminServerList() {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 const servers = await response.json();
-                setUserServers(servers);
-                servers.forEach((server) => socket.emit('joinRoom', server.code));
+                setUserServers(Array.isArray(servers) ? servers : []);
             } catch (error) {
                 console.error('Error fetching admin servers:', error);
             }
