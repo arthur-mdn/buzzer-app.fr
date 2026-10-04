@@ -14,13 +14,25 @@ const MAX_USERNAME_LENGTH = 32;
 
 const registerUserLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 5,
+    max: 40,
     standardHeaders: true,
     legacyHeaders: false,
     message: { success: false, message: 'Too many registration attempts, try again later' },
 });
 
-router.post('/registerUser', registerUserLimiter, async (req, res) => {
+const adminPasswordAttemptLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: (req) => {
+        const password = req.body?.userPassword;
+        return !(typeof password === 'string' && password.length > 0);
+    },
+    message: { success: false, message: 'Too many admin password attempts, try again later' },
+});
+
+router.post('/registerUser', registerUserLimiter, adminPasswordAttemptLimiter, async (req, res) => {
     const { userName, userPassword, userPictureSmiley, userPictureColor } = req.body;
     try {
         const normalizedName = normalizeUserName(userName, {
