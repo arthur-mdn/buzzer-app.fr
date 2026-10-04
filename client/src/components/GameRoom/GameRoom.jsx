@@ -9,13 +9,12 @@ import {useSocket} from "../../SocketContext.jsx";
 import { useUser } from '../../UserContext.jsx';
 import {useToken} from "../../TokenContext.jsx";
 import { GameProvider } from '../../GameContext.jsx';
-import {FaInfoCircle, FaUser} from "react-icons/fa";
+import {FaUser} from "react-icons/fa";
 import RoomDetails from "./RoomDetails.jsx";
 import Modal from '../modal/Modal.jsx';
 import ServerSettings from "./ServerSettings.jsx";
 import BlasonServerViewer from "../host/BlasonServerViewer.jsx";
 import PingViewer from "./PingViewer.jsx";
-import {FaInbox, FaInfo} from "react-icons/fa6";
 
 import config from '../../config.js';
 import GameWaitMessage from './GameWaitMessage.jsx';
@@ -34,7 +33,9 @@ function GameRoom( {currentPing} ) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('details'); // 'details' ou 'players'
 
-    leaveInfoRef.current = { socket, userId, serverCode };
+    useEffect(() => {
+        leaveInfoRef.current = { socket, userId, serverCode };
+    }, [socket, userId, serverCode]);
 
     const emitUserLeaving = () => {
         const { socket: currentSocket, userId: currentUserId, serverCode: currentServerCode } = leaveInfoRef.current;
@@ -79,6 +80,19 @@ function GameRoom( {currentPing} ) {
     }, [serverCode, socket, token]);
 
     useEffect(() => {
+        const rejoinServer = () => {
+            if (serverCode) {
+                socket.emit('joinServer', { serverCode });
+            }
+        };
+
+        socket.on('socketIdUpdated', rejoinServer);
+        return () => {
+            socket.off('socketIdUpdated', rejoinServer);
+        };
+    }, [socket, serverCode]);
+
+    useEffect(() => {
         const handleUnload = () => {
             emitUserLeaving();
         };
@@ -92,9 +106,14 @@ function GameRoom( {currentPing} ) {
     }, []);
 
     useEffect(() => {
-        socket.on('serverDeleted', () => {
+        const handleServerDeleted = () => {
             setError('Serveur supprimé.');
-        });
+        };
+
+        socket.on('serverDeleted', handleServerDeleted);
+        return () => {
+            socket.off('serverDeleted', handleServerDeleted);
+        };
     }, [socket]);
 
     const handleBackClick = () => {

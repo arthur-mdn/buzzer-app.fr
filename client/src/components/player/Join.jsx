@@ -1,14 +1,12 @@
-// Join.jsx
-import React, {useState} from 'react';
-import { Link } from "react-router-dom";
-import QRCodeScanner from "./QRCodeScanner.jsx";
-import config from "../../config";
-import Modal from "../modal/Modal.jsx";
-import {FaQrcode} from "react-icons/fa6";
+import React, { lazy, Suspense, useState } from 'react';
+import config from '../../config';
+import Modal from '../modal/Modal.jsx';
+import { FaQrcode } from 'react-icons/fa6';
+
+const QRCodeScanner = lazy(() => import('./QRCodeScanner.jsx'));
 
 function Join({ onClose }) {
     const [tempJoinCode, setTempJoinCode] = useState('');
-
     const [showScanner, setShowScanner] = useState(false);
 
     const handleCodeScanned = (decodedText) => {
@@ -18,8 +16,6 @@ function Join({ onClose }) {
 
         if (match && match[1]) {
             const serverCode = match[1];
-            // Redirection vers la page du serveur
-            // console.log(serverCode)
             window.location.href = `${config.instanceUrl}/server/${serverCode}`;
         } else {
             alert("QR Code invalide ou ne contient pas un lien de serveur valide.");
@@ -33,10 +29,9 @@ function Join({ onClose }) {
     const handleJoinSubmit = async (e) => {
         e.preventDefault();
 
-        // Normaliser l'entrée et insérer les tirets si nécessaire
-        let normalizedJoinCode = tempJoinCode.replace(/[^a-zA-Z0-9]/g, ''); // Supprimer tous les caractères non alphanumériques
+        let normalizedJoinCode = tempJoinCode.replace(/[^a-zA-Z0-9]/g, '');
         if (normalizedJoinCode.length === 12) {
-            normalizedJoinCode = normalizedJoinCode.replace(/(.{4})/g, '$1-').slice(0, -1); // Insérer des tirets tous les 4 caractères
+            normalizedJoinCode = normalizedJoinCode.replace(/(.{4})/g, '$1-').slice(0, -1);
         }
 
         const validInput = /^[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}$/;
@@ -55,29 +50,30 @@ function Join({ onClose }) {
     };
 
     return (
-                <>
-                <Modal isOpen={!showScanner} title={"Rejoindre un serveur"} onClose={onClose}>
-                        <form className={'modal_content'} onSubmit={handleJoinSubmit} >
-                            <label htmlFor={'name'}>Quel serveur rejoindre ?</label>
-                            <div style={{display: 'flex', width: '100%', flexDirection:'row', justifyContent:'space-between', gap:'15px'}}>
-                                <input type="text" style={{width:'100%'}} value={tempJoinCode} required id={'name'} placeholder={'XXXX - XXXX - XXXX'}  onChange={(e) => setTempJoinCode(e.target.value)}  />
-                            </div>
-                            <button type="submit" className={'btn-push btn-push-green'} style={{ padding: '1rem 2rem'}}>Rejoindre</button>
-                            <button type={"button"} className={'btn-push btn-push-blue'} onClick={() => setShowScanner(true)} style={{padding:'0.5rem 1rem', display:'flex', alignItems:'center',gap:'10px'}}><FaQrcode/>Scan</button>
-
-                        </form>
-                </Modal>
-                {showScanner &&
-                    <Modal isOpen={true} title={"Scanner pour rejoindre"} onClose={() => setShowScanner(false)}>
-                        <div className="modal_content">
+        <>
+            <Modal isOpen={!showScanner} title={"Rejoindre un serveur"} onClose={onClose}>
+                <form className={'modal_content'} onSubmit={handleJoinSubmit}>
+                    <label htmlFor={'name'}>Quel serveur rejoindre ?</label>
+                    <div style={{ display: 'flex', width: '100%', flexDirection: 'row', justifyContent: 'space-between', gap: '15px' }}>
+                        <input type="text" style={{ width: '100%' }} value={tempJoinCode} required id={'name'} placeholder={'XXXX - XXXX - XXXX'} onChange={(e) => setTempJoinCode(e.target.value)} />
+                    </div>
+                    <button type="submit" className={'btn-push btn-push-green'} style={{ padding: '1rem 2rem' }}>Rejoindre</button>
+                    <button type={"button"} className={'btn-push btn-push-blue'} onClick={() => setShowScanner(true)} style={{ padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '10px' }}><FaQrcode />Scan</button>
+                </form>
+            </Modal>
+            {showScanner && (
+                <Modal isOpen={true} title={"Scanner pour rejoindre"} onClose={() => setShowScanner(false)}>
+                    <div className="modal_content">
+                        <Suspense fallback={<p>Chargement du scanner...</p>}>
                             <QRCodeScanner
                                 qrCodeSuccessCallback={handleCodeScanned}
                                 qrCodeErrorCallback={handleCodeScanError}
                             />
-                        </div>
-                    </Modal>
-                }
-                </>
+                        </Suspense>
+                    </div>
+                </Modal>
+            )}
+        </>
     );
 }
 

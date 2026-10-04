@@ -2,8 +2,6 @@
 import  {useEffect, useState, useRef, useCallback} from 'react';
 import io from 'socket.io-client';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Host from './components/host/Host.jsx';
-import Join from './components/player/Join.jsx';
 import GameRoom from './components/GameRoom/GameRoom.jsx';
 import HomePage from './components/homePage/HomePage.jsx';
 import UserNameInput from './components/UserNameInput/UserNameInput.jsx';
@@ -29,56 +27,7 @@ function App() {
 
     const socketRef = useRef();
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-
-        if (token) {
-            authenticateUser(token);
-        } else {
-            setStatus('noToken');
-        }
-    }, []);
-
-    const authenticateUser = async (token) => {
-        console.log("Authenticating user...");
-        try {
-            const response = await fetch(config.serverUrl+'/authenticate', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await response.json();
-            if (data.success) {
-                setStatus('authenticated');
-                setupSocket(data.userId);
-                setUserId(data.userId);
-                setUserRole(data.userRole);
-                setUserName(data.userName);
-                setUserPictureSmiley(normalizeProfileImageIndex(data.userPicture.smiley, false));
-                setUserPictureColor(normalizeProfileColor(data.userPicture.color));
-                setUserBackground(data.userTheme.background);
-            } else {
-                setStatusMsg(data.message);
-                setStatus('authError');
-            }
-        } catch (error) {
-            setStatus('connectError');
-        }
-    };
-
-    const ping = useCallback(() => {
-        if (!isWaitingForPong && socketRef.current) {
-            const startTime = Date.now();
-            socketRef.current.emit('ping-server', startTime);
-            setIsWaitingForPong(true);
-        }
-    }, [isWaitingForPong, socketRef]);
-
-    useEffect(() => {
-        const interval = setInterval(ping, 5000);
-        return () => clearInterval(interval);
-    }, [ping]);
-
-
-    const setupSocket = (userId) => {
+    const setupSocket = useCallback(() => {
         console.log('setup')
         console.log(config.serverSocketUrl)
         socketRef.current = io(config.serverSocketUrl, {
@@ -89,31 +38,33 @@ function App() {
         socketRef.current.on('socketIdUpdated', () => {
             console.log("socketIdUpdated")
             setStatus('socketReady');
+            setIsWaitingForPong(false);
         });
 
         socketRef.current.on('connect', () => {
-            socketRef.current.emit('updateSocketId', { userId });
+            socketRef.current.emit('updateSocketId');
         });
 
-        socketRef.current.on('pong-server', ({startTime, endTime}) => {
-            const latency = endTime - startTime;
+        socketRef.current.on('disconnect', () => {
+            setIsWaitingForPong(false);
+        });
+
+        socketRef.current.on('pong-server', ({ startTime }) => {
+            const latency = Date.now() - startTime;
             setCurrentPing(latency);
-            setIsWaitingForPong(false); // Réinitialisez le flag lorsque le pong est reçu
+            setIsWaitingForPong(false);
         });
 
         socketRef.current.on('forceDisconnect', () => {
-            // alert("Vous avez ouvert une nouvelle session dans un autre onglet. Cette session sera déconnectée.");
-            socketRef.current.disconnect(); // Fermer la connexion socket
+            socketRef.current.disconnect();
             setStatus('forceDisconnect');
-
-            // Vous pouvez également rediriger l'utilisateur vers une autre page ou rafraîchir la page actuelle
         });
         socketRef.current.on('adminForceDisconnect', () => {
-            socketRef.current.disconnect(); // Fermer la connexion socket
+            socketRef.current.disconnect();
             setStatus('adminForceDisconnect');
         });
         socketRef.current.on('kickServer', () => {
-            socketRef.current.disconnect(); // Fermer la connexion socket
+            socketRef.current.disconnect();
             setStatus('kickServer');
         });
 
@@ -124,9 +75,55 @@ function App() {
             setUserPictureColor(normalizeProfileColor(newUserPicture.color));
             setUserBackground(newUserTheme.background);
         });
+    }, []);
 
+    const authenticateUser = useCallback(async (token) => {
+        console.log("Authenticating user...");
+        try {
+            const response = await fetch(config.serverUrl+'/authenticate', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await response.json();
+            if (data.success) {
+                setStatus('authenticated');
+                setupSocket();
+                setUserId(data.userId);
+                setUserRole(data.userRole);
+                setUserName(data.userName);
+                setUserPictureSmiley(normalizeProfileImageIndex(data.userPicture.smiley, false));
+                setUserPictureColor(normalizeProfileColor(data.userPicture.color));
+                setUserBackground(data.userTheme.background);
+            } else {
+                setStatusMsg(data.message);
+                setStatus('authError');
+            }
+        } catch {
+            setStatus('connectError');
+        }
+    }, [setupSocket]);
 
-    };
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+
+        if (token) {
+            authenticateUser(token);
+        } else {
+            setStatus('noToken');
+        }
+    }, [authenticateUser]);
+
+    const ping = useCallback(() => {
+        if (!isWaitingForPong && socketRef.current) {
+            const startTime = Date.now();
+            socketRef.current.emit('ping-server', startTime);
+            setIsWaitingForPong(true);
+        }
+    }, [isWaitingForPong]);
+
+    useEffect(() => {
+        const interval = setInterval(ping, 5000);
+        return () => clearInterval(interval);
+    }, [ping]);
 
     const onRegisterSuccess = () => {
         console.log("Register success...");
@@ -214,8 +211,8 @@ function App() {
                     </div>
                 </div>
             );
-        case 'socketReady':
-            const token = localStorage.getItem('token'); // Récupérez le token
+        case 'socketReady': {
+            const token = localStorage.getItem('token');
             return (
                 <UserProvider userId={userId} userRole={userRole} userName={userName} userPictureSmiley={userPictureSmiley} userPictureColor={userPictureColor}>
                     <TokenProvider token={token}>
@@ -232,6 +229,7 @@ function App() {
                     </TokenProvider>
                 </UserProvider>
             );
+        }
         default:
             return <div className={'modal_bg'}>
                 <div className={'modal'}>

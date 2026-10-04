@@ -1,8 +1,9 @@
-// gameSockets.js
 const GameServer = require("../models/GameServer");
 const { verifyToken } = require('../others/jwtUtils');
 const { retryOnVersionError, safeSocketOn } = require('../others/mongoUtils');
 const User = require("../models/User");
+const { USER_PUBLIC_FIELDS } = require('../others/userPublicFields');
+const { sanitizeOptions } = require('../others/sanitizeOptions');
 
 module.exports = function(io) {
     io.on('connection', (socket) => {
@@ -12,6 +13,10 @@ module.exports = function(io) {
 
         try {
             const data = verifyToken(token);
+            if (typeof data.userId !== 'string' || !data.userId) {
+                socket.disconnect();
+                return;
+            }
             socket.userId = data.userId;
         } catch {
             socket.disconnect();
@@ -20,11 +25,14 @@ module.exports = function(io) {
 
         const safeOn = (event, handler, errorMessage) => safeSocketOn(socket, event, handler, errorMessage);
 
+        function populateServer(query) {
+            return query
+                .populate({ path: 'players.user', select: USER_PUBLIC_FIELDS })
+                .populate({ path: 'buzzOrder', select: USER_PUBLIC_FIELDS });
+        }
+
         async function emitPlayersUpdate(serverCode, serverId) {
-            const populatedServer = await GameServer.findById(serverId)
-                .populate('players.user')
-                .populate('buzzOrder')
-                .lean();
+            const populatedServer = await populateServer(GameServer.findById(serverId)).lean();
             if (populatedServer) {
                 io.to(serverCode).emit('playersUpdate', populatedServer);
             }
@@ -112,18 +120,57 @@ module.exports = function(io) {
             }
         }
 
-        async function handleAnswer(userId, serverCode, accept = true, bonus = false) {
+        async function getAuthenticatedUser() {
+            if (typeof socket.userId !== 'string' || !socket.userId) {
+                return null;
+            }
+            return User.findOne({ userId: socket.userId });
+        }
+
+        async function assertHostOrAdmin(serverCode) {
+            const user = await getAuthenticatedUser();
+            if (!user) {
+                return null;
+            }
+
+            const server = await GameServer.findOne({
+                code: serverCode,
+                status: { $ne: 'del' }
+            });
+            if (!server) {
+                return null;
+            }
+
+            if (user.userId !== server.hostId && user.userRole !== 'admin') {
+                return null;
+            }
+
+            return { user, server };
+        }
+
+        async function handleAnswer(answeredUserId, serverCode, accept = true, bonus = false) {
+            if (typeof answeredUserId !== 'string' || !answeredUserId) {
+                return null;
+            }
+
             return retryOnVersionError(async () => {
-                const server = await GameServer.findOne({
+                const server = await populateServer(GameServer.findOne({
                     code: serverCode,
-                    status: { $ne: 'del' }
-                }).populate('players.user').populate('buzzOrder');
-                if (!server) {
+                    status: { $ne: 'del' },
+                    gameStatus: 'buzzed'
+                }));
+
+                if (!server || !Array.isArray(server.buzzOrder) || server.buzzOrder.length === 0) {
+                    return null;
+                }
+
+                const firstBuzzed = server.buzzOrder[0];
+                if (!firstBuzzed || firstBuzzed.userId !== answeredUserId) {
                     return null;
                 }
 
                 if (accept) {
-                    const player = server.players.find(p => p.user?.userId === userId);
+                    const player = server.players.find(p => p.user?.userId === answeredUserId);
                     if (player) {
                         player.score += bonus
                             ? (server.options.answerPoint + 1)
@@ -131,44 +178,44 @@ module.exports = function(io) {
                         if (player.score >= server.options.winPoint) {
                             server.gameStatus = 'win';
                             player.wins += 1;
+                            server.buzzOrder = [];
                             await server.save();
-                            return GameServer.findOne({ code: serverCode }).populate('players.user').populate('buzzOrder');
+                            return populateServer(GameServer.findOne({ code: serverCode }));
                         }
                     }
-                } else if (server.options.deductPointOnWrongAnswer) {
-                    const player = server.players.find(p => p.user?.userId === userId);
-                    if (player) {
-                        player.score -= 1;
-                    }
-                }
-
-                if (accept) {
                     server.buzzOrder = [];
+                    server.gameStatus = 'waiting';
                 } else {
-                    server.buzzOrder = server.buzzOrder.filter(buzzedUser => {
-                        const buzzedUserId = buzzedUser.userId ?? buzzedUser.toString();
-                        return buzzedUserId !== userId;
-                    });
-                }
+                    if (server.options.deductPointOnWrongAnswer) {
+                        const player = server.players.find(p => p.user?.userId === answeredUserId);
+                        if (player) {
+                            player.score = Math.max(0, player.score - 1);
+                        }
+                    }
 
-                if (server.buzzOrder.length === 0) {
-                    server.gameStatus = (!accept && server.options.autoRestartAfterDecline)
-                        ? 'inProgress'
-                        : 'waiting';
+                    server.buzzOrder = server.buzzOrder.filter((buzzedUser) => {
+                        return buzzedUser.userId !== answeredUserId;
+                    });
+
+                    if (server.buzzOrder.length === 0) {
+                        server.gameStatus = server.options.autoRestartAfterDecline
+                            ? 'inProgress'
+                            : 'waiting';
+                    }
                 }
 
                 await server.save();
-                return server;
+                return populateServer(GameServer.findOne({ code: serverCode }));
             });
         }
 
-        safeOn('updateSocketId', async ({ userId }) => {
-            const user = await User.findOne({ userId });
+        safeOn('updateSocketId', async () => {
+            const user = await getAuthenticatedUser();
             if (!user) {
                 return;
             }
 
-            if (user.socketId && io.sockets.sockets.has(user.socketId)) {
+            if (user.socketId && user.socketId !== socket.id && io.sockets.sockets.has(user.socketId)) {
                 io.sockets.sockets.get(user.socketId).emit('forceDisconnect');
                 await setUserStateInServers(user, 'offline');
             }
@@ -179,16 +226,19 @@ module.exports = function(io) {
         }, 'An error occurred while updating the socket');
 
         safeOn('joinServer', async ({ serverCode }) => {
-            if (!serverCode) {
+            if (!serverCode || typeof serverCode !== 'string') {
                 socket.emit('serverError', { message: "Server code is required" });
                 return;
             }
 
-            const user = await User.findOne({ socketId: socket.id });
+            const user = await getAuthenticatedUser();
             if (!user) {
                 socket.emit('serverError', { message: "User not found" });
                 return;
             }
+
+            user.socketId = socket.id;
+            await user.save();
 
             let server = await GameServer.findOneAndUpdate(
                 {
@@ -252,31 +302,67 @@ module.exports = function(io) {
             await emitPlayersUpdate(serverCode, server._id);
         }, 'An error occurred while joining the server');
 
-        socket.on('joinRoom', (serverCode) => {
-            if (serverCode) {
+        safeOn('joinRoom', async (payload) => {
+            const serverCode = typeof payload === 'string' ? payload : payload?.serverCode;
+            if (!serverCode || typeof serverCode !== 'string') {
+                return;
+            }
+
+            const user = await getAuthenticatedUser();
+            if (!user) {
+                return;
+            }
+
+            const server = await GameServer.findOne({
+                code: serverCode,
+                status: { $ne: 'del' },
+                $or: [
+                    { 'options.isPublic': true },
+                    { 'players.user': user._id },
+                    { hostId: user.userId }
+                ]
+            }).select('code');
+
+            if (server) {
                 socket.join(serverCode);
             }
-        });
+        }, 'An error occurred while joining the room');
 
         safeOn('startGame', async ({ serverCode }) => {
-            await retryOnVersionError(async () => {
+            const auth = await assertHostOrAdmin(serverCode);
+            if (!auth) {
+                socket.emit('serverError', { message: "Not authorized" });
+                return;
+            }
+
+            const updated = await retryOnVersionError(async () => {
                 const server = await GameServer.findOne({ code: serverCode, status: { $ne: 'del' } });
                 if (!server) {
-                    return;
+                    return null;
                 }
                 server.gameStatus = 'inProgress';
                 server.buzzOrder = [];
                 await server.save();
+                return server;
             });
-            io.to(serverCode).emit('gameStarted');
+
+            if (updated) {
+                io.to(serverCode).emit('gameStarted');
+            }
         }, 'An error occurred while starting the game');
 
         safeOn('newGame', async ({ serverCode }) => {
+            const auth = await assertHostOrAdmin(serverCode);
+            if (!auth) {
+                socket.emit('serverError', { message: "Not authorized" });
+                return;
+            }
+
             const server = await retryOnVersionError(async () => {
-                const doc = await GameServer.findOne({
+                const doc = await populateServer(GameServer.findOne({
                     code: serverCode,
                     status: { $ne: 'del' }
-                }).populate('players.user').populate('buzzOrder');
+                }));
                 if (!doc) {
                     return null;
                 }
@@ -286,8 +372,7 @@ module.exports = function(io) {
                     player.score = 0;
                 });
                 await doc.save();
-                return GameServer.findOne({ code: serverCode, status: { $ne: 'del' } })
-                    .populate('players.user').populate('buzzOrder');
+                return populateServer(GameServer.findOne({ code: serverCode, status: { $ne: 'del' } }));
             });
             if (server) {
                 io.to(serverCode).emit('gameReStarted', { server });
@@ -295,54 +380,93 @@ module.exports = function(io) {
         }, 'An error occurred while restarting the game');
 
         safeOn('cancelGame', async ({ serverCode }) => {
-            await retryOnVersionError(async () => {
+            const auth = await assertHostOrAdmin(serverCode);
+            if (!auth) {
+                socket.emit('serverError', { message: "Not authorized" });
+                return;
+            }
+
+            const updated = await retryOnVersionError(async () => {
                 const server = await GameServer.findOne({ code: serverCode, status: { $ne: 'del' } });
                 if (!server) {
-                    return;
+                    return null;
                 }
                 server.gameStatus = 'waiting';
                 server.buzzOrder = [];
                 await server.save();
+                return server;
             });
-            io.to(serverCode).emit('gameCancelled');
+
+            if (updated) {
+                io.to(serverCode).emit('gameCancelled');
+            }
         }, 'An error occurred while cancelling the game');
 
         safeOn('buzz', async ({ serverCode }) => {
-            console.log("buzz serve");
+            const user = await getAuthenticatedUser();
+            if (!user) {
+                socket.emit('serverError', { message: "Utilisateur introuvable" });
+                return;
+            }
+
+            let accepted = false;
 
             await retryOnVersionError(async () => {
-                const user = await User.findOne({ socketId: socket.id });
-                if (!user) {
-                    console.error("No user found for socket ID:", socket.id);
-                    return;
-                }
-
                 const server = await GameServer.findOne({
                     code: serverCode,
                     status: { $ne: 'del' }
                 }).populate('buzzOrder');
 
-                if (server && (server.gameStatus === 'inProgress' || server.gameStatus === 'buzzed')) {
-                    const userIdString = user._id.toString();
-                    if (!server.buzzOrder.some(buzzedUser => buzzedUser._id.toString() === userIdString)) {
-                        server.buzzOrder.push(user._id);
-                        server.gameStatus = 'buzzed';
-                        await server.save();
-                    }
+                if (!server) {
+                    return;
                 }
+
+                if (server.gameStatus !== 'inProgress' && server.gameStatus !== 'buzzed') {
+                    return;
+                }
+
+                const membership = server.players.find((player) => player.user.equals(user._id));
+                if (!membership || membership.role === 'host') {
+                    return;
+                }
+
+                if (membership.state !== 'online') {
+                    membership.state = 'online';
+                }
+
+                const userIdString = user._id.toString();
+                const alreadyBuzzed = server.buzzOrder.some((buzzedUser) => {
+                    const buzzedId = buzzedUser._id?.toString?.() ?? buzzedUser.toString();
+                    return buzzedId === userIdString;
+                });
+
+                if (!alreadyBuzzed) {
+                    server.buzzOrder.push(user._id);
+                    server.gameStatus = 'buzzed';
+                    accepted = true;
+                }
+
+                await server.save();
             });
 
-            const serverUpdated = await GameServer.findOne({
+            const serverUpdated = await populateServer(GameServer.findOne({
                 code: serverCode,
                 status: { $ne: 'del' }
-            }).populate('buzzOrder');
+            }));
             if (serverUpdated) {
                 io.to(serverCode).emit('playerBuzzed', { server: serverUpdated });
+            } else if (!accepted) {
+                socket.emit('serverError', { message: "Buzz refusé" });
             }
         }, 'An error occurred while processing the buzz event');
 
         safeOn('acceptAnswer', async ({ userId, serverCode }) => {
-            console.log("accept");
+            const auth = await assertHostOrAdmin(serverCode);
+            if (!auth) {
+                socket.emit('serverError', { message: "Not authorized" });
+                return;
+            }
+
             const server = await handleAnswer(userId, serverCode, true);
             if (!server) {
                 return;
@@ -355,7 +479,12 @@ module.exports = function(io) {
         }, 'An error occurred while accepting the answer');
 
         safeOn('acceptAnswerBonus', async ({ userId, serverCode }) => {
-            console.log("accept with bonus");
+            const auth = await assertHostOrAdmin(serverCode);
+            if (!auth) {
+                socket.emit('serverError', { message: "Not authorized" });
+                return;
+            }
+
             const server = await handleAnswer(userId, serverCode, true, true);
             if (!server) {
                 return;
@@ -368,7 +497,12 @@ module.exports = function(io) {
         }, 'An error occurred while accepting the answer');
 
         safeOn('declineAnswer', async ({ userId, serverCode }) => {
-            console.log("decline");
+            const auth = await assertHostOrAdmin(serverCode);
+            if (!auth) {
+                socket.emit('serverError', { message: "Not authorized" });
+                return;
+            }
+
             const server = await handleAnswer(userId, serverCode, false);
             if (!server) {
                 return;
@@ -390,19 +524,44 @@ module.exports = function(io) {
         }, 'An error occurred while handling disconnect');
 
         safeOn('updateServerOptions', async ({ serverCode, newOptions }) => {
-            const server = await GameServer.findOne({ code: serverCode, status: { $ne: 'del' } });
+            const auth = await assertHostOrAdmin(serverCode);
+            if (!auth) {
+                socket.emit('serverError', { message: "Not authorized" });
+                return;
+            }
+
+            const options = sanitizeOptions(newOptions);
+            const server = await retryOnVersionError(async () => {
+                const doc = await GameServer.findOne({ code: serverCode, status: { $ne: 'del' } });
+                if (!doc) {
+                    return null;
+                }
+                doc.options = options;
+                await doc.save({ validateBeforeSave: true });
+                return doc;
+            });
+
             if (!server) {
                 socket.emit('serverError', { message: "Server not found" });
                 return;
             }
-            server.options = newOptions;
-            await retryOnVersionError(() => server.save());
+
             io.to(serverCode).emit('serverOptionsUpdated', server.options);
         }, 'An error occurred while updating server options');
 
         safeOn('updateUserProfile', async ({ userPicture }) => {
-            await User.findOneAndUpdate({ socketId: socket.id }, { $set: { userPicture } });
-            const newUser = await User.findOne({ socketId: socket.id });
+            const user = await getAuthenticatedUser();
+            if (!user) {
+                socket.emit('serverError', { message: "User not found" });
+                return;
+            }
+
+            await User.findOneAndUpdate(
+                { userId: user.userId },
+                { $set: { userPicture } },
+                { runValidators: true }
+            );
+            const newUser = await User.findOne({ userId: user.userId });
             if (!newUser) {
                 socket.emit('serverError', { message: "User not found" });
                 return;
@@ -416,8 +575,18 @@ module.exports = function(io) {
         }, 'An error occurred while updating the profile');
 
         safeOn('updateUserTheme', async ({ userTheme }) => {
-            await User.findOneAndUpdate({ socketId: socket.id }, { $set: { userTheme } });
-            const newUser = await User.findOne({ socketId: socket.id });
+            const user = await getAuthenticatedUser();
+            if (!user) {
+                socket.emit('serverError', { message: "User not found" });
+                return;
+            }
+
+            await User.findOneAndUpdate(
+                { userId: user.userId },
+                { $set: { userTheme } },
+                { runValidators: true }
+            );
+            const newUser = await User.findOne({ userId: user.userId });
             if (!newUser) {
                 socket.emit('serverError', { message: "User not found" });
                 return;
@@ -432,15 +601,15 @@ module.exports = function(io) {
 
         safeOn('kickPlayer', async ({ serverCode, playerId }) => {
             const server = await retryOnVersionError(async () => {
-                const doc = await GameServer.findOne({
+                const doc = await populateServer(GameServer.findOne({
                     code: serverCode,
                     status: { $ne: 'del' }
-                }).populate('players.user');
+                }));
                 if (!doc) {
                     return null;
                 }
 
-                const user = await User.findOne({ userId: socket.userId });
+                const user = await getAuthenticatedUser();
                 if (!user || (user.userId !== doc.hostId && user.userRole !== 'admin')) {
                     return null;
                 }
@@ -469,17 +638,18 @@ module.exports = function(io) {
         }, 'An error occurred while kicking the player');
 
         safeOn('resetScores', async ({ serverCode }) => {
+            const auth = await assertHostOrAdmin(serverCode);
+            if (!auth) {
+                socket.emit('serverError', { message: "Not authorized" });
+                return;
+            }
+
             const server = await retryOnVersionError(async () => {
-                const doc = await GameServer.findOne({
+                const doc = await populateServer(GameServer.findOne({
                     code: serverCode,
                     status: { $ne: 'del' }
-                }).populate('players.user').populate('buzzOrder');
+                }));
                 if (!doc) {
-                    return null;
-                }
-
-                const user = await User.findOne({ userId: socket.userId });
-                if (!user || (user.userId !== doc.hostId && user.userRole !== 'admin')) {
                     return null;
                 }
 
@@ -502,12 +672,12 @@ module.exports = function(io) {
                 const doc = await GameServer.findOne({
                     code: serverCode,
                     status: { $ne: 'del' }
-                }).populate('players.user');
+                });
                 if (!doc) {
                     return false;
                 }
 
-                const user = await User.findOne({ userId: socket.userId });
+                const user = await getAuthenticatedUser();
                 if (!user || (user.userId !== doc.hostId && user.userRole !== 'admin')) {
                     return false;
                 }
@@ -523,7 +693,7 @@ module.exports = function(io) {
         }, 'An error occurred while deleting the server');
 
         safeOn('adminForceDisconnect', async () => {
-            const user = await User.findOne({ userId: socket.userId });
+            const user = await getAuthenticatedUser();
             if (user?.userRole === 'admin') {
                 io.sockets.sockets.forEach(s => {
                     s.emit('adminForceDisconnect');
@@ -533,7 +703,7 @@ module.exports = function(io) {
         }, 'An error occurred during admin force disconnect');
 
         safeOn('adminForceResetProfilPictures', async () => {
-            const user = await User.findOne({ userId: socket.userId });
+            const user = await getAuthenticatedUser();
             if (user?.userRole === 'admin') {
                 const userPicture = { smiley: "1", color: "#999" };
                 await User.updateMany({}, { $set: { userPicture } });
@@ -541,7 +711,7 @@ module.exports = function(io) {
         }, 'An error occurred during admin profile reset');
 
         socket.on('ping-server', (startTime) => {
-            socket.emit('pong-server', { startTime, endTime: Date.now() });
+            socket.emit('pong-server', { startTime });
         });
     });
 };

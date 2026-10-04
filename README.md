@@ -3,6 +3,8 @@ A buzzer-app with a server and a client.
 Made with React, NodeJS and Socket.io.
 Useful for quizzes and games for your parties like blind-test.
 
+Requires **Node.js 20.19+**.
+
 ## Installation
 ```bash
 git clone https://github.com/arthur-mdn/buzzer-app.git
@@ -13,30 +15,34 @@ cd buzzer-app
 cd server
 npm install
 ```
-> ⚠️ You will need to duplicate the `.env.example` file to `.env` and update the environment variables.
+> Duplicate `.env.example` to `.env` and set `DB_URI`, `CLIENT_URL=http://localhost:5174`, and a strong `JWT_SECRET` (32+ characters). Changing `JWT_SECRET` invalidates existing tokens.
 
-> ⚠️ You will also need to create a MongoDB database and update the `DB_URI` variable in the server .env file.
+> Create a MongoDB database and update `DB_URI` in the server `.env` file.
 
 ### Install the client dependencies
 ```bash
 cd client
 npm install
 ```
-> ⚠️ You will need to duplicate the `.env.example` file in to `.env` and update the environment variables.
+> Duplicate `.env.example` to `.env` and update the environment variables. The Vite app listens on port **5174**.
 
 ## Execution
 
-### Launch the server script
-In the server directory, you can run this to run the server and listen for connections / sockets.
-
+### Launch the server
 ```bash
 cd server
 node server.js
 ```
-### Launch the client script
-In the client directory, you can run this to run the app in development mode :
+
+### Launch the client
 ```bash
 cd client
 npm run dev
 ```
-Open [http://localhost:5173](http://localhost:5173) to view it in your browser.
+Open [http://localhost:5174](http://localhost:5174) in your browser.
+
+### Docker (development)
+```bash
+docker compose up --build
+```
+MongoDB is not published on the host in development; the API reaches it on the Docker network only.

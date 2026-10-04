@@ -1,4 +1,3 @@
-// GameContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useSocket } from './SocketContext.jsx';
 
@@ -41,59 +40,63 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
     const [message, setMessage] = useState('');
     const [buzzOrder, setBuzzOrder] = useState(initialBuzzOrder || []);
     const [players, setPlayers] = useState(() => dedupePlayers(initialPlayers || []));
-    // options of the server
     const [options, setOptions] = useState(initialGameOptions || {});
     const [animationType, setAnimationType] = useState('none');
+    const [serverError, setServerError] = useState(null);
 
     useEffect(() => {
-
-        socket.on('gameStarted', () => {
+        const handleGameStarted = () => {
             setGameState('inProgress');
             setMessage('La manche a commencé !');
-        });
-        socket.on('gameReStarted', ({server}) => {
-            setGameState('waiting');
+        };
+
+        const handleGameReStarted = ({ server }) => {
             setMessage('La partie va recommencer !');
-            // setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
             setOptions(server.options);
             setPlayers(dedupePlayers(server.players));
-        });
+            if (Array.isArray(server.buzzOrder)) {
+                setBuzzOrder(server.buzzOrder);
+            }
+        };
 
-        socket.on('gameCancelled', () => {
+        const handleGameCancelled = () => {
             setGameState('waiting');
             setMessage('La manche a été annulée.');
-        });
+        };
 
-        socket.on('playerBuzzed', ({ server }) => {
+        const handlePlayerBuzzed = ({ server }) => {
             setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
             setOptions(server.options);
-        });
+        };
 
-        socket.on('answerAccepted', ({ server }) => {
+        const handleAnswerAccepted = ({ server }) => {
             setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
             setPlayers(dedupePlayers(server.players));
             setOptions(server.options);
-            setMessage('Réponse valide !')
+            setMessage('Réponse valide !');
             setAnimationType('correct');
-        });
-        socket.on('answerWon', ({ server }) => {
+        };
+
+        const handleAnswerWon = ({ server }) => {
             setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
             setPlayers(dedupePlayers(server.players));
             setOptions(server.options);
-            setMessage('Réponse gagnante !')
-        });
-        socket.on('answerDeclined', ({ server }) => {
+            setMessage('Réponse gagnante !');
+        };
+
+        const handleAnswerDeclined = ({ server }) => {
             setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
             setPlayers(dedupePlayers(server.players));
             setOptions(server.options);
-            setMessage('Réponse incorrecte !')
+            setMessage('Réponse incorrecte !');
             setAnimationType('wrong');
-        });
+        };
+
         const handlePlayersUpdate = (updatedServer) => {
             if (Array.isArray(updatedServer?.players)) {
                 setPlayers(dedupePlayers(updatedServer.players));
@@ -101,20 +104,52 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
             if (updatedServer?.options) {
                 setOptions(updatedServer.options);
             }
+            if (updatedServer?.gameStatus) {
+                setGameState(updatedServer.gameStatus);
+            }
+            if (Array.isArray(updatedServer?.buzzOrder)) {
+                setBuzzOrder(updatedServer.buzzOrder);
+            }
         };
-        socket.on('playersUpdate', handlePlayersUpdate);
 
         const handleOptionsUpdate = (newOptions) => {
             setOptions(newOptions);
         };
-        socket.on('serverOptionsUpdated', handleOptionsUpdate);
 
-        socket.on('error', console.error);
+        const handleServerError = ({ message: errorMessage } = {}) => {
+            const text = errorMessage || 'Une erreur est survenue';
+            setServerError(text);
+            setMessage(text);
+        };
+
+        const handleSocketError = (error) => {
+            console.error(error);
+        };
+
+        socket.on('gameStarted', handleGameStarted);
+        socket.on('gameReStarted', handleGameReStarted);
+        socket.on('gameCancelled', handleGameCancelled);
+        socket.on('playerBuzzed', handlePlayerBuzzed);
+        socket.on('answerAccepted', handleAnswerAccepted);
+        socket.on('answerWon', handleAnswerWon);
+        socket.on('answerDeclined', handleAnswerDeclined);
+        socket.on('playersUpdate', handlePlayersUpdate);
+        socket.on('serverOptionsUpdated', handleOptionsUpdate);
+        socket.on('serverError', handleServerError);
+        socket.on('error', handleSocketError);
+
         return () => {
+            socket.off('gameStarted', handleGameStarted);
+            socket.off('gameReStarted', handleGameReStarted);
+            socket.off('gameCancelled', handleGameCancelled);
+            socket.off('playerBuzzed', handlePlayerBuzzed);
+            socket.off('answerAccepted', handleAnswerAccepted);
+            socket.off('answerWon', handleAnswerWon);
+            socket.off('answerDeclined', handleAnswerDeclined);
             socket.off('playersUpdate', handlePlayersUpdate);
-            socket.off('gameStarted');
-            socket.off('gameCancelled');
             socket.off('serverOptionsUpdated', handleOptionsUpdate);
+            socket.off('serverError', handleServerError);
+            socket.off('error', handleSocketError);
         };
     }, [socket]);
 
@@ -128,7 +163,9 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
         setPlayers,
         options,
         animationType,
-        setAnimationType
+        setAnimationType,
+        serverError,
+        setServerError,
     };
 
     return <GameContext.Provider value={value}>{children}</GameContext.Provider>;

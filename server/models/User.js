@@ -1,4 +1,3 @@
-// models/User.js
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
@@ -6,11 +5,15 @@ const userSchema = new Schema({
     userId: {
         type: String,
         required: true,
+        unique: true,
+        index: true,
     },
     userName: {
         type: String,
         required: true,
-        default: 'Unknown'
+        default: 'Unknown',
+        trim: true,
+        maxlength: 32,
     },
     creation: {
         type: Date,
@@ -23,27 +26,26 @@ const userSchema = new Schema({
     userRole: {
         type: String,
         required: true,
-        default: "user"
+        default: "user",
+        enum: ['user', 'admin'],
     },
-    userPicture:{
-        smiley:{
+    userPicture: {
+        smiley: {
             type: Number,
             default: 1
         },
-        color:{
+        color: {
             type: String,
             default: "#999"
         }
-
     },
-    userTheme:{
-        background:{
+    userTheme: {
+        background: {
             type: String,
             default: "default",
-            required:true
+            required: true
         }
     }
 });
 
 module.exports = mongoose.model('User', userSchema);
-

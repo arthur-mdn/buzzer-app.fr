@@ -1,9 +1,16 @@
-//server.js
 require('dotenv').config();
-const { registerProcessErrorHandlers, retryOnVersionError } = require('./others/mongoUtils');
+const { registerProcessErrorHandlers } = require('./others/mongoUtils');
 const config = require('./others/config');
 
 registerProcessErrorHandlers();
+
+try {
+    config.assertConfig();
+} catch (error) {
+    console.error('Invalid server configuration:', error.message);
+    process.exit(1);
+}
+
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -13,7 +20,6 @@ const gameRoutes = require('./routes/gameRoutes');
 const gameSockets = require('./sockets/gameSockets');
 const database = require('./others/database');
 const GameServer = require("./models/GameServer");
-
 
 const app = express();
 const server = http.createServer(app);
@@ -31,17 +37,10 @@ app.use(express.json());
 
 async function setAllUsersOffline() {
     try {
-        const servers = await GameServer.find();
-        for (const server of servers) {
-            server.players.forEach(player => {
-                player.state = 'offline';
-            });
-            try {
-                await retryOnVersionError(() => server.save());
-            } catch (error) {
-                console.error(`Failed to set users offline for server ${server.code}:`, error);
-            }
-        }
+        await GameServer.updateMany(
+            { status: { $ne: 'del' } },
+            { $set: { 'players.$[].state': 'offline' } }
+        );
         console.log("all servers members set to offline");
     } catch (error) {
         console.error('Failed to set users offline:', error);

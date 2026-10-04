@@ -1,13 +1,30 @@
-// PlayerList.jsx
-import React, { useState} from 'react';
-import {useUser} from "../../UserContext.jsx";
-import {useGame} from "../../GameContext.jsx";
-import ProfilePictureViewer from "../UserNameInput/ProfilePictureViewer.jsx";
-import config from "../../config";
-import {useToken} from "../../TokenContext.jsx";
-import Modal from "../modal/Modal.jsx";
-import PlayerItem from "./PlayerItem.jsx";
+import React, { useState } from 'react';
+import { useUser } from '../../UserContext.jsx';
+import { useGame } from '../../GameContext.jsx';
+import ProfilePictureViewer from '../UserNameInput/ProfilePictureViewer.jsx';
+import config from '../../config';
+import { useToken } from '../../TokenContext.jsx';
+import Modal from '../modal/Modal.jsx';
+import PlayerItem from './PlayerItem.jsx';
 import { format } from 'date-fns';
+
+function PlayerDetailsPopup({ details, isOpen, onClose }) {
+    if (!details) return null;
+    return (
+        <Modal isOpen={isOpen} title={"Profil du joueur"} onClose={onClose}>
+            <div className={"modal_content"}>
+                <div style={{ display: "flex", gap: "1rem" }}>
+                    <ProfilePictureViewer imageIndex={details.userPicture.smiley} imageColor={details.userPicture.color} size={"6rem"} />
+                    <div style={{ display: "flex", gap: "1rem", flexDirection: "column" }}>
+                        <h2 style={{ margin: "0" }}>{details.userName}</h2>
+                        <h3 style={{ margin: "0" }}>{details.userRole === "admin" ? "Administrateur" : "Utilisateur"}</h3>
+                    </div>
+                </div>
+                <h3 style={{ margin: "0" }}>Inscrit le : {format(new Date(details.creation), "dd/MM/yyyy 'à' HH'h'mm")}</h3>
+            </div>
+        </Modal>
+    );
+}
 
 function PlayerList({ serverInfo }) {
     const { userId } = useUser();
@@ -33,27 +50,6 @@ function PlayerList({ serverInfo }) {
         return acc;
     }, {}) : {};
 
-
-
-
-    const PlayerDetailsPopup = ({ details }) => {
-        if (!details) return null;
-        return (
-            <Modal isOpen={showPlayerDetails} title={"Profil du joueur"} onClose={() => setShowPlayerDetails(false)} >
-                <div className={"modal_content"}>
-                    <div style={{display:"flex", gap:"1rem"}}>
-                        <ProfilePictureViewer imageIndex={ details.userPicture.smiley} imageColor={ details.userPicture.color} size={"6rem"}/>
-                        <div style={{display:"flex", gap:"1rem", flexDirection:"column"}}>
-                            <h2 style={{margin: "0"}}>{details.userName}</h2>
-                            <h3 style={{margin: "0"}}>{details.userRole === "admin" ? "Administrateur" : "Utilisateur"}</h3>
-                        </div>
-                    </div>
-                    <h3 style={{margin: "0"}}>Inscrit le : { format(new Date(details.creation), "dd/MM/yyyy 'à' HH'h'mm")}</h3>
-                </div>
-            </Modal>
-        );
-    };
-
     const handleShowPlayerDetails = async (playerId) => {
         try {
             const response = await fetch(config.serverUrl + `/user-profile/${playerId}`, {
@@ -69,39 +65,38 @@ function PlayerList({ serverInfo }) {
             } else {
                 alert("profil introuvable")
             }
-
         } catch (error) {
             console.error('There was an error fetching the server details:', error);
-            console.log('Erreur lors de la récupération des détails du serveur. Veuillez réessayer.');
         }
     };
 
     return (
         <>
-            <div className={"tab-content"} style={{height:'100%', overflowY:'scroll'}}>
-                <div style={{display:'flex', flexDirection:"column",gap:"0.5rem"}}>
-                    <h2 style={{margin:'0'}}>Hôte:</h2>
+            <div className={"tab-content"} style={{ height: '100%', overflowY: 'scroll' }}>
+                <div style={{ display: 'flex', flexDirection: "column", gap: "0.5rem" }}>
+                    <h2 style={{ margin: '0' }}>Hôte:</h2>
                     <ul className={playersGrouped['host-online']?.some(player => player.user.userId === userId) ? "yourProfile" : ""}>
-                        {playersGrouped['host-online']?.map(player => <PlayerItem serverInfo={serverInfo} key={player.user._id} player={player}  onMenuToggle={handleMenuToggle} isOpen={openMenuId === player.user._id}  onShowDetails={() => handleShowPlayerDetails(player.user.userId)}  />)}
+                        {playersGrouped['host-online']?.map(player => <PlayerItem serverInfo={serverInfo} key={player.user._id} player={player} onMenuToggle={handleMenuToggle} isOpen={openMenuId === player.user._id} onShowDetails={() => handleShowPlayerDetails(player.user.userId)} />)}
                     </ul>
                     <ul className={playersGrouped['host-offline']?.some(player => player.user.userId === userId) ? "yourProfile" : ""}>
-                        {playersGrouped['host-offline']?.map(player => <PlayerItem serverInfo={serverInfo} key={player.user._id} player={player}  onMenuToggle={handleMenuToggle} isOpen={openMenuId === player.user._id}  onShowDetails={() => handleShowPlayerDetails(player.user.userId)}  />)}
+                        {playersGrouped['host-offline']?.map(player => <PlayerItem serverInfo={serverInfo} key={player.user._id} player={player} onMenuToggle={handleMenuToggle} isOpen={openMenuId === player.user._id} onShowDetails={() => handleShowPlayerDetails(player.user.userId)} />)}
                     </ul>
-                    <h2 style={{margin:'0'}}>Joueurs:</h2>
+                    <h2 style={{ margin: '0' }}>Joueurs:</h2>
                     <ul className={playersGrouped['user-online']?.some(player => player.user.userId === userId) ? "yourProfile" : ""}>
-                        {playersGrouped['user-online']?.map(player => <PlayerItem serverInfo={serverInfo} key={player.user._id} player={player}  onMenuToggle={handleMenuToggle} isOpen={openMenuId === player.user._id}  onShowDetails={() => handleShowPlayerDetails(player.user.userId)}  />)}
+                        {playersGrouped['user-online']?.map(player => <PlayerItem serverInfo={serverInfo} key={player.user._id} player={player} onMenuToggle={handleMenuToggle} isOpen={openMenuId === player.user._id} onShowDetails={() => handleShowPlayerDetails(player.user.userId)} />)}
                     </ul>
                     <ul className={playersGrouped['user-offline']?.some(player => player.user.userId === userId) ? "yourProfile" : ""}>
-                        {playersGrouped['user-offline']?.map(player => <PlayerItem serverInfo={serverInfo} key={player.user._id} player={player}  onMenuToggle={handleMenuToggle} isOpen={openMenuId === player.user._id}  onShowDetails={() => handleShowPlayerDetails(player.user.userId)}  />)}
+                        {playersGrouped['user-offline']?.map(player => <PlayerItem serverInfo={serverInfo} key={player.user._id} player={player} onMenuToggle={handleMenuToggle} isOpen={openMenuId === player.user._id} onShowDetails={() => handleShowPlayerDetails(player.user.userId)} />)}
                     </ul>
                 </div>
             </div>
-            {showPlayerDetails && <PlayerDetailsPopup details={playerDetails} />}
-
+            <PlayerDetailsPopup
+                details={playerDetails}
+                isOpen={showPlayerDetails}
+                onClose={() => setShowPlayerDetails(false)}
+            />
         </>
-
     );
 }
-
 
 export default PlayerList;

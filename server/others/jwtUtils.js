@@ -1,14 +1,20 @@
-// jwtUtils.js
 const jwt = require('jsonwebtoken');
+const { getJwtSecret } = require('./config');
 
-const SECRET_KEY = "R08U5T_789324985_7897ezaouc';";
+function getSecret() {
+    const secret = getJwtSecret();
+    if (!secret) {
+        throw new Error('JWT_SECRET is not configured');
+    }
+    return secret;
+}
 
 function generateToken(payload) {
-    return jwt.sign(payload, SECRET_KEY, { expiresIn: '365d' }); // expire en 1 jour
+    return jwt.sign(payload, getSecret(), { expiresIn: '7d' });
 }
 
 function verifyToken(token) {
-    return jwt.verify(token, SECRET_KEY);
+    return jwt.verify(token, getSecret());
 }
 
 module.exports = { generateToken, verifyToken };

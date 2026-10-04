@@ -1,30 +1,28 @@
-// models/GameServer.js
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
-
-const playerSchema = new Schema({
-    userId: String,
-    score: Number,
-    state: String, // par exemple, 'waiting', 'buzzed', 'answered'
-});
 
 const GameServerSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
+        trim: true,
+        maxlength: 64,
     },
     code: {
         type: String,
         required: true,
+        unique: true,
+        index: true,
     },
     hostId: {
-        type: String, // ceci stocke l'ID de l'hôte
+        type: String,
         required: true,
     },
     gameStatus: {
-        type: String, // ceci stocke l'ID de l'hôte
+        type: String,
         required: true,
-        default: "waiting"
+        default: "waiting",
+        enum: ['waiting', 'inProgress', 'buzzed', 'win'],
     },
     players: [
         {
@@ -36,22 +34,26 @@ const GameServerSchema = new mongoose.Schema({
             state: {
                 type: String,
                 required: true,
-                default: "offline"
+                default: "offline",
+                enum: ['online', 'offline'],
             },
             score: {
                 type: Number,
                 required: true,
-                default: 0
+                default: 0,
+                min: 0,
             },
             wins: {
                 type: Number,
                 required: true,
-                default: 0
+                default: 0,
+                min: 0,
             },
             role: {
                 type: String,
                 required: true,
-                default: "user"
+                default: "user",
+                enum: ['host', 'user'],
             }
         }
     ],
@@ -59,28 +61,33 @@ const GameServerSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
-    blason:{
-        blason:{
+    blason: {
+        blason: {
             type: Number,
-            required:true,
-            default: 1
-        } // anticipate a future blason object with color and blason number
+            required: true,
+            default: 1,
+            min: 1,
+        }
     },
     options: {
         autoRestartAfterDecline: {
             type: Boolean,
-            required:true,
+            required: true,
             default: true
         },
         answerPoint: {
             type: Number,
-            required:true,
-            default: 1
+            required: true,
+            default: 1,
+            min: 1,
+            max: 100,
         },
         winPoint: {
             type: Number,
-            required:true,
-            default: 10
+            required: true,
+            default: 10,
+            min: 1,
+            max: 1000,
         },
         deductPointOnWrongAnswer: {
             type: Boolean,
@@ -93,12 +100,12 @@ const GameServerSchema = new mongoose.Schema({
             default: false
         }
     },
-    status:{
+    status: {
         type: String,
-        required:true,
-        default: "ok"
+        required: true,
+        default: "ok",
+        enum: ['ok', 'del'],
     }
 }, { timestamps: true });
 
 module.exports = mongoose.model('GameServer', GameServerSchema);
-

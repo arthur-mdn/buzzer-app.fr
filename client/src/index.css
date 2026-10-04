@@ -771,6 +771,9 @@ progress::-moz-progress-bar {
   --white: 243, 243, 243;
   width: 110px;
   height: 100px;
+  padding: 0;
+  border: none;
+  background: transparent;
   outline: none;
   cursor: pointer;
   border-radius: 100%;
@@ -778,6 +781,24 @@ progress::-moz-progress-bar {
   will-change: transform;
   transition: all .2s ease-in-out 0s;
   z-index: 5;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -20%;
+  bottom: 0;
+  z-index: 6;
+}
+
+.btn .back,
+.btn .front,
+.btn .base {
+  pointer-events: none;
 }
 
 .btn .back {
@@ -818,7 +839,7 @@ progress::-moz-progress-bar {
   cursor: pointer;
 }
 
-.btn:active .front {
+.btn:active:not(:disabled) .front {
   transform: translateY(0%);
 }
 /*Socle du bouton*/

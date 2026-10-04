@@ -1,11 +1,10 @@
-// gameRoutes.js
 const express = require('express');
 const GameServer = require('../models/GameServer');
 const router = express.Router();
 const { generateUniqueCode, authenticateToken } = require('../others/utils');
 const { verifyToken } = require('../others/jwtUtils');
-
-
+const { USER_PUBLIC_FIELDS } = require('../others/userPublicFields');
+const { sanitizeOptions } = require('../others/sanitizeOptions');
 
 router.get('/server/:serverCode', async (req, res) => {
     try {
@@ -18,15 +17,17 @@ router.get('/server/:serverCode', async (req, res) => {
             const data = verifyToken(token);
             const { serverCode } = req.params;
 
-            // Rechercher le serveur par code
-            const server = await GameServer.findOne({ code: serverCode ,
-                status: { $ne: 'del' }}).populate('players.user').populate('buzzOrder');
+            const server = await GameServer.findOne({
+                code: serverCode,
+                status: { $ne: 'del' }
+            })
+                .populate({ path: 'players.user', select: USER_PUBLIC_FIELDS })
+                .populate({ path: 'buzzOrder', select: USER_PUBLIC_FIELDS });
 
             if (!server) {
                 return res.status(404).json({ success: false, message: "Server not found" });
             }
 
-            // Déterminer le rôle
             let role = 'participant';
             if (data.userId === server.hostId) {
                 role = 'host';
@@ -40,54 +41,37 @@ router.get('/server/:serverCode', async (req, res) => {
         } catch (err) {
             res.status(403).json({ success: false, message: "Invalid token." });
         }
-
-
     } catch (error) {
         console.error(error);
-        res.status(500).json({ success: false,  message: "Internal Server Error" });
+        res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 });
 
-router.post('/create-server', async (req, res) => {
+router.post('/create-server', authenticateToken, async (req, res) => {
     try {
-        const authHeader = req.headers['authorization'];
-        const token = authHeader && authHeader.split(' ')[1];
-
-        if (!token) return res.status(401).json({ success: false, message: "No token provided." });
-
-        try {
-            const data = verifyToken(token);
-            const { serverName, options = {}, selectedImageIndex } = req.body;
-            const serverCode = generateUniqueCode();
-
-            const server = new GameServer({
-                name: serverName,
-                code: serverCode,
-                hostId: data.userId,
-                gameStatus: "waiting",
-                players: [],
-                blason:{
-                    blason: selectedImageIndex
-                },
-                options: {
-                    autoRestartAfterDecline: options.autoRestartAfterDecline ?? true,
-                    answerPoint: options.answerPoint || 1,
-                    winPoint: options.winPoint || 10,
-                    deductPointOnWrongAnswer: options.deductPointOnWrongAnswer || false,
-                    isPublic: options.isPublic || false,
-                }
-            });
-            await server.save();
-            res.json(server);
-        } catch (err) {
-            console.error(err);
-            res.status(403).json({ success: false, message: "Invalid token." });
+        const { serverName, options = {}, selectedImageIndex } = req.body;
+        if (typeof serverName !== 'string' || !serverName.trim() || serverName.trim().length > 64) {
+            return res.status(400).json({ success: false, message: "Invalid server name" });
         }
+
+        const serverCode = generateUniqueCode();
+        const server = new GameServer({
+            name: serverName.trim(),
+            code: serverCode,
+            hostId: req.userId,
+            gameStatus: "waiting",
+            players: [],
+            blason: {
+                blason: selectedImageIndex
+            },
+            options: sanitizeOptions(options)
+        });
+        await server.save();
+        res.json(server);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 });
-
 
 module.exports = router;

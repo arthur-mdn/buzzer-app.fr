@@ -1,6 +1,7 @@
-FROM node:latest
+FROM node:20.19-alpine
 WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
 COPY . .
-RUN npm install
 EXPOSE 3001
 CMD ["npm", "start"]
