@@ -4,6 +4,33 @@ import { useSocket } from './SocketContext.jsx';
 
 const GameContext = createContext();
 
+function dedupePlayers(players = []) {
+    const byUser = new Map();
+
+    for (const player of players) {
+        const id = player?.user?._id || player?.user?.userId;
+        if (!id) continue;
+
+        const key = String(id);
+        const existing = byUser.get(key);
+        if (!existing) {
+            byUser.set(key, player);
+            continue;
+        }
+
+        byUser.set(key, {
+            ...existing,
+            ...player,
+            score: Math.max(existing.score || 0, player.score || 0),
+            wins: Math.max(existing.wins || 0, player.wins || 0),
+            state: player.state === 'online' || existing.state === 'online' ? 'online' : existing.state,
+            role: player.role === 'host' || existing.role === 'host' ? 'host' : existing.role,
+        });
+    }
+
+    return Array.from(byUser.values());
+}
+
 export function useGame() {
     return useContext(GameContext);
 }
@@ -13,7 +40,7 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
     const [gameState, setGameState] = useState(initialGameState || 'waiting');
     const [message, setMessage] = useState('');
     const [buzzOrder, setBuzzOrder] = useState(initialBuzzOrder || []);
-    const [players, setPlayers] = useState(initialPlayers || []);
+    const [players, setPlayers] = useState(() => dedupePlayers(initialPlayers || []));
     // options of the server
     const [options, setOptions] = useState(initialGameOptions || {});
     const [animationType, setAnimationType] = useState('none');
@@ -30,7 +57,7 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
             // setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
             setOptions(server.options);
-            setPlayers(server.players)
+            setPlayers(dedupePlayers(server.players));
         });
 
         socket.on('gameCancelled', () => {
@@ -47,7 +74,7 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
         socket.on('answerAccepted', ({ server }) => {
             setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
-            setPlayers(server.players);
+            setPlayers(dedupePlayers(server.players));
             setOptions(server.options);
             setMessage('Réponse valide !')
             setAnimationType('correct');
@@ -55,21 +82,21 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
         socket.on('answerWon', ({ server }) => {
             setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
-            setPlayers(server.players);
+            setPlayers(dedupePlayers(server.players));
             setOptions(server.options);
             setMessage('Réponse gagnante !')
         });
         socket.on('answerDeclined', ({ server }) => {
             setBuzzOrder(server.buzzOrder);
             setGameState(server.gameStatus);
-            setPlayers(server.players);
+            setPlayers(dedupePlayers(server.players));
             setOptions(server.options);
             setMessage('Réponse incorrecte !')
             setAnimationType('wrong');
         });
         const handlePlayersUpdate = (updatedServer) => {
             if (Array.isArray(updatedServer?.players)) {
-                setPlayers(updatedServer.players);
+                setPlayers(dedupePlayers(updatedServer.players));
             }
             if (updatedServer?.options) {
                 setOptions(updatedServer.options);

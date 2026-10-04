@@ -44,10 +44,10 @@ function GameRoom( {currentPing} ) {
     };
 
     useEffect(() => {
+        let cancelled = false;
+
         const fetchServerDetails = async () => {
             try {
-
-                // Récupérer l'userId du localStorage
                 const response = await fetch(config.serverUrl + `/server/${serverCode}`, {
                     headers: {
                         'Content-Type': 'application/json',
@@ -55,10 +55,10 @@ function GameRoom( {currentPing} ) {
                     }
                 });
                 const data = await response.json();
+                if (cancelled) return;
 
                 if(data.success){
                     setServerInfo(data.server);
-                    // console.log(data.server)
                     setRole(data.role);
                     socket.emit('joinServer', { serverCode: serverCode });
                 }else{
@@ -66,11 +66,16 @@ function GameRoom( {currentPing} ) {
                 }
 
             } catch (error) {
+                if (cancelled) return;
                 console.error('There was an error fetching the server details:', error);
                 setError('Erreur lors de la récupération des détails du serveur. Veuillez réessayer.');
             }
         };
         fetchServerDetails();
+
+        return () => {
+            cancelled = true;
+        };
     }, [serverCode, socket, token]);
 
     useEffect(() => {

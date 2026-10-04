@@ -31,15 +31,51 @@ module.exports = function(io) {
             return populatedServer;
         }
 
+        function getPlayerUserId(player) {
+            return player?.user?._id?.toString?.() ?? player?.user?.toString?.() ?? null;
+        }
+
         function dedupePlayersByUser(players = []) {
-            const seen = new Set();
-            return players.filter((player) => {
-                const id = player.user?._id?.toString?.() ?? player.user?.toString?.();
-                if (!id || seen.has(id)) {
-                    return false;
+            const byUser = new Map();
+
+            for (const player of players) {
+                const id = getPlayerUserId(player);
+                if (!id) {
+                    continue;
                 }
-                seen.add(id);
-                return true;
+
+                const existing = byUser.get(id);
+                if (!existing) {
+                    byUser.set(id, player);
+                    continue;
+                }
+
+                existing.score = Math.max(existing.score || 0, player.score || 0);
+                existing.wins = Math.max(existing.wins || 0, player.wins || 0);
+                if (player.state === 'online') {
+                    existing.state = 'online';
+                }
+                if (player.role === 'host') {
+                    existing.role = 'host';
+                }
+            }
+
+            return Array.from(byUser.values());
+        }
+
+        async function cleanupDuplicatePlayers(serverId) {
+            return retryOnVersionError(async () => {
+                const doc = await GameServer.findById(serverId);
+                if (!doc || !Array.isArray(doc.players)) {
+                    return doc;
+                }
+
+                const deduped = dedupePlayersByUser(doc.players);
+                if (deduped.length !== doc.players.length) {
+                    doc.players = deduped;
+                    await doc.save();
+                }
+                return doc;
             });
         }
 
@@ -61,6 +97,7 @@ module.exports = function(io) {
                 ).select('_id code');
 
                 if (updated) {
+                    await cleanupDuplicatePlayers(updated._id);
                     await emitPlayersUpdate(updated.code, updated._id);
                 }
             }
@@ -153,42 +190,64 @@ module.exports = function(io) {
                 return;
             }
 
-            const server = await retryOnVersionError(async () => {
-                const doc = await GameServer.findOne({
+            let server = await GameServer.findOneAndUpdate(
+                {
+                    code: serverCode,
+                    status: { $ne: 'del' },
+                    'players.user': user._id
+                },
+                { $set: { 'players.$.state': 'online' } },
+                { new: true }
+            ).select('_id code hostId');
+
+            if (!server) {
+                const existing = await GameServer.findOne({
                     code: serverCode,
                     status: { $ne: 'del' }
-                });
+                }).select('_id code hostId');
 
-                if (!doc) {
-                    return null;
+                if (!existing) {
+                    socket.emit('serverError', { message: "Server does not exist" });
+                    return;
                 }
 
-                if (!Array.isArray(doc.players)) {
-                    doc.players = [];
+                server = await GameServer.findOneAndUpdate(
+                    {
+                        _id: existing._id,
+                        status: { $ne: 'del' },
+                        players: { $not: { $elemMatch: { user: user._id } } }
+                    },
+                    {
+                        $push: {
+                            players: {
+                                user: user._id,
+                                state: 'online',
+                                role: user.userId === existing.hostId ? 'host' : 'user'
+                            }
+                        }
+                    },
+                    { new: true }
+                ).select('_id code');
+
+                if (!server) {
+                    server = await GameServer.findOneAndUpdate(
+                        {
+                            _id: existing._id,
+                            status: { $ne: 'del' },
+                            'players.user': user._id
+                        },
+                        { $set: { 'players.$.state': 'online' } },
+                        { new: true }
+                    ).select('_id code');
                 }
-
-                doc.players = dedupePlayersByUser(doc.players);
-
-                const existingPlayer = doc.players.find((player) => player.user.equals(user._id));
-                if (existingPlayer) {
-                    existingPlayer.state = 'online';
-                } else {
-                    doc.players.push({
-                        user: user._id,
-                        state: 'online',
-                        role: user.userId === doc.hostId ? 'host' : 'user'
-                    });
-                }
-
-                await doc.save();
-                return doc;
-            });
+            }
 
             if (!server) {
                 socket.emit('serverError', { message: "Server does not exist" });
                 return;
             }
 
+            await cleanupDuplicatePlayers(server._id);
             socket.join(serverCode);
             await emitPlayersUpdate(serverCode, server._id);
         }, 'An error occurred while joining the server');
