@@ -1,5 +1,5 @@
 //GameRoom.jsx
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import HostGameRoom from './HostGameRoom.jsx';
 import PlayerGameRoom from './PlayerGameRoom.jsx';
 import {Link, useParams} from "react-router-dom";
@@ -23,16 +23,25 @@ import GameFeedbackCard from './GameFeedbackCard.jsx';
 
 function GameRoom( {currentPing} ) {
     const socket = useSocket();
-    const userId = useUser();
+    const { userId } = useUser();
     const token = useToken();
     const { serverCode } = useParams();
     const [role, setRole] = useState(null); // 'host' ou 'participant'
     const [serverInfo, setServerInfo] = useState(null);
     const [error, setError] = useState(null);
+    const leaveInfoRef = useRef({ socket, userId, serverCode });
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('details'); // 'details' ou 'players'
 
+    leaveInfoRef.current = { socket, userId, serverCode };
+
+    const emitUserLeaving = () => {
+        const { socket: currentSocket, userId: currentUserId, serverCode: currentServerCode } = leaveInfoRef.current;
+        if (currentSocket && currentServerCode) {
+            currentSocket.emit('userLeaving', { userId: currentUserId, serverCode: currentServerCode });
+        }
+    };
 
     useEffect(() => {
         const fetchServerDetails = async () => {
@@ -66,15 +75,16 @@ function GameRoom( {currentPing} ) {
 
     useEffect(() => {
         const handleUnload = () => {
-            socket.emit('userLeaving', { userId: userId });
+            emitUserLeaving();
         };
 
         window.addEventListener("beforeunload", handleUnload);
 
         return () => {
             window.removeEventListener("beforeunload", handleUnload);
+            emitUserLeaving();
         };
-    }, [socket, userId]);
+    }, []);
 
     useEffect(() => {
         socket.on('serverDeleted', () => {
@@ -83,7 +93,7 @@ function GameRoom( {currentPing} ) {
     }, [socket]);
 
     const handleBackClick = () => {
-        socket.emit('userLeaving', { userId: userId });
+        emitUserLeaving();
     };
 
     const handleOpenModal = (tab) => {
@@ -131,7 +141,7 @@ function GameRoom( {currentPing} ) {
     }
 
 
-    return <GameProvider initialGameState={serverInfo.gameStatus} initialGameOptions={serverInfo.options} initialBuzzOrder={serverInfo.buzzOrder} >
+    return <GameProvider initialGameState={serverInfo.gameStatus} initialGameOptions={serverInfo.options} initialBuzzOrder={serverInfo.buzzOrder} initialPlayers={serverInfo.players} >
         <GameFeedbackCard />
         {
             config.sendPings === "true" &&

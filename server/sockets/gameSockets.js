@@ -20,18 +20,48 @@ module.exports = function(io) {
 
         const safeOn = (event, handler, errorMessage) => safeSocketOn(socket, event, handler, errorMessage);
 
+        async function emitPlayersUpdate(serverCode, serverId) {
+            const populatedServer = await GameServer.findById(serverId)
+                .populate('players.user')
+                .populate('buzzOrder')
+                .lean();
+            if (populatedServer) {
+                io.to(serverCode).emit('playersUpdate', populatedServer);
+            }
+            return populatedServer;
+        }
+
+        function dedupePlayersByUser(players = []) {
+            const seen = new Set();
+            return players.filter((player) => {
+                const id = player.user?._id?.toString?.() ?? player.user?.toString?.();
+                if (!id || seen.has(id)) {
+                    return false;
+                }
+                seen.add(id);
+                return true;
+            });
+        }
+
         async function setUserStateInServers(user, state) {
             const servers = await GameServer.find({
                 'players.user': user._id,
                 status: { $ne: 'del' }
-            });
+            }).select('_id code');
+
             for (const server of servers) {
-                const player = server.players.find(p => p.user.equals(user._id));
-                if (player) {
-                    player.state = state;
-                    await retryOnVersionError(() => server.save());
-                    const populatedServer = await GameServer.findById(server._id).populate('players.user');
-                    io.to(server.code).emit('playersUpdate', populatedServer);
+                const updated = await GameServer.findOneAndUpdate(
+                    {
+                        _id: server._id,
+                        'players.user': user._id,
+                        status: { $ne: 'del' }
+                    },
+                    { $set: { 'players.$.state': state } },
+                    { new: true }
+                ).select('_id code');
+
+                if (updated) {
+                    await emitPlayersUpdate(updated.code, updated._id);
                 }
             }
         }
@@ -117,45 +147,50 @@ module.exports = function(io) {
                 return;
             }
 
-            const server = await GameServer.findOne({
-                code: serverCode,
-                status: { $ne: 'del' }
-            }).populate('players.user').populate('buzzOrder');
-
-            if (!server) {
-                socket.emit('serverError', { message: "Server does not exist" });
-                return;
-            }
-
             const user = await User.findOne({ socketId: socket.id });
             if (!user) {
                 socket.emit('serverError', { message: "User not found" });
                 return;
             }
 
-            if (!Array.isArray(server.players)) {
-                server.players = [];
+            const server = await retryOnVersionError(async () => {
+                const doc = await GameServer.findOne({
+                    code: serverCode,
+                    status: { $ne: 'del' }
+                });
+
+                if (!doc) {
+                    return null;
+                }
+
+                if (!Array.isArray(doc.players)) {
+                    doc.players = [];
+                }
+
+                doc.players = dedupePlayersByUser(doc.players);
+
+                const existingPlayer = doc.players.find((player) => player.user.equals(user._id));
+                if (existingPlayer) {
+                    existingPlayer.state = 'online';
+                } else {
+                    doc.players.push({
+                        user: user._id,
+                        state: 'online',
+                        role: user.userId === doc.hostId ? 'host' : 'user'
+                    });
+                }
+
+                await doc.save();
+                return doc;
+            });
+
+            if (!server) {
+                socket.emit('serverError', { message: "Server does not exist" });
+                return;
             }
 
-            const existingPlayerIndex = server.players.findIndex(player => player.user?.userId === user.userId);
-
-            if (existingPlayerIndex !== -1) {
-                server.players[existingPlayerIndex].state = 'online';
-            } else if (user.userId === server.hostId) {
-                server.players.push({ user, state: 'online', role: 'host' });
-            } else {
-                server.players.push({ user, state: 'online', role: 'user' });
-            }
-
-            server.players = server.players.filter((player, index, self) =>
-                index === self.findIndex((p) => (
-                    p.user?.userId === player.user?.userId && p.user?.socketId === player.user?.socketId
-                ))
-            );
-
-            await retryOnVersionError(() => server.save());
             socket.join(serverCode);
-            io.to(serverCode).emit('playersUpdate', server);
+            await emitPlayersUpdate(serverCode, server._id);
         }, 'An error occurred while joining the server');
 
         socket.on('joinRoom', (serverCode) => {
@@ -282,8 +317,11 @@ module.exports = function(io) {
             io.to(serverCode).emit('answerDeclined', { server });
         }, 'An error occurred while declining the answer');
 
-        safeOn('userLeaving', async () => {
+        safeOn('userLeaving', async ({ serverCode } = {}) => {
             console.log('user disconnected leaving');
+            if (serverCode) {
+                socket.leave(serverCode);
+            }
             await handleUserDisconnect(socket.id);
         }, 'An error occurred while handling user leave');
 
@@ -354,6 +392,7 @@ module.exports = function(io) {
                 }
 
                 doc.players.splice(playerIndex, 1);
+                doc.players = dedupePlayersByUser(doc.players);
                 await doc.save();
                 return doc;
             });
@@ -367,7 +406,7 @@ module.exports = function(io) {
                 io.sockets.sockets.get(kickedUser.socketId).emit('kickServer');
             }
 
-            io.to(serverCode).emit('playersUpdate', server);
+            await emitPlayersUpdate(serverCode, server._id);
         }, 'An error occurred while kicking the player');
 
         safeOn('resetScores', async ({ serverCode }) => {

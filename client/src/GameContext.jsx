@@ -68,8 +68,12 @@ export function GameProvider({ children , initialGameState, initialGameOptions, 
             setAnimationType('wrong');
         });
         const handlePlayersUpdate = (updatedServer) => {
-            setPlayers(updatedServer.players);
-            setOptions(updatedServer.options);
+            if (Array.isArray(updatedServer?.players)) {
+                setPlayers(updatedServer.players);
+            }
+            if (updatedServer?.options) {
+                setOptions(updatedServer.options);
+            }
         };
         socket.on('playersUpdate', handlePlayersUpdate);
 

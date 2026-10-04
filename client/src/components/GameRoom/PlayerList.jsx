@@ -26,6 +26,7 @@ function PlayerList({ serverInfo }) {
     };
 
     const playersGrouped = players ? players.reduce((acc, player) => {
+        if (!player?.user) return acc;
         const key = `${player.role}-${player.state}`;
         if (!acc[key]) acc[key] = [];
         acc[key].push(player);
@@ -91,7 +92,7 @@ function PlayerList({ serverInfo }) {
                         {playersGrouped['user-online']?.map(player => <PlayerItem serverInfo={serverInfo} key={player.user._id} player={player}  onMenuToggle={handleMenuToggle} isOpen={openMenuId === player.user._id}  onShowDetails={() => handleShowPlayerDetails(player.user.userId)}  />)}
                     </ul>
                     <ul className={playersGrouped['user-offline']?.some(player => player.user.userId === userId) ? "yourProfile" : ""}>
-                        {playersGrouped['user-offline']?.map(player => <PlayerItem serverInfo={serverInfo} key={player.user.userId} player={player}  onMenuToggle={handleMenuToggle} isOpen={openMenuId === player.user._id}  onShowDetails={() => handleShowPlayerDetails(player.user.userId)}  />)}
+                        {playersGrouped['user-offline']?.map(player => <PlayerItem serverInfo={serverInfo} key={player.user._id} player={player}  onMenuToggle={handleMenuToggle} isOpen={openMenuId === player.user._id}  onShowDetails={() => handleShowPlayerDetails(player.user.userId)}  />)}
                     </ul>
                 </div>
             </div>
