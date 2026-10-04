@@ -2,6 +2,7 @@
 import  {useEffect, useState, useRef, useCallback} from 'react';
 import io from 'socket.io-client';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import NotFound from "./components/NotFound.jsx";
 import GameRoom from './components/GameRoom/GameRoom.jsx';
 import HomePage from './components/homePage/HomePage.jsx';
 import UserNameInput from './components/UserNameInput/UserNameInput.jsx';
@@ -222,6 +223,7 @@ function App() {
                                     <Routes>
                                         <Route path="/" element={ <HomePage />} />
                                         <Route path="/server/:serverCode" element={<GameRoom currentPing={currentPing}/>} />
+                                        <Route path="*" element={<NotFound />} />
                                     </Routes>
                                 </Router>
                             </ThemeProvider>
