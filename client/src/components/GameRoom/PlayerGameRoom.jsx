@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useUser } from '../../UserContext.jsx';
 import { useParams } from 'react-router-dom';
 import { useSocket } from '../../SocketContext.jsx';
@@ -12,12 +12,14 @@ function PlayerGameRoom({ serverInfo }) {
     const { serverCode } = useParams();
     const { gameState, message, setMessage, buzzOrder, players } = useGame();
     const buzzLockRef = useRef(false);
+    const [isPressed, setIsPressed] = useState(false);
+    const canBuzz = gameState === 'inProgress';
 
     useEffect(() => {
-        if (gameState === 'inProgress') {
+        if (canBuzz) {
             buzzLockRef.current = false;
         }
-    }, [gameState]);
+    }, [canBuzz]);
 
     useEffect(() => {
         if (gameState === 'buzzed' && buzzOrder.length > 0) {
@@ -48,15 +50,55 @@ function PlayerGameRoom({ serverInfo }) {
         };
     }, [socket]);
 
-    const handleBuzz = (event) => {
-        event?.preventDefault?.();
-        if (gameState !== 'inProgress' || buzzLockRef.current || !socket) {
+    const tryBuzz = () => {
+        if (!canBuzz || buzzLockRef.current || !socket) {
             return;
         }
 
         buzzLockRef.current = true;
         setMessage('Buzz envoyé...');
         socket.emit('buzz', { serverCode });
+    };
+
+    const handlePointerDown = (event) => {
+        if (event.button != null && event.button !== 0) {
+            return;
+        }
+        event.preventDefault();
+        setIsPressed(true);
+        tryBuzz();
+        event.currentTarget.setPointerCapture?.(event.pointerId);
+    };
+
+    const handlePointerUp = () => {
+        setIsPressed(false);
+    };
+
+    const handlePointerCancel = () => {
+        setIsPressed(false);
+    };
+
+    const handleKeyDown = (event) => {
+        if (event.key !== ' ' && event.key !== 'Enter') {
+            return;
+        }
+        event.preventDefault();
+        if (event.repeat) {
+            return;
+        }
+        setIsPressed(true);
+        tryBuzz();
+    };
+
+    const handleKeyUp = (event) => {
+        if (event.key !== ' ' && event.key !== 'Enter') {
+            return;
+        }
+        setIsPressed(false);
+    };
+
+    const handleBlur = () => {
+        setIsPressed(false);
     };
 
     return (
@@ -78,15 +120,25 @@ function PlayerGameRoom({ serverInfo }) {
                 <div className="btn-container">
                     <button
                         type="button"
-                        className="btn"
+                        className={[
+                            'btn',
+                            !canBuzz ? 'btn--disabled' : '',
+                            isPressed ? 'btn--pressed' : '',
+                        ].filter(Boolean).join(' ')}
                         id="big-red-button"
                         aria-label="Buzzer"
-                        onPointerDown={handleBuzz}
-                        onClick={handleBuzz}
-                        disabled={gameState !== 'inProgress'}
+                        aria-disabled={!canBuzz}
+                        onPointerDown={handlePointerDown}
+                        onPointerUp={handlePointerUp}
+                        onLostPointerCapture={handlePointerUp}
+                        onPointerCancel={handlePointerCancel}
+                        onKeyDown={handleKeyDown}
+                        onKeyUp={handleKeyUp}
+                        onBlur={handleBlur}
                     >
                         <span className="back" aria-hidden="true"></span>
-                        <span className="front" aria-hidden="true"></span>
+                        <input type="checkbox" className="checkbox" id="Checkbox" tabIndex={-1} aria-hidden="true" readOnly />
+                        <label htmlFor="Checkbox" className="front" aria-hidden="true"></label>
                         <span className="base" aria-hidden="true"></span>
                     </button>
                 </div>

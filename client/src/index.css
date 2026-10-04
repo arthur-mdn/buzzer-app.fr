@@ -762,276 +762,161 @@ progress::-moz-progress-bar {
 
 .btn-container{
   margin-top: 60px;
+  padding: 2.5rem 1.5rem 1.5rem;
   display: flex;
   align-content: center;
   justify-content: center;
+  overflow: visible;
 }
-/*De la plus petite taille d'ecran jusqu'a 767px*/
+
 .btn {
-  --white: 243, 243, 243;
-  width: 110px;
-  height: 100px;
+  --buzzer-size: 110px;
+  --buzzer-depth: 18px;
+  --buzzer-rim: 8px;
+  width: var(--buzzer-size);
+  height: var(--buzzer-size);
   padding: 0;
   border: none;
   background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
   outline: none;
   cursor: pointer;
-  border-radius: 100%;
+  border-radius: 50%;
   position: relative;
-  will-change: transform;
-  transition: all .2s ease-in-out 0s;
-  z-index: 5;
+  isolation: isolate;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
-.btn::before {
-  content: "";
+.btn .checkbox {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: -20%;
-  bottom: 0;
-  z-index: 6;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  pointer-events: none;
 }
 
 .btn .back,
 .btn .front,
 .btn .base {
   pointer-events: none;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.btn .base {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(100% + var(--buzzer-rim) * 2);
+  height: calc(100% + var(--buzzer-rim) * 2);
+  margin: 0;
+  padding: 0;
+  transform: translate(-50%, calc(-50% + var(--buzzer-depth) * 0.55));
+  z-index: 0;
+  background: linear-gradient(160deg, #d8d8d8 0%, #9a9a9a 42%, #6f6f6f 100%);
+  box-shadow:
+    0 1px 0 #555,
+    0 5px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.55),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.4);
 }
 
 .btn .back {
-  background: rgb(var(--secondary-buzzer-button-color));
-  border-radius: 100%;
   position: absolute;
-  border: 1px solid rgb(var(--black), .25);
   left: 0;
-  top: 4px;
+  right: 0;
+  top: calc(var(--buzzer-depth) * 0.35);
   width: 100%;
   height: 100%;
+  z-index: 1;
+  background: linear-gradient(180deg, #b30008 0%, rgb(var(--secondary-buzzer-button-color)) 55%, #7a0002 100%);
+  box-shadow: inset 0 -3px 5px rgba(0, 0, 0, 0.28);
 }
 
 .btn .front {
-  background-color: rgba(var(--primary-buzzer-button-color));
-  box-shadow: 0 .5em 1em -0.2em rgba(var(--secondary-buzzer-button-color), .5);
-  border-radius: 100%;
   position: absolute;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.2rem;
-  font-weight: 600;
-  transform: translateY(-15%);
-  transition: .15s;
+  z-index: 2;
+  display: block;
+  background: rgb(var(--primary-buzzer-button-color));
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.22);
+  transform: translateY(calc(var(--buzzer-depth) * -0.55));
+  transition: transform .12s ease-out;
 }
 
-.btn .checkbox + .front {
-  cursor: pointer;
+.btn:active .front,
+.btn.btn--pressed .front {
+  transform: translateY(calc(var(--buzzer-depth) * 0.15));
 }
 
-.btn .checkbox:checked + .front {
-  /*transform: translateY(-1px);*/
-  cursor: pointer;
+.btn.btn--disabled .front {
+  background: #656565;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.12);
 }
 
-.btn:active:not(:disabled) .front {
-  transform: translateY(0%);
+.btn.btn--disabled .back {
+  background: linear-gradient(180deg, #8a8a8a 0%, #706c6c 55%, #555 100%);
 }
-/*Socle du bouton*/
-.base {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-end;
-  color: #fff;
-  /*Ajustement du placement boutton rouge*/
-  margin-top: -18px;
-  margin-left: -19px;
-  border: 0.5px solid rgba(0, 0, 0, 0.1);
-  min-height: 100px;
-  max-height: 500px;
-  min-width: 100px;
-  max-width: 500px;
-  padding: 12px;
-  border-radius: 100%;
-  cursor: pointer;
-  position: relative;
-  will-change: transform;
-  transition: all .1s ease-in-out 0s;
-  background-image: linear-gradient(to right, rgb(143 143 143 / 100%), rgba(143, 143, 143, 1)),
-  linear-gradient(to bottom, rgb(140 140 140 / 100%), rgba(149, 159, 149, 1)),
-  linear-gradient(to left, rgb(150 150 150 / 100%), rgba(255, 255, 255, 1));
-  background-position: bottom right;
-  background-size: 100% 100%, 100% 100%;
-  box-shadow: inset -6px -10px 0 rgba(255, 255, 255, 0.4),
-  inset -4px -8px 0 rgba(0, 0, 0, 0.8),
-  0 1px 1px rgba(0, 0, 0, 0.7),
-  0 8px 1px rgba(255, 255, 255, 0.1);
-  transform: rotateZ(22deg) translateY(-10.8px);
-  z-index: -5;
+
+.btn.btn--disabled .base {
+  filter: grayscale(0.35);
+  opacity: 0.95;
 }
-/*A partir de la taille d'ecran de 568px*/
+
+.btn.btn--disabled.btn--pressed .front,
+.btn.btn--disabled:active .front {
+  transform: translateY(calc(var(--buzzer-depth) * 0.15));
+}
+
 @media only screen and (min-width: 268px) {
   .btn {
-    /*gestion des couleurs*/
-    --white: 243, 243, 243;
-    width: 210px;
-    height: 200px;
-    outline: none;
-    cursor: pointer;
-    border-radius: 100%;
-    position: relative;
-    will-change: transform;
-    transition: all .2s ease-in-out 0s;
-    z-index: 0;
-  }
-
-  /*Socle du bouton*/
-  .base {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-end;
-    color: #fff;
-    /*Ajustement du placement boutton rouge*/
-    margin-top: -18px;
-    margin-left: -24px;
-    border: 0.5px solid rgba(0, 0, 0, 0.1);
-    /*Ajustement de la taille de la base grise(width, height)*/
-    height: 205px;
-    width: 210px;
-    padding: 12px;
-    border-radius: 100%;
-    cursor: pointer;
-    position: relative;
-    will-change: transform;
-    transition: all .1s ease-in-out 0s;
-    background-image: linear-gradient(to right, rgb(143 143 143 / 100%), rgba(143, 143, 143, 1)),
-    linear-gradient(to bottom, rgb(140 140 140 / 100%), rgba(149, 159, 149, 1)),
-    linear-gradient(to left, rgb(150 150 150 / 100%), rgba(255, 255, 255, 1));
-    background-position: bottom right;
-    background-size: 100% 100%, 100% 100%;
-    box-shadow: inset -6px -10px 0 rgba(255, 255, 255, 0.4),
-    inset -4px -8px 0 rgba(0, 0, 0, 0.8),
-    0 1px 1px rgba(0, 0, 0, 0.7),
-    0 8px 1px rgba(255, 255, 255, 0.1);
-    transform: rotateZ(22deg) translateY(-10.8px);
-    z-index: -5;
+    --buzzer-size: 210px;
+    --buzzer-depth: 26px;
+    --buzzer-rim: 10px;
   }
 }
 
-/*A partir de la taille d'ecran de 768px*/
 @media only screen and (min-width: 568px) {
   .btn {
-    /*gestion des couleurs*/
-    --white: 243, 243, 243;
-    width: 250px;
-    height: 240px;
-    outline: none;
-    cursor: pointer;
-    border-radius: 100%;
-    position: relative;
-    will-change: transform;
-    transition: all .2s ease-in-out 0s;
-    z-index: 0;
-  }
-
-  /*Socle du bouton*/
-  .base {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-end;
-    color: #fff;
-    /*Ajustement du placement boutton rouge*/
-    margin-top: -22px;
-    margin-left: -28px;
-    border: 0.5px solid rgba(0, 0, 0, 0.1);
-    /*Ajustement de la taille de la base grise(width, height)*/
-    height: 250px;
-    width: 255px;
-    padding: 12px;
-    border-radius: 100%;
-    cursor: pointer;
-    position: relative;
-    will-change: transform;
-    transition: all .1s ease-in-out 0s;
-    background-image: linear-gradient(to right, rgb(143 143 143 / 100%), rgba(143, 143, 143, 1)),
-    linear-gradient(to bottom, rgb(140 140 140 / 100%), rgba(149, 159, 149, 1)),
-    linear-gradient(to left, rgb(150 150 150 / 100%), rgba(255, 255, 255, 1));
-    background-position: bottom right;
-    background-size: 100% 100%, 100% 100%;
-    box-shadow: inset -6px -10px 0 rgba(255, 255, 255, 0.4),
-    inset -4px -8px 0 rgba(0, 0, 0, 0.8),
-    0 1px 1px rgba(0, 0, 0, 0.7),
-    0 8px 1px rgba(255, 255, 255, 0.1);
-    transform: rotateZ(22deg) translateY(-10.8px);
-    z-index: -5;
+    --buzzer-size: 250px;
+    --buzzer-depth: 30px;
+    --buzzer-rim: 12px;
   }
 }
-/*A partir de la taille d'ecran de 1024px*/
+
 @media only screen and (min-width: 1024px) {
   .btn {
-    /*gestion des couleurs*/
-    --white: 243, 243, 243;
-    /*gestion de la taille bouton rouge*/
-    width: 350px;
-    height: 340px;
-    outline: none;
-    cursor: pointer;
-    border-radius: 100%;
-    position: relative;
-    will-change: transform;
-    transition: all .2s ease-in-out 0s;
-    z-index: 0;
-  }
-
-  /*Socle du bouton*/
-  .base {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-end;
-    color: #fff;
-    /*Ajustement du placement boutton rouge*/
-    margin-top: -25px;
-    margin-left: -34px;
-    border: 0.5px solid rgba(0, 0, 0, 0.1);
-    /*Ajustement de la taille de la base grise(width, height)*/
-    height: 360px;
-    width: 370px;
-    padding: 12px;
-    border-radius: 100%;
-    cursor: pointer;
-    position: relative;
-    will-change: transform;
-    transition: all .1s ease-in-out 0s;
-    background-image: linear-gradient(to right, rgb(143 143 143 / 100%), rgba(143, 143, 143, 1)),
-    linear-gradient(to bottom, rgb(140 140 140 / 100%), rgba(149, 159, 149, 1)),
-    linear-gradient(to left, rgb(150 150 150 / 100%), rgba(255, 255, 255, 1));
-    background-position: bottom right;
-    background-size: 100% 100%, 100% 100%;
-    box-shadow: inset -6px -10px 0 rgba(255, 255, 255, 0.4),
-    inset -4px -8px 0 rgba(0, 0, 0, 0.8),
-    0 1px 1px rgba(0, 0, 0, 0.7),
-    0 8px 1px rgba(255, 255, 255, 0.1);
-    transform: rotateZ(22deg) translateY(-10.8px);
-    z-index: -5;
+    --buzzer-size: 340px;
+    --buzzer-depth: 38px;
+    --buzzer-rim: 14px;
   }
 }
 
 
-.btn:disabled .front{
-  background-color: #656565;
-  box-shadow: 0 .5em 1em -0.2em rgba(140, 140, 140, 0.5);
+.home-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
-.btn:disabled .back{
-  background-color: #706c6c;
+
+.home-page__content {
+  flex: 1;
+  min-height: 0;
+  padding-bottom: calc(8.5rem + env(safe-area-inset-bottom, 0px));
+  overflow: hidden;
+}
+
+.home-page__tabs-track {
+  display: flex;
+  height: 100%;
+  transition: transform 500ms ease;
+  will-change: transform;
 }
 
 
