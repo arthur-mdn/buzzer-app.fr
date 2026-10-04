@@ -1,11 +1,8 @@
 import { useState } from 'react';
-import { useUser } from '../../UserContext.jsx';
 import UserHistory from './UserHistory.jsx';
 import PublicServerList from './PublicServerList.jsx';
-import AdminServerList from './AdminServerList.jsx';
 
 function ServerView() {
-    const { userRole } = useUser();
     const [serverActiveTab, setServerActiveTab] = useState('history');
 
     const renderServerTab = () => {
@@ -14,8 +11,6 @@ function ServerView() {
                 return <UserHistory />;
             case 'public':
                 return <PublicServerList />;
-            case 'admin':
-                return userRole === 'admin' ? <AdminServerList /> : null;
             default:
                 return null;
         }
@@ -45,17 +40,6 @@ function ServerView() {
                         >
                             Public
                         </button>
-                        {userRole === 'admin' && (
-                            <button
-                                type="button"
-                                role="tab"
-                                aria-selected={serverActiveTab === 'admin'}
-                                onClick={() => setServerActiveTab('admin')}
-                                className={`salons-panel__tab${serverActiveTab === 'admin' ? ' active' : ''}`}
-                            >
-                                Admin
-                            </button>
-                        )}
                     </div>
                     <div className="salons-panel__body" role="tabpanel">
                         {renderServerTab()}

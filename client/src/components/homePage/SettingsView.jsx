@@ -12,16 +12,10 @@ import AboutModalContent from "./AboutModalContent.jsx";
 import { normalizeProfileColor, normalizeProfileImageIndex } from "../../utils/profilePicture.js";
 
 function SettingsView() {
-    const { userRole, userName, userPictureSmiley, userPictureColor } = useUser();
+    const { userName, userPictureSmiley, userPictureColor } = useUser();
     const { userBackground, setThemeBackground } = useTheme();
     const socket = useSocket();
 
-    const handleDisconnectAll = () => {
-        socket.emit('adminForceDisconnect');
-    };
-    const handleRestPicturesAll = () => {
-        socket.emit('adminForceResetProfilPictures');
-    };
     const [tempImageIndex, setTempImageIndex] = useState(() => normalizeProfileImageIndex(userPictureSmiley, false));
     const [tempColor, setTempColor] = useState(() => normalizeProfileColor(userPictureColor));
     const [tempBackground, setTempBackground] = useState( "default");
@@ -93,17 +87,6 @@ function SettingsView() {
 
 
 
-                {userRole === "admin" &&
-                    <div>
-                        <h3>YoADMIN</h3>
-                        <button onClick={handleDisconnectAll} className={'btn-push btn-push-red'}>
-                            Déconnecter tous les utilisateurs
-                        </button>
-                        <button onClick={handleRestPicturesAll} className={'btn-push btn-push-red'}>
-                            Réinitialiser photos de profils
-                        </button>
-                    </div>
-                }
             </div>
             {isProfileModalOpen &&
                     <Modal title={"Modifier profil"} isOpen={isProfileModalOpen} onClose={handleCancelChanges}>

@@ -37,7 +37,9 @@ services:
     ports:
       - "3001:3001"
     volumes:
+      - ./server:/app
       - buzzer_server_node_modules:/app/node_modules
+    command: ["node", "--watch", "server.js"]
 
 volumes:
   buzzer_mongodb_data:

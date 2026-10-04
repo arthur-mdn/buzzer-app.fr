@@ -364,6 +364,7 @@ nav .btn-push{
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  flex: 0 0 auto;
   margin-bottom: 0.55rem;
   padding: 0.7rem 0.85rem;
   border-radius: 0.85rem;
@@ -400,7 +401,8 @@ nav .btn-push{
   text-shadow: 0 2px 0 #1c6186, 0 3px 6px rgba(0, 0, 0, 0.35);
 }
 
-.modal .modal_content_title .close.btn-push {
+.modal .modal_content_title .close.btn-push,
+.modal .modal_content_title .back.btn-push {
   position: relative;
   z-index: 1;
   flex-shrink: 0;
@@ -409,12 +411,24 @@ nav .btn-push{
   font-size: 1.35rem;
   line-height: 1;
   border-radius: 0.55rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.modal .modal_content_title .close.btn-push {
   background: linear-gradient(180deg, #ff7b84 0%, #de2e48 55%, #b81830 100%);
   box-shadow: 0 4px 0 #8f1428;
   text-shadow: 0 1px 2px #8f1428;
 }
 
-.modal .modal_content_title .close.btn-push:active {
+.modal .modal_content_title .back.btn-push {
+  padding: 0.05rem 0.7rem 0.25rem;
+  font-size: 1.55rem;
+  background: linear-gradient(180deg, #7ec8ff 0%, #2f8fd4 55%, #1a6fad 100%);
+  box-shadow: 0 4px 0 #155a8a;
+}
+
+.modal .modal_content_title .close.btn-push:active,
+.modal .modal_content_title .back.btn-push:active {
   top: 4px;
 }
 
@@ -1349,6 +1363,251 @@ progress::-moz-progress-bar {
 .navbar-bottom__item--settings.active:active .navbar-bottom__icon-shell {
   transform: translateY(2px);
   box-shadow: 0 1px 0 #b87400;
+}
+
+.navbar-bottom__item--admin.active .navbar-bottom__icon-shell {
+  background: linear-gradient(180deg, #b388ff 0%, #7c4dff 100%);
+  box-shadow: 0 4px 0 #4a148c, 0 0 16px rgba(124, 77, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.navbar-bottom__item--admin.active:active .navbar-bottom__icon-shell {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #4a148c;
+}
+
+.admin-view {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  padding-top: 1.25rem;
+  padding-bottom: 0.75rem;
+}
+
+.admin-view__panel {
+  flex: 1;
+  min-height: 0;
+  max-width: 28rem;
+  overflow: hidden;
+  gap: 1rem;
+}
+
+.admin-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.admin-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  margin: 0;
+  padding: 1rem 1.05rem;
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  border-bottom-width: 4px;
+  border-bottom-color: #12151c;
+  border-radius: 0.9rem;
+  background: linear-gradient(180deg, #4a5368 0%, #2b3140 48%, #1e2330 100%);
+  color: #fff;
+  font-family: "Fredoka One", sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: 0.03rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.admin-menu__item > span {
+  flex: 1;
+}
+
+.admin-menu__item svg:first-child {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+.admin-menu__item svg:last-child {
+  font-size: 0.9rem;
+  opacity: 0.55;
+}
+
+.admin-modal-body {
+  align-items: stretch;
+  gap: 0.85rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+
+.admin-server-list {
+  width: 100%;
+  max-width: 100%;
+  max-height: none;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+.admin-socket-list,
+.admin-player-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.admin-socket-list--modal,
+.admin-player-list--modal {
+  max-height: none;
+  overflow: visible;
+}
+
+.admin-socket-list__item,
+.admin-player-list__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.75rem;
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, #3d4558 0%, #262c3a 100%);
+  color: #fff;
+}
+
+.admin-player-list__identity,
+.admin-socket-list__identity {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.7rem;
+  min-width: 0;
+  flex: 1 1 0;
+  overflow: hidden;
+}
+
+.admin-player-list__identity--button {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.admin-player-list__identity > :first-child,
+.admin-socket-list__identity > :first-child {
+  flex: 0 0 auto;
+}
+
+.admin-player-list__identity > div:last-child,
+.admin-socket-list__identity > div:last-child {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.15rem;
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.admin-socket-list__actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+}
+
+.admin-avatar-placeholder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border-radius: 0.6rem;
+  background: linear-gradient(180deg, #5a6478 0%, #3a4254 100%);
+  color: rgba(255, 255, 255, 0.85);
+  font-family: "Fredoka One", sans-serif;
+  font-size: 1.1rem;
+}
+
+.admin-socket-list__item > .btn-push,
+.admin-player-list__item > .btn-push {
+  flex: 0 0 auto;
+}
+
+.admin-modal-body .server-list__link {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-socket-list__identity > div:last-child strong,
+.admin-player-list__identity > div:last-child strong,
+.admin-socket-list__identity > div:last-child span,
+.admin-player-list__identity > div:last-child span {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-socket-list__identity > div:last-child strong,
+.admin-player-list__identity > div:last-child strong {
+  font-family: "Fredoka One", sans-serif;
+  font-size: 0.95rem;
+}
+
+.admin-socket-list__identity > div:last-child span,
+.admin-player-list__identity > div:last-child span {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.admin-empty-servers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-top: 0.35rem;
+}
+
+.admin-empty-servers__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  margin: 0;
+  padding: 0.7rem 0.85rem;
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.75rem;
+  background: linear-gradient(180deg, #353b4a 0%, #252a36 100%);
+  color: rgba(255, 255, 255, 0.85);
+  font-family: "Fredoka One", sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.02rem;
+  cursor: pointer;
 }
 
 .navbar-bottom__item--home.active .navbar-bottom__icon-shell {

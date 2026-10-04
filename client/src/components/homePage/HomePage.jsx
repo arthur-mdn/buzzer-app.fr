@@ -1,23 +1,17 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import ServerView from './ServerView.jsx';
 import HomeView from './HomeView.jsx';
 import SettingsView from './SettingsView.jsx';
-import { FaUserGroup, FaBolt, FaSliders } from "react-icons/fa6";
-
-const TABS = [
-    { id: 0, label: 'Salons', Icon: FaUserGroup, variant: 'servers' },
-    { id: 1, label: 'Jouer !', Icon: FaBolt, variant: 'home' },
-    { id: 2, label: 'Profil', Icon: FaSliders, variant: 'settings' },
-];
+import AdminView from './AdminView.jsx';
+import { useUser } from '../../UserContext.jsx';
+import { FaUserGroup, FaBolt, FaSliders, FaShieldHalved } from 'react-icons/fa6';
 
 const AXIS_LOCK_PX = 10;
 const SWIPE_RATIO = 0.22;
 const VELOCITY_THRESHOLD = 0.35;
 
-function clampDragOffset(offset, tab, width) {
-    const maxIndex = TABS.length - 1;
-
+function clampDragOffset(offset, tab, width, maxIndex) {
     if (tab === 0 && offset > 0) {
         return offset * 0.35;
     }
@@ -31,8 +25,24 @@ function clampDragOffset(offset, tab, width) {
 }
 
 function HomePage() {
+    const { userRole } = useUser();
+    const isAdmin = userRole === 'admin';
+
+    const tabs = useMemo(() => {
+        const items = [
+            { key: 'servers', label: 'Salons', Icon: FaUserGroup, variant: 'servers', panel: <ServerView /> },
+            { key: 'home', label: 'Jouer !', Icon: FaBolt, variant: 'home', panel: <HomeView /> },
+        ];
+        if (isAdmin) {
+            items.push({ key: 'admin', label: 'Admin', Icon: FaShieldHalved, variant: 'admin', panel: <AdminView /> });
+        }
+        items.push({ key: 'settings', label: 'Profil', Icon: FaSliders, variant: 'settings', panel: <SettingsView /> });
+        return items;
+    }, [isAdmin]);
+
     const contentRef = useRef(null);
     const currentTabRef = useRef(1);
+    const tabsLengthRef = useRef(tabs.length);
     const dragRef = useRef({
         startX: 0,
         startY: 0,
@@ -48,9 +58,14 @@ function HomePage() {
     const [isDragging, setIsDragging] = useState(false);
 
     currentTabRef.current = currentTab;
+    tabsLengthRef.current = tabs.length;
+
+    useEffect(() => {
+        setCurrentTab((tab) => Math.max(0, Math.min(tabs.length - 1, tab)));
+    }, [tabs.length]);
 
     const goToTab = (index) => {
-        setCurrentTab(Math.max(0, Math.min(TABS.length - 1, index)));
+        setCurrentTab(Math.max(0, Math.min(tabs.length - 1, index)));
         setDragOffset(0);
         setIsDragging(false);
         dragRef.current.axis = null;
@@ -62,6 +77,7 @@ function HomePage() {
 
         const finishDrag = (clientX) => {
             const drag = dragRef.current;
+            const maxIndex = tabsLengthRef.current - 1;
             if (drag.axis !== 'x') {
                 setIsDragging(false);
                 drag.axis = null;
@@ -81,7 +97,7 @@ function HomePage() {
                 nextTab = drag.startTab - 1;
             }
 
-            nextTab = Math.max(0, Math.min(TABS.length - 1, nextTab));
+            nextTab = Math.max(0, Math.min(maxIndex, nextTab));
             setCurrentTab(nextTab);
             setDragOffset(0);
             setIsDragging(false);
@@ -101,7 +117,6 @@ function HomePage() {
                 lastTime: Date.now(),
                 width: el.offsetWidth,
             };
-            setIsDragging(true);
             setDragOffset(0);
         };
 
@@ -118,6 +133,9 @@ function HomePage() {
                     return;
                 }
                 drag.axis = Math.abs(deltaX) > Math.abs(deltaY) ? 'x' : 'y';
+                if (drag.axis === 'x') {
+                    setIsDragging(true);
+                }
             }
 
             if (drag.axis !== 'x') {
@@ -127,7 +145,7 @@ function HomePage() {
             e.preventDefault();
             drag.lastX = touch.clientX;
             drag.lastTime = Date.now();
-            setDragOffset(clampDragOffset(deltaX, drag.startTab, drag.width));
+            setDragOffset(clampDragOffset(deltaX, drag.startTab, drag.width, tabsLengthRef.current - 1));
         };
 
         const onTouchEnd = (e) => {
@@ -158,23 +176,23 @@ function HomePage() {
                     className={`home-page__tabs-track${isDragging ? ' home-page__tabs-track--dragging' : ''}`}
                     style={trackStyle}
                 >
-                    <div className="home-page__tab-panel"><ServerView /></div>
-                    <div className="home-page__tab-panel"><HomeView /></div>
-                    <div className="home-page__tab-panel"><SettingsView /></div>
+                    {tabs.map((tab) => (
+                        <div key={tab.key} className="home-page__tab-panel">{tab.panel}</div>
+                    ))}
                 </div>
             </div>
 
             <nav className="navbar-bottom" aria-label="Navigation principale">
                 <div className="navbar-bottom__glow" aria-hidden="true" />
                 <div className="navbar-bottom__track">
-                    {TABS.map(({ id, label, Icon, variant }) => {
-                        const isActive = currentTab === id;
+                    {tabs.map(({ key, label, Icon, variant }, index) => {
+                        const isActive = currentTab === index;
                         return (
                             <button
-                                key={id}
+                                key={key}
                                 type="button"
                                 className={`navbar-bottom__item navbar-bottom__item--${variant}${isActive ? ' active' : ''}`}
-                                onClick={() => goToTab(id)}
+                                onClick={() => goToTab(index)}
                                 aria-current={isActive ? 'page' : undefined}
                             >
                                 <span className="navbar-bottom__icon-shell">

@@ -32,6 +32,11 @@ function App() {
     const setupSocket = useCallback(() => {
         console.log('setup')
         console.log(config.serverSocketUrl)
+        if (socketRef.current) {
+            socketRef.current.removeAllListeners();
+            socketRef.current.disconnect();
+            socketRef.current = null;
+        }
         socketRef.current = io(config.serverSocketUrl, {
             transports: ['websocket', 'polling'],
             query: { token: getStorageItem(STORAGE_KEYS.token) }

@@ -5,6 +5,7 @@ const User = require("../models/User");
 const { USER_PUBLIC_FIELDS } = require('../others/userPublicFields');
 const { sanitizeOptions } = require('../others/sanitizeOptions');
 const { allowExpensiveSocketEvent } = require('../others/socketRateLimit');
+const presence = require('../others/presence');
 
 module.exports = function(io) {
     io.on('connection', (socket) => {
@@ -19,6 +20,25 @@ module.exports = function(io) {
                 return;
             }
             socket.userId = data.userId;
+            presence.registerSocket(socket.id, {
+                userId: data.userId,
+                userName: 'Unknown',
+                userRole: 'user',
+            });
+            User.findOne({ userId: data.userId })
+                .select('userName userRole userPicture')
+                .lean()
+                .then((user) => {
+                    if (!user) {
+                        return;
+                    }
+                    presence.updateSocketProfile(socket.id, {
+                        userName: user.userName,
+                        userRole: user.userRole,
+                        userPicture: user.userPicture,
+                    });
+                })
+                .catch(() => {});
         } catch {
             socket.disconnect();
             return;
@@ -143,6 +163,31 @@ module.exports = function(io) {
             return User.findOne({ userId: socket.userId });
         }
 
+        async function assertAdmin() {
+            const user = await getAuthenticatedUser();
+            if (!user || user.userRole !== 'admin') {
+                return null;
+            }
+            return user;
+        }
+
+        async function buildAdminOverview() {
+            const [activeServers, gamesInProgress] = await Promise.all([
+                GameServer.countDocuments({ status: { $ne: 'del' } }),
+                GameServer.countDocuments({
+                    status: { $ne: 'del' },
+                    gameStatus: { $in: ['inProgress', 'buzzed'] },
+                }),
+            ]);
+
+            return {
+                connectedSockets: presence.getSocketCount(),
+                onlineUsers: presence.getOnlineUserIds().size,
+                activeServers,
+                gamesInProgress,
+            };
+        }
+
         async function assertHostOrAdmin(serverCode) {
             const user = await getAuthenticatedUser();
             if (!user) {
@@ -238,6 +283,11 @@ module.exports = function(io) {
 
             user.socketId = socket.id;
             await user.save();
+            presence.updateSocketProfile(socket.id, {
+                userName: user.userName,
+                userRole: user.userRole,
+                userPicture: user.userPicture,
+            });
             socket.emit('socketIdUpdated');
         }, 'An error occurred while updating the socket');
 
@@ -315,8 +365,45 @@ module.exports = function(io) {
 
             await cleanupDuplicatePlayers(server._id);
             socket.join(serverCode);
+            presence.addJoinedServer(socket.id, serverCode);
             await emitPlayersUpdate(serverCode, server._id);
         }), 'An error occurred while joining the server');
+
+        safeOn('observeServer', rateLimited('observeServer', async ({ serverCode } = {}) => {
+            if (!serverCode || typeof serverCode !== 'string') {
+                socket.emit('serverError', { message: 'Server code is required' });
+                return;
+            }
+
+            const user = await assertAdmin();
+            if (!user) {
+                socket.emit('serverError', { message: 'Not authorized' });
+                return;
+            }
+
+            const server = await GameServer.findOne({
+                code: serverCode,
+                status: { $ne: 'del' },
+            }).select('code');
+
+            if (!server) {
+                socket.emit('serverError', { message: 'Server does not exist' });
+                return;
+            }
+
+            socket.join(serverCode);
+            presence.addObserver(serverCode, socket.id);
+            socket.emit('observeStarted', { serverCode });
+        }), 'An error occurred while observing the server');
+
+        safeOn('unobserveServer', async ({ serverCode } = {}) => {
+            if (!serverCode || typeof serverCode !== 'string') {
+                return;
+            }
+            socket.leave(serverCode);
+            presence.removeObserver(serverCode, socket.id);
+            presence.removeJoinedServer(socket.id, serverCode);
+        }, 'An error occurred while unobserving the server');
 
         safeOn('watchServer', async (payload) => {
             const serverCode = typeof payload === 'string' ? payload : payload?.serverCode;
@@ -522,12 +609,15 @@ module.exports = function(io) {
             console.log('user disconnected leaving');
             if (serverCode) {
                 socket.leave(serverCode);
+                presence.removeJoinedServer(socket.id, serverCode);
+                presence.removeObserver(serverCode, socket.id);
             }
             await handleUserDisconnect(socket.id);
         }, 'An error occurred while handling user leave');
 
         safeOn('disconnect', async () => {
             console.log('user disconnected');
+            presence.unregisterSocket(socket.id);
             await handleUserDisconnect(socket.id);
         }, 'An error occurred while handling disconnect');
 
@@ -574,6 +664,11 @@ module.exports = function(io) {
                 socket.emit('serverError', { message: "User not found" });
                 return;
             }
+            presence.updateSocketProfile(socket.id, {
+                userName: newUser.userName,
+                userRole: newUser.userRole,
+                userPicture: newUser.userPicture,
+            });
             socket.emit('updateProfile', {
                 newUserRole: newUser.userRole,
                 newUserName: newUser.userName,
@@ -702,8 +797,8 @@ module.exports = function(io) {
         }, 'An error occurred while deleting the server');
 
         safeOn('adminForceDisconnect', rateLimited('adminForceDisconnect', async () => {
-            const user = await getAuthenticatedUser();
-            if (user?.userRole === 'admin') {
+            const user = await assertAdmin();
+            if (user) {
                 io.sockets.sockets.forEach(s => {
                     s.emit('adminForceDisconnect');
                     s.disconnect(true);
@@ -712,12 +807,66 @@ module.exports = function(io) {
         }), 'An error occurred during admin force disconnect');
 
         safeOn('adminForceResetProfilPictures', rateLimited('adminForceResetProfilPictures', async () => {
-            const user = await getAuthenticatedUser();
-            if (user?.userRole === 'admin') {
+            const user = await assertAdmin();
+            if (user) {
                 const userPicture = { smiley: 1, color: "#999" };
                 await User.updateMany({}, { $set: { userPicture } });
             }
         }), 'An error occurred during admin profile reset');
+
+        safeOn('adminGetOverview', rateLimited('adminGetOverview', async () => {
+            const user = await assertAdmin();
+            if (!user) {
+                socket.emit('serverError', { message: 'Not authorized' });
+                return;
+            }
+            const overview = await buildAdminOverview();
+            socket.emit('adminOverview', overview);
+        }), 'An error occurred while fetching admin overview');
+
+        safeOn('adminGetSockets', rateLimited('adminGetSockets', async () => {
+            const user = await assertAdmin();
+            if (!user) {
+                socket.emit('serverError', { message: 'Not authorized' });
+                return;
+            }
+            const liveIds = new Set(io.sockets.sockets.keys());
+            const sockets = presence.listSockets().filter((entry) => {
+                if (liveIds.has(entry.socketId)) {
+                    return true;
+                }
+                presence.unregisterSocket(entry.socketId);
+                return false;
+            });
+            socket.emit('adminSockets', { sockets });
+        }), 'An error occurred while fetching admin sockets');
+
+        safeOn('adminDisconnectSocket', rateLimited('adminDisconnectSocket', async ({ socketId } = {}) => {
+            const user = await assertAdmin();
+            if (!user) {
+                socket.emit('serverError', { message: 'Not authorized' });
+                return;
+            }
+            if (!socketId || typeof socketId !== 'string') {
+                return;
+            }
+            const target = io.sockets.sockets.get(socketId);
+            if (target) {
+                target.emit('forceDisconnect');
+                target.disconnect(true);
+            }
+            if (socketId !== socket.id && socket.connected) {
+                const liveIds = new Set(io.sockets.sockets.keys());
+                const sockets = presence.listSockets().filter((entry) => {
+                    if (liveIds.has(entry.socketId)) {
+                        return true;
+                    }
+                    presence.unregisterSocket(entry.socketId);
+                    return false;
+                });
+                socket.emit('adminSockets', { sockets });
+            }
+        }), 'An error occurred while disconnecting a socket');
 
         socket.on('ping-server', (startTime) => {
             socket.emit('pong-server', { startTime });

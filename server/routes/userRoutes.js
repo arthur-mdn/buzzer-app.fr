@@ -8,6 +8,7 @@ const router = express.Router();
 const config = require('../others/config');
 const { USER_PUBLIC_FIELDS, USER_PROFILE_PROJECTION } = require('../others/userPublicFields');
 const { isAdminRegistration, normalizeUserName } = require('../others/sanitizeOptions');
+const presence = require('../others/presence');
 
 const MIN_USERNAME_LENGTH = 1;
 const MAX_USERNAME_LENGTH = 32;
@@ -178,6 +179,62 @@ router.get('/admin-servers', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+});
+
+router.get('/admin/server/:serverCode', async (req, res) => {
+    try {
+        const user = await User.findOne({ userId: req.userId });
+        if (!user) {
+            return res.status(403).json({ success: false, message: 'Utilisateur introuvable.' });
+        }
+        if (user.userRole !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Rôle administrateur requis.' });
+        }
+
+        const server = await GameServer.findOne({
+            code: req.params.serverCode,
+            status: { $ne: 'del' },
+        })
+            .populate({ path: 'players.user', select: USER_PUBLIC_FIELDS })
+            .populate({ path: 'buzzOrder', select: USER_PUBLIC_FIELDS });
+
+        if (!server) {
+            return res.status(404).json({ success: false, message: 'Server not found' });
+        }
+
+        const players = (server.players || []).map((player) => {
+            const playerUserId = player.user?.userId;
+            return {
+                userId: playerUserId,
+                userName: player.user?.userName,
+                userPicture: player.user?.userPicture,
+                role: player.role,
+                state: player.state,
+                score: player.score,
+                wins: player.wins,
+                connectedAt: player.state === 'online' && playerUserId
+                    ? presence.getConnectedAtForUser(playerUserId)
+                    : null,
+            };
+        });
+
+        res.json({
+            success: true,
+            server: {
+                code: server.code,
+                name: server.name,
+                hostId: server.hostId,
+                gameStatus: server.gameStatus,
+                options: server.options,
+                blason: server.blason,
+                updatedAt: server.updatedAt,
+                players,
+            },
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
