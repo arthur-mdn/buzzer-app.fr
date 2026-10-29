@@ -9,10 +9,13 @@
 }
 
 html, body {
-  height: 100%; /* Fait en sorte que le html et le body prennent toute la hauteur de la fenêtre */
-  margin: 0; /* Supprime la marge par défaut */
-  padding: 0; /* Supprime le padding par défaut */
+  height: 100%;
+  margin: 0;
+  padding: 0;
   box-sizing: inherit;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 html{
   --primary-buzzer-button-color: 222, 64, 64;
@@ -20,8 +23,26 @@ html{
   --background-url: url("../backgrounds/default.svg");
 }
 body {
-
   overflow: hidden;
+}
+
+img,
+svg,
+canvas,
+video {
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
+  pointer-events: auto;
+}
+
+input,
+textarea,
+[contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
 }
 body::before {
   content: "";
