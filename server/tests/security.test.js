@@ -33,6 +33,30 @@ describe('security hardening', () => {
         const token = generateToken({ userId: 'user-1' });
         const payload = verifyToken(token);
         assert.equal(payload.userId, 'user-1');
+        assert.equal(payload.typ, 'access');
+    });
+
+    it('rejects refresh tokens used as access tokens', () => {
+        delete require.cache[require.resolve('../others/jwtUtils')];
+        const { generateRefreshToken, verifyToken } = require('../others/jwtUtils');
+        const refresh = generateRefreshToken({ userId: 'user-1' });
+        assert.throws(() => verifyToken(refresh));
+    });
+
+    it('refreshes access tokens from a valid refresh token', () => {
+        delete require.cache[require.resolve('../others/jwtUtils')];
+        const {
+            generateTokenPair,
+            verifyRefreshToken,
+            verifyAccessToken,
+        } = require('../others/jwtUtils');
+        const pair = generateTokenPair({ userId: 'user-2' });
+        const refreshPayload = verifyRefreshToken(pair.refreshToken);
+        assert.equal(refreshPayload.userId, 'user-2');
+        assert.equal(refreshPayload.typ, 'refresh');
+        const accessPayload = verifyAccessToken(pair.token);
+        assert.equal(accessPayload.userId, 'user-2');
+        assert.equal(accessPayload.typ, 'access');
     });
 
     it('rejects tokens signed with another secret', () => {

@@ -70,6 +70,9 @@ function UserNameInput({ onSuccess }) {
                 if (data.success) {
                     setStorageItem(STORAGE_KEYS.userName, trimmedUserName);
                     setStorageItem(STORAGE_KEYS.token, data.token);
+                    if (data.refreshToken) {
+                        setStorageItem(STORAGE_KEYS.refreshToken, data.refreshToken);
+                    }
                     onSuccess(true);
                 } else {
                     alert(data.message || "Une erreur s'est produite lors de l'enregistrement de l'utilisateur.");

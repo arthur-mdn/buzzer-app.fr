@@ -2,6 +2,7 @@ const PREFIX = 'buzzerapp_';
 
 export const STORAGE_KEYS = {
     token: `${PREFIX}token`,
+    refreshToken: `${PREFIX}refreshToken`,
     userName: `${PREFIX}userName`,
     userId: `${PREFIX}userId`,
 };
@@ -54,6 +55,16 @@ export function removeStorageItem(key) {
 
 export function clearAuthStorage() {
     removeStorageItem(STORAGE_KEYS.token);
+    removeStorageItem(STORAGE_KEYS.refreshToken);
     removeStorageItem(STORAGE_KEYS.userName);
     removeStorageItem(STORAGE_KEYS.userId);
+}
+
+export function persistAuthTokens({ token, refreshToken } = {}) {
+    if (typeof token === 'string' && token) {
+        setStorageItem(STORAGE_KEYS.token, token);
+    }
+    if (typeof refreshToken === 'string' && refreshToken) {
+        setStorageItem(STORAGE_KEYS.refreshToken, refreshToken);
+    }
 }

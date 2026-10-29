@@ -1,6 +1,6 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
-const { generateToken, verifyToken } = require('../others/jwtUtils');
+const { generateTokenPair, verifyToken, verifyRefreshToken } = require('../others/jwtUtils');
 const { generateUserId, authenticateToken } = require('../others/utils');
 const GameServer = require('../models/GameServer');
 const User = require('../models/User');
@@ -58,8 +58,8 @@ router.post('/registerUser', registerUserLimiter, adminPasswordAttemptLimiter, a
         });
         await user.save();
 
-        const token = generateToken({ userId });
-        res.json({ success: true, token, userId });
+        const tokens = generateTokenPair({ userId });
+        res.json({ success: true, ...tokens, userId });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -75,19 +75,53 @@ router.get('/authenticate', async (req, res) => {
         const data = verifyToken(token);
         const user = await User.findOne({ userId: data.userId }).select(USER_PUBLIC_FIELDS + ' userTheme');
         if (user) {
+            const tokens = generateTokenPair({ userId: data.userId });
             res.json({
                 success: true,
                 userId: data.userId,
                 userRole: user.userRole,
                 userName: user.userName,
                 userPicture: user.userPicture,
-                userTheme: user.userTheme
+                userTheme: user.userTheme,
+                ...tokens,
             });
         } else {
             res.status(403).json({ success: false, message: "Utilisateur introuvable." });
         }
     } catch (err) {
         res.status(403).json({ success: false, message: "Token invalide." });
+    }
+});
+
+const refreshTokenLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 60,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: 'Too many refresh attempts, try again later' },
+});
+
+router.post('/refresh-token', refreshTokenLimiter, async (req, res) => {
+    const refreshToken = req.body?.refreshToken;
+    if (typeof refreshToken !== 'string' || !refreshToken) {
+        return res.status(401).json({ success: false, message: 'No refresh token provided.' });
+    }
+
+    try {
+        const data = verifyRefreshToken(refreshToken);
+        if (typeof data.userId !== 'string' || !data.userId) {
+            return res.status(403).json({ success: false, message: 'Refresh token invalide.' });
+        }
+
+        const user = await User.findOne({ userId: data.userId }).select('userId');
+        if (!user) {
+            return res.status(403).json({ success: false, message: 'Utilisateur introuvable.' });
+        }
+
+        const tokens = generateTokenPair({ userId: user.userId });
+        res.json({ success: true, ...tokens, userId: user.userId });
+    } catch {
+        res.status(403).json({ success: false, message: 'Refresh token invalide.' });
     }
 });
 

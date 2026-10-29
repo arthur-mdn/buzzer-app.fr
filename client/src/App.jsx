@@ -13,6 +13,7 @@ import { ThemeProvider } from './ThemeContext.jsx';
 import config from './config.js';
 import { normalizeProfileColor, normalizeProfileImageIndex } from './utils/profilePicture.js';
 import { STORAGE_KEYS, clearAuthStorage, getStorageItem } from './utils/storage.js';
+import { authenticateWithStoredToken } from './utils/auth.js';
 
 
 function App() {
@@ -84,39 +85,35 @@ function App() {
         });
     }, []);
 
-    const authenticateUser = useCallback(async (token) => {
+    const authenticateUser = useCallback(async () => {
         console.log("Authenticating user...");
         try {
-            const response = await fetch(config.serverUrl+'/authenticate', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await response.json();
-            if (data.success) {
-                setStatus('authenticated');
-                setupSocket();
-                setUserId(data.userId);
-                setUserRole(data.userRole);
-                setUserName(data.userName);
-                setUserPictureSmiley(normalizeProfileImageIndex(data.userPicture.smiley, false));
-                setUserPictureColor(normalizeProfileColor(data.userPicture.color));
-                setUserBackground(data.userTheme.background);
-            } else {
-                setStatusMsg(data.message);
-                setStatus('authError');
+            const result = await authenticateWithStoredToken();
+            if (result.reason === 'noToken') {
+                setStatus('noToken');
+                return;
             }
+            if (!result.ok) {
+                setStatusMsg(result.message || 'Token invalide.');
+                setStatus('authError');
+                return;
+            }
+
+            setUserId(result.user.userId);
+            setUserRole(result.user.userRole);
+            setUserName(result.user.userName);
+            setUserPictureSmiley(normalizeProfileImageIndex(result.user.userPicture.smiley, false));
+            setUserPictureColor(normalizeProfileColor(result.user.userPicture.color));
+            setUserBackground(result.user.userTheme.background);
+            setStatus('authenticated');
+            setupSocket();
         } catch {
             setStatus('connectError');
         }
     }, [setupSocket]);
 
     useEffect(() => {
-        const token = getStorageItem(STORAGE_KEYS.token);
-
-        if (token) {
-            authenticateUser(token);
-        } else {
-            setStatus('noToken');
-        }
+        authenticateUser();
     }, [authenticateUser]);
 
     const ping = useCallback(() => {
@@ -134,10 +131,7 @@ function App() {
 
     const onRegisterSuccess = () => {
         console.log("Register success...");
-        const token = getStorageItem(STORAGE_KEYS.token);
-        if (token) {
-            authenticateUser(token);
-        }
+        authenticateUser();
     };
     const onLogout = () => {
         console.log("logout...");
