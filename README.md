@@ -3,7 +3,7 @@ A buzzer-app with a server and a client.
 Made with React, NodeJS and Socket.io.
 Useful for quizzes and games for your parties like blind-test.
 
-Requires **Node.js 20.19+**.
+Requires **Node.js 26+**.
 
 ## Installation
 ```bash

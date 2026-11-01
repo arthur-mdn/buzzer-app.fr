@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "engines": {
-    "node": ">=20.19.0"
+    "node": ">=26"
   },
   "scripts": {
     "start": "node server.js",
@@ -22,7 +22,7 @@
     "cors": "^2.8.6",
     "dotenv": "^18.0.9",
     "express": "^5.3.0",
-    "express-rate-limit": "^8.7.1",
+    "express-rate-limit": "^8.7.2",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.11.4",
     "socket.io": "^4.8.4"
