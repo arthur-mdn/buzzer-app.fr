@@ -1,6 +1,7 @@
 {
   "short_name": "Buzzer App",
-  "name": "Buzzer App",
+  "name": "Buzzer App : application buzzer en ligne",
+  "description": "Application buzzer en ligne gratuite pour blind-test, quiz et soirées jeux. Multijoueur sur téléphone, sans installation.",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +21,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#de2e48",
+  "background_color": "#12141c"
 }

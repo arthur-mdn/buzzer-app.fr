@@ -119,7 +119,7 @@ function LandingPage({ authenticated = false }) {
                     <img
                         className="landing-hero__logo"
                         src="/buzzer-app-logo-transparent.webp"
-                        alt="Buzzer App"
+                        alt="Buzzer App, application buzzer en ligne"
                         width={220}
                         height={220}
                     />
@@ -181,6 +181,18 @@ function LandingPage({ authenticated = false }) {
                             </li>
                         ))}
                     </ul>
+                </section>
+
+                <section
+                    className="landing-section landing-section--seo"
+                    aria-labelledby="landing-seo-title"
+                >
+                    <h2 id="landing-seo-title" className="landing-section__title">{t('landing.seoTitle')}</h2>
+                    <div className="landing-seo">
+                        <p className="landing-seo__text">{t('landing.seoP1')}</p>
+                        <p className="landing-seo__text">{t('landing.seoP2')}</p>
+                        <p className="landing-seo__text">{t('landing.seoP3')}</p>
+                    </div>
                 </section>
 
                 <section className="landing-section landing-section--cta" aria-labelledby="landing-cta-title">

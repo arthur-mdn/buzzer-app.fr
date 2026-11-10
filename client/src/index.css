@@ -2829,6 +2829,29 @@ progress::-moz-progress-bar {
   color: rgba(255, 255, 255, 0.9);
 }
 
+.landing-section--seo {
+  padding-top: 2.25rem;
+}
+
+.landing-seo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  max-width: 36rem;
+  margin: 0 auto;
+}
+
+.landing-seo__text {
+  margin: 0;
+  font-family: "Nunito", "Segoe UI", sans-serif;
+  font-size: 0.98rem;
+  font-weight: 600;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: left;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
+}
+
 .landing-section--cta {
   display: flex;
   flex-direction: column;
