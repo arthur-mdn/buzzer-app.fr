@@ -440,6 +440,11 @@ function AdminView() {
                         <p style={{ margin: 0 }}>
                             Code <strong>{selectedServer.code}</strong> · statut {selectedServer.gameStatus}
                         </p>
+                        {selectedServer.createdAt && (
+                            <p style={{ margin: 0 }}>
+                                Créé le {format(new Date(selectedServer.createdAt), "dd/MM/yyyy 'à' HH'h'mm")}
+                            </p>
+                        )}
                         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                             <button
                                 type="button"

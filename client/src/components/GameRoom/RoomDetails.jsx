@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { format } from 'date-fns';
 import Modal from "../modal/Modal.jsx";
 import { QRCodeSVG } from 'qrcode.react';
 import { useGame } from "../../GameContext.jsx";
@@ -56,6 +57,11 @@ function RoomDetails({ serverInfo }) {
                         <button onClick={() => handleShareServer()} style={{margin:'0', padding:'0.2rem 1rem', display:'flex', alignItems:'center', gap:'0.5rem'}} className={"btn-push btn-push-blue"}>
                             <FaShare/>{serverCode}
                         </button>
+                        {serverInfo.createdAt && (
+                            <p style={{ margin: '0.35rem 0 0', fontSize: '0.85rem', opacity: 0.8 }}>
+                                Créé le {format(new Date(serverInfo.createdAt), "dd/MM/yyyy 'à' HH'h'mm")}
+                            </p>
+                        )}
                     </div>
                 </div>
                    {/*<div style={ (options.deductPointOnWrongAnswer || options.autoRestartAfterDecline) ? {marginBottom: "10px"} }>*/}

@@ -262,6 +262,7 @@ router.get('/admin/server/:serverCode', async (req, res) => {
                 gameStatus: server.gameStatus,
                 options: server.options,
                 blason: server.blason,
+                createdAt: server.createdAt,
                 updatedAt: server.updatedAt,
                 players,
             },
