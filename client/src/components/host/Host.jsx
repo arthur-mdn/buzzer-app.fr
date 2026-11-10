@@ -6,9 +6,11 @@ import Modal from "../modal/Modal.jsx";
 import BlasonServerChooser from "./BlasonServerChooser.jsx";
 import config from '../../config.js';
 import { STORAGE_KEYS, getStorageItem } from '../../utils/storage.js';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 function Host({ onClose }) {
     const { userId } = useUser();
+    const { t } = useLanguage();
     const [serverName, setServerName] = useState('');
     const [winPoint, setWinPoint] = useState(10);
     const [answerPoint, setAnswerPoint] = useState(1);
@@ -29,17 +31,17 @@ function Host({ onClose }) {
         try {
             const trimmedServerName = serverName.trim();
             if (!trimmedServerName) {
-                alert("Le nom du serveur ne peut pas être vide.");
+                alert(t('host.nameEmpty'));
                 return;
             }
 
             if (trimmedServerName.length < 3 || trimmedServerName.length > 30) {
-                alert("Le nom du serveur doit contenir entre 3 et 30 caractères.");
+                alert(t('host.nameLength'));
                 return;
             }
 
             if (selectedImageIndex == null || selectedImageIndex < 1 || selectedImageIndex > 6) {
-                alert("Blason de serveur invalide.");
+                alert(t('host.blasonInvalid'));
                 return;
             }
 
@@ -87,29 +89,29 @@ function Host({ onClose }) {
     };
 
     return (
-                <Modal isOpen={true} title={"Créer un serveur"} onClose={onClose}>
+                <Modal isOpen={true} title={t('host.title')} onClose={onClose}>
                     <form className={'modal_content'} onSubmit={handleSubmit}>
                         <div className="host-form__field">
-                            <label htmlFor="name">Nom du serveur</label>
+                            <label htmlFor="name">{t('host.nameLabel')}</label>
                             <input
                                 type="text"
                                 id="name"
                                 value={serverName}
                                 onChange={(e) => setServerName(e.target.value)}
                                 required
-                                placeholder="Serveur trop fun"
+                                placeholder={t('host.namePlaceholder')}
                             />
                         </div>
 
                         <div className="host-form__field">
-                            <label>Blason du serveur</label>
+                            <label>{t('host.blasonLabel')}</label>
                             <BlasonServerChooser
                                 onImageSelect={handleImageSelect}
                                 initialImageIndex={selectedImageIndex}
                             />
                         </div>
                         <div>
-                            <label htmlFor="winPoint">Points pour gagner la partie :</label>
+                            <label htmlFor="winPoint">{t('server.options.winPoint')}</label>
                             <input
                                 type="range"
                                 min="5"
@@ -124,7 +126,7 @@ function Host({ onClose }) {
                             <span>{winPoint}</span>
                         </div>
                         <div>
-                            <label htmlFor="answerPoint">Points gagnés par bonne réponse :</label>
+                            <label htmlFor="answerPoint">{t('server.options.answerPoint')}</label>
                             <input
                                 type="range"
                                 min="1"
@@ -145,7 +147,7 @@ function Host({ onClose }) {
                                     checked={deductPointOnWrongAnswer}
                                     onChange={(e) => setDeductPointOnWrongAnswer(e.target.checked)}
                                 />
-                                Retirer un point par mauvaise réponse
+                                {t('server.options.deductPoint')}
                             </label>
                         </div>
                         <div>
@@ -155,7 +157,7 @@ function Host({ onClose }) {
                                     checked={autoRestartAfterDecline}
                                     onChange={(e) => setAutoRestartAfterDecline(e.target.checked)}
                                 />
-                                Engager une nouvelle manche lors d'une mauvaise réponse.
+                                {t('server.options.autoRestart')}
                             </label>
                         </div>
                         <div>
@@ -165,10 +167,10 @@ function Host({ onClose }) {
                                     checked={isPublic}
                                     onChange={(e) => setIsPublic(e.target.checked)}
                                 />
-                                Serveur public
+                                {t('server.options.public')}
                             </label>
                         </div>
-                        <button type="submit" className={'btn-push btn-push-green'} style={{width: '100%', padding: '1rem'}}>Créer</button>
+                        <button type="submit" className={'btn-push btn-push-green'} style={{width: '100%', padding: '1rem'}}>{t('home.create')}</button>
                     </form>
                 </Modal>
     );

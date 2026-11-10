@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { format } from 'date-fns';
 import { FaChevronDown, FaChevronRight, FaEye, FaPlug, FaShieldHalved, FaUser, FaUserGroup } from 'react-icons/fa6';
 import { useSocket } from '../../SocketContext.jsx';
 import { useToken } from '../../TokenContext.jsx';
@@ -11,21 +10,23 @@ import BlasonServerViewer from '../host/BlasonServerViewer.jsx';
 import ProfilePictureViewer from '../UserNameInput/ProfilePictureViewer.jsx';
 import { countOnlinePlayers, sortServersByRecency } from '../../utils/serverList.js';
 import { useWatchedServers } from '../../hooks/useWatchedServers.js';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
+import { formatDateParts } from '../../i18n/formatDate.js';
 
-function formatConnectedSince(connectedAt) {
+function formatConnectedSince(connectedAt, t) {
     if (!connectedAt) {
         return '-';
     }
     const seconds = Math.max(0, Math.floor((Date.now() - connectedAt) / 1000));
     if (seconds < 60) {
-        return `${seconds}s`;
+        return t('admin.durationSeconds', { s: seconds });
     }
     const minutes = Math.floor(seconds / 60);
     if (minutes < 60) {
-        return `${minutes} min`;
+        return t('admin.durationMinutes', { m: minutes });
     }
     const hours = Math.floor(minutes / 60);
-    return `${hours} h ${minutes % 60} min`;
+    return t('admin.durationHours', { h: hours, m: minutes % 60 });
 }
 
 function hasPlayers(server) {
@@ -54,6 +55,7 @@ function PlayerAvatar({ picture, size = '2.5rem' }) {
 }
 
 function AdminView() {
+    const { t } = useLanguage();
     const socket = useSocket();
     const token = useToken();
     const { userId } = useUser();
@@ -227,25 +229,25 @@ function AdminView() {
             return '';
         }
         if (confirmAction.type === 'disconnectAll') {
-            return 'Déconnecter tous les utilisateurs ?';
+            return t('admin.confirmDisconnectAll');
         }
         if (confirmAction.type === 'resetPictures') {
-            return 'Réinitialiser toutes les photos de profil ?';
+            return t('admin.confirmResetPictures');
         }
         if (confirmAction.type === 'disconnectSocket') {
             if (confirmAction.isSelf) {
-                return 'Tu vas te déconnecter toi-même. Continuer ?';
+                return t('admin.confirmDisconnectSelf');
             }
-            return `Déconnecter ${confirmAction.userName || 'cette socket'} ?`;
+            return t('admin.confirmDisconnectUser', { name: confirmAction.userName || t('admin.thisSocket') });
         }
         if (confirmAction.type === 'kick') {
             if (confirmAction.isSelf) {
-                return `Tu es sur le point de te kick toi-même (${confirmAction.playerName}). Continuer ?`;
+                return t('admin.confirmKickSelf', { name: confirmAction.playerName || t('admin.thisPlayer') });
             }
-            return `Kick ${confirmAction.playerName} de ce salon ?`;
+            return t('admin.confirmKick', { name: confirmAction.playerName || t('admin.thisPlayer') });
         }
         if (confirmAction.type === 'join') {
-            return `Rejoindre le salon ${confirmAction.serverName || confirmAction.serverCode} ?`;
+            return t('admin.confirmJoin', { name: confirmAction.serverName || confirmAction.serverCode });
         }
         return '';
     })();
@@ -263,7 +265,7 @@ function AdminView() {
                     <span className="server-list__name">{server.name}</span>
                     <span className="server-list__meta">
                         <FaUserGroup aria-hidden="true" />
-                        {countOnlinePlayers(server)} en ligne · {server.players?.length || 0} joueurs · {server.code}
+                        {t('admin.serverMeta', { online: countOnlinePlayers(server), players: server.players?.length || 0, code: server.code })}
                     </span>
                 </div>
                 <FaChevronRight className="server-list__chevron" aria-hidden="true" />
@@ -272,15 +274,15 @@ function AdminView() {
     );
 
     const menuItems = [
-        { key: 'actions', label: 'Actions', Icon: FaShieldHalved },
-        { key: 'sockets', label: 'Sockets connectées', Icon: FaPlug },
-        { key: 'servers', label: 'Salons actifs', Icon: FaUserGroup },
+        { key: 'actions', label: t('admin.menuActions'), Icon: FaShieldHalved },
+        { key: 'sockets', label: t('admin.menuSockets'), Icon: FaPlug },
+        { key: 'servers', label: t('admin.menuServers'), Icon: FaUserGroup },
     ];
 
     return (
         <div className="tab-screen salons-view admin-view">
             <div className="salons-panel admin-view__panel">
-                <h2 className="salons-panel__title">Administration</h2>
+                <h2 className="salons-panel__title">{t('admin.title')}</h2>
                 <div className="admin-menu">
                     {menuItems.map(({ key, label, Icon }) => (
                         <button
@@ -298,7 +300,7 @@ function AdminView() {
             </div>
 
             <Modal
-                title="Actions"
+                title={t('admin.menuActions')}
                 isOpen={openPanel === 'actions'}
                 onClose={() => setOpenPanel(null)}
             >
@@ -309,7 +311,7 @@ function AdminView() {
                         style={{ padding: '0.85rem 1rem', fontSize: '0.95rem', width: '100%' }}
                         onClick={() => setConfirmAction({ type: 'disconnectAll' })}
                     >
-                        Déconnecter tous
+                        {t('admin.disconnectAll')}
                     </button>
                     <button
                         type="button"
@@ -317,20 +319,20 @@ function AdminView() {
                         style={{ padding: '0.85rem 1rem', fontSize: '0.95rem', width: '100%' }}
                         onClick={() => setConfirmAction({ type: 'resetPictures' })}
                     >
-                        Reset photos
+                        {t('admin.resetPictures')}
                     </button>
                 </div>
             </Modal>
 
             <Modal
-                title={`Sockets connectées (${sockets.length})`}
+                title={t('admin.socketsTitle', { count: sockets.length })}
                 isOpen={openPanel === 'sockets'}
                 onClose={() => setOpenPanel(null)}
                 maxHeight="min(85dvh, calc(100dvh - 2rem))"
             >
                 <div className="modal_content admin-modal-body">
                     {sockets.length === 0 ? (
-                        <p className="server-list__empty">Aucune socket.</p>
+                        <p className="server-list__empty">{t('admin.noSockets')}</p>
                     ) : (
                         <ul className="admin-socket-list admin-socket-list--modal">
                             {sockets.map((entry) => {
@@ -341,15 +343,15 @@ function AdminView() {
                                             <PlayerAvatar picture={entry.userPicture} />
                                             <div>
                                                 <strong>
-                                                    {entry.userName || 'Inconnu'}
-                                                    {isSelf ? ' (vous)' : ''}
+                                                    {entry.userName || t('admin.unknown')}
+                                                    {isSelf ? ` ${t('admin.youSuffix')}` : ''}
                                                 </strong>
                                                 <span>{entry.userId} · {entry.userRole}</span>
-                                                <span>Depuis {formatConnectedSince(entry.connectedAt)}</span>
+                                                <span>{t('admin.since', { duration: formatConnectedSince(entry.connectedAt, t) })}</span>
                                                 {(entry.serverCodes?.length > 0 || entry.observing?.length > 0) && (
                                                     <span>
                                                         {entry.serverCodes?.join(', ')}
-                                                        {entry.observing?.length ? ` · obs: ${entry.observing.join(', ')}` : ''}
+                                                        {entry.observing?.length ? ` · ${t('admin.observing', { codes: entry.observing.join(', ') })}` : ''}
                                                     </span>
                                                 )}
                                             </div>
@@ -360,7 +362,7 @@ function AdminView() {
                                                 className="btn-push btn-push-blue"
                                                 style={{ padding: '0.35rem 0.65rem', fontSize: '0.8rem' }}
                                                 onClick={() => openUserProfile(entry.userId)}
-                                                aria-label={`Voir le profil de ${entry.userName || entry.userId}`}
+                                                aria-label={t('admin.viewProfile', { name: entry.userName || entry.userId })}
                                             >
                                                 <FaUser aria-hidden="true" />
                                             </button>
@@ -371,11 +373,11 @@ function AdminView() {
                                                 onClick={() => setConfirmAction({
                                                     type: 'disconnectSocket',
                                                     socketId: entry.socketId,
-                                                    userName: entry.userName || 'cette socket',
+                                                    userName: entry.userName,
                                                     isSelf,
                                                 })}
                                             >
-                                                Déco
+                                                {t('admin.disconnectShort')}
                                             </button>
                                         </div>
                                     </li>
@@ -387,14 +389,14 @@ function AdminView() {
             </Modal>
 
             <Modal
-                title="Salons actifs"
+                title={t('admin.menuServers')}
                 isOpen={openPanel === 'servers' && !selectedServer}
                 onClose={closeServersFlow}
                 maxHeight="min(85dvh, calc(100dvh - 2rem))"
             >
                 <div className="modal_content admin-modal-body">
                     {occupiedServers.length === 0 ? (
-                        <p className="server-list__empty">Aucun salon actif.</p>
+                        <p className="server-list__empty">{t('admin.noActiveServers')}</p>
                     ) : (
                         <ul className="server-list admin-server-list">
                             {occupiedServers.map(renderServerButton)}
@@ -409,7 +411,7 @@ function AdminView() {
                                 onClick={() => setShowEmptyServers((open) => !open)}
                                 aria-expanded={showEmptyServers}
                             >
-                                <span>Salons vides ({emptyServers.length})</span>
+                                <span>{t('admin.emptyServers', { count: emptyServers.length })}</span>
                                 <FaChevronDown
                                     aria-hidden="true"
                                     style={{
@@ -429,7 +431,7 @@ function AdminView() {
             </Modal>
 
             <Modal
-                title={selectedServer ? selectedServer.name : 'Salon'}
+                title={selectedServer ? selectedServer.name : t('admin.roomTitle')}
                 isOpen={Boolean(selectedServer)}
                 onBack={backToServers}
                 onClose={closeServersFlow}
@@ -438,11 +440,11 @@ function AdminView() {
                 {selectedServer && (
                     <div className="modal_content admin-modal-body" style={{ alignItems: 'stretch' }}>
                         <p style={{ margin: 0 }}>
-                            Code <strong>{selectedServer.code}</strong> · statut {selectedServer.gameStatus}
+                            {t('admin.code')} <strong>{selectedServer.code}</strong> · {t('admin.status')} {t(`game.status.${selectedServer.gameStatus}`)}
                         </p>
                         {selectedServer.createdAt && (
                             <p style={{ margin: 0 }}>
-                                Créé le {format(new Date(selectedServer.createdAt), "dd/MM/yyyy 'à' HH'h'mm")}
+                                {t('room.createdAt', formatDateParts(selectedServer.createdAt, t))}
                             </p>
                         )}
                         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -452,7 +454,7 @@ function AdminView() {
                                 style={{ padding: '0.55rem 1rem', fontSize: '0.9rem', display: 'inline-flex', gap: '0.4rem', alignItems: 'center' }}
                                 onClick={() => navigate(`/server/${selectedServer.code}?observe=1`)}
                             >
-                                <FaEye aria-hidden="true" /> Observer
+                                <FaEye aria-hidden="true" /> {t('admin.observe')}
                             </button>
                             <button
                                 type="button"
@@ -464,7 +466,7 @@ function AdminView() {
                                     serverName: selectedServer.name,
                                 })}
                             >
-                                Rejoindre
+                                {t('home.join')}
                             </button>
                         </div>
                         <ul className="admin-player-list admin-player-list--modal">
@@ -481,13 +483,13 @@ function AdminView() {
                                             <div>
                                                 <strong>
                                                     {player.userName}
-                                                    {isSelf ? ' (vous)' : ''}
+                                                    {isSelf ? ` ${t('admin.youSuffix')}` : ''}
                                                 </strong>
                                                 <span>
-                                                    {player.role} · {player.state}
-                                                    {player.state === 'online' ? ` · ${formatConnectedSince(player.connectedAt)}` : ''}
+                                                    {player.role === 'host' ? t('players.roleHost') : t('players.roleUser')} · {player.state === 'online' ? t('players.online') : t('players.offline')}
+                                                    {player.state === 'online' ? ` · ${formatConnectedSince(player.connectedAt, t)}` : ''}
                                                 </span>
-                                                <span>{player.score ?? 0} pts · {player.wins ?? 0} wins</span>
+                                                <span>{t('admin.playerStats', { score: player.score ?? 0, wins: player.wins ?? 0 })}</span>
                                             </div>
                                         </button>
                                         <button
@@ -497,11 +499,11 @@ function AdminView() {
                                             onClick={() => setConfirmAction({
                                                 type: 'kick',
                                                 playerId: player.userId,
-                                                playerName: player.userName || 'ce joueur',
+                                                playerName: player.userName,
                                                 isSelf,
                                             })}
                                         >
-                                            Kick
+                                            {t('players.kick')}
                                         </button>
                                     </li>
                                 );
@@ -512,7 +514,7 @@ function AdminView() {
             </Modal>
 
             <Modal
-                title="Profil"
+                title={t('profile.title')}
                 isOpen={Boolean(profileDetails)}
                 onClose={() => setProfileDetails(null)}
             >
@@ -522,13 +524,13 @@ function AdminView() {
                             <PlayerAvatar picture={profileDetails.userPicture} size="5.5rem" />
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', minWidth: 0 }}>
                                 <h2 style={{ margin: 0 }}>{profileDetails.userName}</h2>
-                                <span>{profileDetails.userRole === 'admin' ? 'Administrateur' : 'Utilisateur'}</span>
+                                <span>{profileDetails.userRole === 'admin' ? t('players.roleAdmin') : t('players.roleUser')}</span>
                                 <span style={{ opacity: 0.75, fontSize: '0.85rem' }}>{profileDetails.userId}</span>
                             </div>
                         </div>
                         {profileDetails.creation && (
                             <p style={{ margin: 0 }}>
-                                Inscrit le {format(new Date(profileDetails.creation), "dd/MM/yyyy 'à' HH'h'mm")}
+                                {t('players.registeredAt', formatDateParts(profileDetails.creation, t))}
                             </p>
                         )}
                     </div>
@@ -536,7 +538,7 @@ function AdminView() {
             </Modal>
 
             <Modal
-                title="Confirmer"
+                title={t('common.confirm')}
                 isOpen={Boolean(confirmAction)}
                 onClose={() => setConfirmAction(null)}
             >
@@ -551,7 +553,7 @@ function AdminView() {
                             style={{ flex: 1, padding: '0.75rem' }}
                             onClick={() => setConfirmAction(null)}
                         >
-                            Annuler
+                            {t('common.cancel')}
                         </button>
                         <button
                             type="button"
@@ -559,7 +561,7 @@ function AdminView() {
                             style={{ flex: 1, padding: '0.75rem' }}
                             onClick={runConfirmedAction}
                         >
-                            Confirmer
+                            {t('common.confirm')}
                         </button>
                     </div>
                 </div>

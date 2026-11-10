@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useSocket } from './SocketContext.jsx';
 import { eventMatchesServer } from './utils/serverEvent.js';
+import { useLanguage } from './i18n/LanguageContext.jsx';
 
 const GameContext = createContext();
 
@@ -44,6 +45,7 @@ export function GameProvider({
     initialPlayers,
 }) {
     const socket = useSocket();
+    const { t } = useLanguage();
     const [gameState, setGameState] = useState(initialGameState || 'waiting');
     const [message, setMessage] = useState('');
     const [buzzOrder, setBuzzOrder] = useState(initialBuzzOrder || []);
@@ -56,13 +58,13 @@ export function GameProvider({
         const handleGameStarted = (payload) => {
             if (!eventMatchesServer(payload ?? { serverCode }, serverCode)) return;
             setGameState('inProgress');
-            setMessage('La manche a commencé !');
+            setMessage(t('game.roundStarted'));
         };
 
         const handleGameReStarted = (payload) => {
             if (!eventMatchesServer(payload, serverCode)) return;
             const server = payload.server;
-            setMessage('La partie va recommencer !');
+            setMessage(t('game.restarting'));
             setGameState(server.gameStatus);
             setOptions(server.options);
             setPlayers(dedupePlayers(server.players));
@@ -74,7 +76,7 @@ export function GameProvider({
         const handleGameCancelled = (payload) => {
             if (!eventMatchesServer(payload ?? { serverCode }, serverCode)) return;
             setGameState('waiting');
-            setMessage('La manche a été annulée.');
+            setMessage(t('game.roundCancelled'));
         };
 
         const handlePlayerBuzzed = (payload) => {
@@ -92,7 +94,7 @@ export function GameProvider({
             setGameState(server.gameStatus);
             setPlayers(dedupePlayers(server.players));
             setOptions(server.options);
-            setMessage('Réponse valide !');
+            setMessage(t('game.answerValid'));
             setAnimationType('correct');
         };
 
@@ -103,7 +105,7 @@ export function GameProvider({
             setGameState(server.gameStatus);
             setPlayers(dedupePlayers(server.players));
             setOptions(server.options);
-            setMessage('Réponse gagnante !');
+            setMessage(t('game.answerWinning'));
         };
 
         const handleAnswerDeclined = (payload) => {
@@ -113,7 +115,7 @@ export function GameProvider({
             setGameState(server.gameStatus);
             setPlayers(dedupePlayers(server.players));
             setOptions(server.options);
-            setMessage('Réponse incorrecte !');
+            setMessage(t('game.answerWrong'));
             setAnimationType('wrong');
         };
 
@@ -139,7 +141,7 @@ export function GameProvider({
         };
 
         const handleServerError = ({ message: errorMessage } = {}) => {
-            const text = errorMessage || 'Une erreur est survenue';
+            const text = errorMessage || t('game.genericError');
             setServerError(text);
             setMessage(text);
         };
@@ -173,7 +175,7 @@ export function GameProvider({
             socket.off('serverError', handleServerError);
             socket.off('error', handleSocketError);
         };
-    }, [socket, serverCode]);
+    }, [socket, serverCode, t]);
 
     const value = {
         gameState,

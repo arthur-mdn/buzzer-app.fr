@@ -8,6 +8,7 @@ import {
     normalizeProfileColor,
     fetchColoredProfileSvg,
 } from '../../utils/profilePicture.js';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 function ProfilePictureChooser({
     onImageSelect,
@@ -16,6 +17,7 @@ function ProfilePictureChooser({
     initialColor,
     collapsibleSmileys = false,
 }) {
+    const { t } = useLanguage();
     const [selectedImageIndex, setSelectedImageIndex] = useState(() =>
         normalizeProfileImageIndex(initialImageIndex, initialImageIndex == null)
     );
@@ -74,7 +76,7 @@ function ProfilePictureChooser({
         <div
             className={`avatar-picker__grid${collapsibleSmileys ? ' avatar-picker__grid--full' : ''}`}
             role="listbox"
-            aria-label="Smileys disponibles"
+            aria-label={t('avatar.smileys')}
         >
             {Array.from({ length: TOTAL_PROFILE_SMILEYS }, (_, i) => i + 1).map((number) => {
                 const isSelected = number === selectedImageIndex;
@@ -84,7 +86,7 @@ function ProfilePictureChooser({
                         type="button"
                         role="option"
                         aria-selected={isSelected}
-                        aria-label={`Smiley ${number}`}
+                        aria-label={t('avatar.smiley', { number })}
                         className={`avatar-picker__option${isSelected ? ' avatar-picker__option--selected' : ''}`}
                         onClick={() => handleImageSelect(number)}
                     >
@@ -108,7 +110,7 @@ function ProfilePictureChooser({
                         className="avatar-picker__preview-btn"
                         onClick={() => setShowSmileyGrid((open) => !open)}
                         aria-expanded={showSmileyGrid}
-                        aria-label={showSmileyGrid ? 'Fermer le choix de smiley' : 'Modifier le smiley'}
+                        aria-label={showSmileyGrid ? t('avatar.closeSmileyPicker') : t('avatar.editSmiley')}
                     >
                         <div className="avatar-picker__preview">
                             <div
@@ -125,7 +127,7 @@ function ProfilePictureChooser({
                 </>
             ) : (
                 <>
-                    <p className="avatar-picker__section-title">Aperçu</p>
+                    <p className="avatar-picker__section-title">{t('avatar.preview')}</p>
                     <div className="avatar-picker__preview">
                         <div
                             className="avatar-picker__preview-inner"
@@ -133,13 +135,13 @@ function ProfilePictureChooser({
                         />
                     </div>
 
-                    <p className="avatar-picker__section-title">Smiley</p>
+                    <p className="avatar-picker__section-title">{t('avatar.smileyTitle')}</p>
                     {smileyGrid}
                 </>
             )}
 
-            <p className="avatar-picker__section-title">Couleur</p>
-            <div className="avatar-picker__colors" role="listbox" aria-label="Couleurs du profil">
+            <p className="avatar-picker__section-title">{t('avatar.colorTitle')}</p>
+            <div className="avatar-picker__colors" role="listbox" aria-label={t('avatar.colors')}>
                 {PROFILE_COLORS.map((color) => {
                     const isSelected = selectedColor === color;
                     return (
@@ -148,7 +150,7 @@ function ProfilePictureChooser({
                             type="button"
                             role="option"
                             aria-selected={isSelected}
-                            aria-label={`Couleur ${color}`}
+                            aria-label={t('avatar.color', { color })}
                             className={`avatar-picker__color${isSelected ? ' avatar-picker__color--selected' : ''}`}
                             style={{ backgroundColor: color }}
                             onClick={() => handleColorSelect(color)}

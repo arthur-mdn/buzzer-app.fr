@@ -5,9 +5,11 @@ import { useSocket } from '../../SocketContext.jsx';
 import { useGame } from '../../GameContext.jsx';
 import Podium from './Podium.jsx';
 import GameWaitMessage from './GameWaitMessage.jsx';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 function PlayerGameRoom({ serverInfo }) {
     const socket = useSocket();
+    const { t } = useLanguage();
     const { userId } = useUser();
     const { serverCode } = useParams();
     const { gameState, message, setMessage, buzzOrder, players } = useGame();
@@ -25,12 +27,12 @@ function PlayerGameRoom({ serverInfo }) {
         if (gameState === 'buzzed' && buzzOrder.length > 0) {
             const latestBuzzer = buzzOrder[0];
             if (latestBuzzer.userId === userId) {
-                setMessage('Vous avez buzzé !');
+                setMessage(t('game.youBuzzed'));
             } else {
-                setMessage(`Le joueur ${latestBuzzer.userName} a buzzé !`);
+                setMessage(t('game.playerBuzzed', { name: latestBuzzer.userName }));
             }
         }
-    }, [buzzOrder, gameState, serverInfo, setMessage, userId]);
+    }, [buzzOrder, gameState, serverInfo, setMessage, userId, t]);
 
     useEffect(() => {
         const unlockIfStillPlayable = ({ server } = {}) => {
@@ -56,7 +58,7 @@ function PlayerGameRoom({ serverInfo }) {
         }
 
         buzzLockRef.current = true;
-        setMessage('Buzz envoyé...');
+        setMessage(t('game.buzzSent'));
         socket.emit('buzz', { serverCode });
     };
 
@@ -108,7 +110,7 @@ function PlayerGameRoom({ serverInfo }) {
                 <div className={'modal_bg'}>
                     <div className={'modal'}>
                         <div className={'modal_content_title'}>
-                            <h2>Victoire !</h2>
+                            <h2>{t('game.victory')}</h2>
                         </div>
                         <div className={'modal_content'}>
                             <Podium players={players} />
@@ -126,7 +128,7 @@ function PlayerGameRoom({ serverInfo }) {
                             isPressed ? 'btn--pressed' : '',
                         ].filter(Boolean).join(' ')}
                         id="big-red-button"
-                        aria-label="Buzzer"
+                        aria-label={t('game.buzzerLabel')}
                         aria-disabled={!canBuzz}
                         onPointerDown={handlePointerDown}
                         onPointerUp={handlePointerUp}
@@ -145,8 +147,8 @@ function PlayerGameRoom({ serverInfo }) {
             )}
             {gameState === 'waiting' && (
                 <GameWaitMessage
-                    title="En attente de l'hôte"
-                    subtitle="Prépare toi, la manche va bientôt commencer"
+                    title={t('game.waitingHostTitle')}
+                    subtitle={t('game.waitingHostSubtitle')}
                 />
             )}
         </div>

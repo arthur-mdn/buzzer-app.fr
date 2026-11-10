@@ -5,9 +5,11 @@ import config from '../../config';
 import { useToken } from '../../TokenContext.jsx';
 import ServerList from './ServerList.jsx';
 import { useWatchedServers } from '../../hooks/useWatchedServers.js';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 function AdminServerList() {
     const token = useToken();
+    const { t } = useLanguage();
     const socket = useSocket();
     const { userId } = useUser();
     const [userServers, setUserServers] = useState([]);
@@ -46,7 +48,7 @@ function AdminServerList() {
     return (
         <ServerList
             servers={userServers}
-            emptyMessage="Aucun salon."
+            emptyMessage={t('admin.noServer')}
         />
     );
 }

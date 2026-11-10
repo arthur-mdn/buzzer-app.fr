@@ -36,7 +36,7 @@ function ServerList({
                                 type="button"
                                 className={`server-list__check${isSelected ? ' is-checked' : ''}`}
                                 aria-pressed={isSelected}
-                                aria-label={isSelected ? `Désélectionner ${server.name}` : `Sélectionner ${server.name}`}
+                                aria-label={isSelected ? t('salons.deselectOne', { name: server.name }) : t('salons.selectOne', { name: server.name })}
                                 onClick={() => onToggleSelect?.(server.code)}
                             >
                                 {isSelected ? <FaCheck aria-hidden="true" /> : null}

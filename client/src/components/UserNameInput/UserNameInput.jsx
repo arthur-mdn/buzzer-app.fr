@@ -30,7 +30,7 @@ function UserNameInput({ onSuccess }) {
         let trimmedPassword = tempPassword.trim();
 // Vérifiez si la chaîne est vide après suppression des espaces
         if (!trimmedUserName) {
-            alert("Le nom d'utilisateur ne peut pas être vide.");
+            alert(t('auth.nameEmpty'));
             return;
         }
 
@@ -40,23 +40,23 @@ function UserNameInput({ onSuccess }) {
 
 // Vérifiez la longueur de la chaîne
         if (trimmedUserName.length < 3 || trimmedUserName.length > 30) {
-            alert("Le nom d'utilisateur doit contenir entre 3 et 30 caractères.");
+            alert(t('auth.nameLength'));
             return;
         }
 
 // Vérifiez si la chaîne correspond à l'expression régulière
         if (!validInput.test(trimmedUserName)) {
-            alert("Seuls les lettres, chiffres, tirets, underscores, points et espaces sont autorisés dans le nom d'utilisateur.");
+            alert(t('auth.nameChars'));
             return;
         }
 
         if (selectedImageIndex == null || selectedImageIndex < 1 || selectedImageIndex > 30) {
-            alert("Image de profil invalide.");
+            alert(t('auth.pictureInvalid'));
             return;
         }
 
         if (selectedColor == null || !PROFILE_COLORS.includes(normalizeProfileColor(selectedColor))) {
-            alert("Couleur de profil invalide.");
+            alert(t('auth.colorInvalid'));
             return;
         }
 
@@ -86,14 +86,14 @@ function UserNameInput({ onSuccess }) {
                     }
                     onSuccess(true);
                 } else {
-                    alert(data.message || "Une erreur s'est produite lors de l'enregistrement de l'utilisateur.");
+                    alert(data.message || t('auth.registerError'));
                 }
             } else {
-                alert("Une erreur s'est produite lors de la communication avec le serveur.");
+                alert(t('common.serverCommError'));
             }
         } catch (error) {
             console.error(error);
-            alert("Une erreur s'est produite lors de la communication avec le serveur.");
+            alert(t('common.serverCommError'));
         }
     };
 
@@ -105,7 +105,7 @@ function UserNameInput({ onSuccess }) {
                 <div className={'modal'}>
                     <div className={'modal_content_title'}>
                         {showBackToLanding && (
-                            <Link to="/" className="back btn-push" aria-label="Retour à l'accueil">
+                            <Link to="/" className="back btn-push" aria-label={t('auth.backHome')}>
                                 ‹
                             </Link>
                         )}

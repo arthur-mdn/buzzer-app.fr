@@ -3,10 +3,12 @@ import ProfilePictureViewer from "../UserNameInput/ProfilePictureViewer.jsx";
 import {useSocket} from "../../SocketContext.jsx";
 import {useUser} from "../../UserContext.jsx";
 import config from "../../config";
+import { useLanguage } from "../../i18n/LanguageContext.jsx";
 
 function PlayerItem({ player, onShowDetails, serverInfo, onKickPlayer, onMenuToggle, isOpen }) {
     const socket = useSocket();
     const { userId } = useUser();
+    const { t } = useLanguage();
 
     const handleKickPlayer = () => {
         // Envoyer un événement de socket pour expulser le joueur
@@ -45,14 +47,14 @@ function PlayerItem({ player, onShowDetails, serverInfo, onKickPlayer, onMenuTog
                     <div style={{display:"flex", flexDirection:"column", gap:"0.2rem"}}>
                         <span>{player.user.userName}</span>
                         <span className={player.state} >
-                                {player.state === 'online' ? 'En ligne' : 'Hors ligne'}
+                                {player.state === 'online' ? t('players.online') : t('players.offline')}
                             </span>
                     </div>
                     {(player.role !== 'host') &&
                         <div style={{marginLeft: 'auto', display: "flex"}}>
                             <div
                                 style={{marginLeft: 'auto', display: 'flex', alignItems: "center", padding: '0 0.5rem 0 0'}}
-                                title={player.wins + ' victoires'}>
+                                title={t('players.wins', { count: player.wins })}>
                                 <span style={{marginLeft: 'auto'}}>{player.score} / {serverInfo.options.winPoint} </span>
                             </div>
                             <div style={{
@@ -63,8 +65,8 @@ function PlayerItem({ player, onShowDetails, serverInfo, onKickPlayer, onMenuTog
                                 padding: '0 0.5rem 0 0',
                                 fontFamily:"Fredoka One",
                                 textShadow: "2px 1px 2px black",
-                            }} title={player.wins + ' victoires'}>
-                                <img src={`${config.instanceUrl}/trophee.png`} alt="trophée" style={{width: '40px'}}/>
+                            }} title={t('players.wins', { count: player.wins })}>
+                                <img src={`${config.instanceUrl}/trophee.png`} alt={t('players.trophyAlt')} style={{width: '40px'}}/>
                                 <span style={{color: "white"}}>
                                         {player.wins}
                                     </span>
@@ -79,11 +81,11 @@ function PlayerItem({ player, onShowDetails, serverInfo, onKickPlayer, onMenuTog
                         <div className={"player_dropdown"}>
                             <ul style={{listStyle: "none", alignItems:'center'}}>
                                 <li  onClick={handlePlayerProfile} >
-                                    <button type={"button"} className={"btn-push btn-push-green"}>Afficher le profil</button>
+                                    <button type={"button"} className={"btn-push btn-push-green"}>{t('players.showProfile')}</button>
                                 </li>
                                 {(serverInfo.hostId === userId && userId !== player.user.userId) && (
                                     <li onClick={handleKickPlayer}>
-                                        <button type={"button"} className={"btn-push"}>Kick</button>
+                                        <button type={"button"} className={"btn-push"}>{t('players.kick')}</button>
                                     </li>
                                 )}
                             </ul>

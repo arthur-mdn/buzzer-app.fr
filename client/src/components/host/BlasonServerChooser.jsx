@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { FaPen } from 'react-icons/fa6';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 const TOTAL_BLASONS = 6;
 
 function BlasonServerChooser({ onImageSelect, initialImageIndex = 1 }) {
+    const { t } = useLanguage();
     const [selectedImageIndex, setSelectedImageIndex] = useState(initialImageIndex);
     const [showGrid, setShowGrid] = useState(false);
 
@@ -26,7 +28,7 @@ function BlasonServerChooser({ onImageSelect, initialImageIndex = 1 }) {
                 className="avatar-picker__preview-btn"
                 onClick={() => setShowGrid((open) => !open)}
                 aria-expanded={showGrid}
-                aria-label={showGrid ? 'Fermer le choix de blason' : 'Modifier le blason'}
+                aria-label={showGrid ? t('blason.close') : t('blason.edit')}
             >
                 <div className="avatar-picker__preview">
                     <div className="avatar-picker__preview-inner">
@@ -43,7 +45,7 @@ function BlasonServerChooser({ onImageSelect, initialImageIndex = 1 }) {
             </button>
 
             {showGrid && (
-                <div className="avatar-picker__grid avatar-picker__grid--compact" role="listbox" aria-label="Blasons disponibles">
+                <div className="avatar-picker__grid avatar-picker__grid--compact" role="listbox" aria-label={t('blason.available')}>
                     {Array.from({ length: TOTAL_BLASONS }, (_, i) => i + 1).map((number) => {
                         const isSelected = number === selectedImageIndex;
                         return (
@@ -52,7 +54,7 @@ function BlasonServerChooser({ onImageSelect, initialImageIndex = 1 }) {
                                 type="button"
                                 role="option"
                                 aria-selected={isSelected}
-                                aria-label={`Blason ${number}`}
+                                aria-label={t('blason.item', { number })}
                                 className={`avatar-picker__option${isSelected ? ' avatar-picker__option--selected' : ''}`}
                                 onClick={() => handleSelect(number)}
                             >

@@ -21,7 +21,7 @@ function ThemeChooser({ onBackgroundSelect , initialBackground }) {
                     <img
                         key={name}
                         src={`/backgrounds/${name}.svg`}
-                        alt={`Smiley ${name}`}
+                        alt={t('avatar.themeAlt', { name: t(`theme.${name}`) })}
                         onClick={() => handleNewBackgroundSelect(name)}
                         style={{width: "55px", height:"55px", objectFit:"cover", border: name === selectedBackground ? '2px solid blue' : ""}}
                     />

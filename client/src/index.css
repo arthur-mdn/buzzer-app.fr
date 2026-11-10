@@ -2322,7 +2322,7 @@ progress::-moz-progress-bar {
   margin-bottom: 10px;
 }
 #html5-qrcode-button-camera-permission:after {
-  content: "Autoriser la caméra";
+  content: var(--qr-camera-permission);
   text-indent: 0;
   display: block;
   line-height: initial;
@@ -2332,7 +2332,7 @@ progress::-moz-progress-bar {
 }
 #html5-qrcode-anchor-scan-type-change:after {
   font-size: 1rem;
-  content: "Scanner à partir d'un fichier";
+  content: var(--qr-scan-file);
   cursor: pointer;
 }
 #html5-qrcode-button-file-selection {
@@ -2341,7 +2341,7 @@ progress::-moz-progress-bar {
   margin-bottom: 0 !important;
 }
 #html5-qrcode-button-file-selection:after {
-  content: "Sélectionner un fichier";
+  content: var(--qr-select-file);
   text-indent: 0;
   display: block;
   line-height: initial;
@@ -2352,7 +2352,7 @@ progress::-moz-progress-bar {
   line-height: 0;
 }
 #html5qr-code-full-region__header_message:after {
-  content: "Le code QR ne peut pas être lu sur la photo téléchargée, veuillez le recadrer et le télécharger.";
+  content: var(--qr-unreadable);
   text-indent: 0;
   display: block;
   line-height: initial;

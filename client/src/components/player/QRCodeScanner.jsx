@@ -1,5 +1,6 @@
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import { useEffect } from 'react';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 const qrcodeRegionId = "html5qr-code-full-region";
 
@@ -22,6 +23,7 @@ const createConfig = (props) => {
 };
 
 const QRCodeScanner = (props) => {
+    const { t } = useLanguage();
 
     useEffect(() => {
         // when component mounts
@@ -43,7 +45,15 @@ const QRCodeScanner = (props) => {
     }, []);
 
     return (
-        <div id={qrcodeRegionId} />
+        <div
+            id={qrcodeRegionId}
+            style={{
+                '--qr-camera-permission': JSON.stringify(t('qr.cameraPermission')),
+                '--qr-scan-file': JSON.stringify(t('qr.scanFile')),
+                '--qr-select-file': JSON.stringify(t('qr.selectFile')),
+                '--qr-unreadable': JSON.stringify(t('qr.unreadable')),
+            }}
+        />
     );
 };
 

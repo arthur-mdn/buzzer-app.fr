@@ -6,21 +6,23 @@ import config from '../../config';
 import { useToken } from '../../TokenContext.jsx';
 import Modal from '../modal/Modal.jsx';
 import PlayerItem from './PlayerItem.jsx';
-import { format } from 'date-fns';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
+import { formatDateParts } from '../../i18n/formatDate.js';
 
 function PlayerDetailsPopup({ details, isOpen, onClose }) {
+    const { t } = useLanguage();
     if (!details) return null;
     return (
-        <Modal isOpen={isOpen} title={"Profil du joueur"} onClose={onClose}>
+        <Modal isOpen={isOpen} title={t('players.profileTitle')} onClose={onClose}>
             <div className={"modal_content"}>
                 <div style={{ display: "flex", gap: "1rem" }}>
                     <ProfilePictureViewer imageIndex={details.userPicture.smiley} imageColor={details.userPicture.color} size={"6rem"} />
                     <div style={{ display: "flex", gap: "1rem", flexDirection: "column" }}>
                         <h2 style={{ margin: "0" }}>{details.userName}</h2>
-                        <h3 style={{ margin: "0" }}>{details.userRole === "admin" ? "Administrateur" : "Utilisateur"}</h3>
+                        <h3 style={{ margin: "0" }}>{details.userRole === "admin" ? t('players.roleAdmin') : t('players.roleUser')}</h3>
                     </div>
                 </div>
-                <h3 style={{ margin: "0" }}>Inscrit le : {format(new Date(details.creation), "dd/MM/yyyy 'à' HH'h'mm")}</h3>
+                <h3 style={{ margin: "0" }}>{t('players.registeredAt', formatDateParts(details.creation, t))}</h3>
             </div>
         </Modal>
     );
@@ -30,6 +32,7 @@ function PlayerList({ serverInfo }) {
     const { userId } = useUser();
     const { players } = useGame();
     const token = useToken();
+    const { t } = useLanguage();
     const [showPlayerDetails, setShowPlayerDetails] = useState(false);
     const [playerDetails, setPlayerDetails] = useState(null);
     const [openMenuId, setOpenMenuId] = useState(null);
@@ -63,7 +66,7 @@ function PlayerList({ serverInfo }) {
                 setPlayerDetails(data.user);
                 setShowPlayerDetails(true);
             } else {
-                alert("profil introuvable")
+                alert(t('players.profileNotFound'))
             }
         } catch (error) {
             console.error('There was an error fetching the server details:', error);
@@ -74,14 +77,14 @@ function PlayerList({ serverInfo }) {
         <>
             <div className={"tab-content"} style={{ height: '100%', overflowY: 'scroll' }}>
                 <div style={{ display: 'flex', flexDirection: "column", gap: "0.5rem" }}>
-                    <h2 style={{ margin: '0' }}>Hôte:</h2>
+                    <h2 style={{ margin: '0' }}>{t('players.host')}</h2>
                     <ul className={playersGrouped['host-online']?.some(player => player.user.userId === userId) ? "yourProfile" : ""}>
                         {playersGrouped['host-online']?.map(player => <PlayerItem serverInfo={serverInfo} key={player.user._id} player={player} onMenuToggle={handleMenuToggle} isOpen={openMenuId === player.user._id} onShowDetails={() => handleShowPlayerDetails(player.user.userId)} />)}
                     </ul>
                     <ul className={playersGrouped['host-offline']?.some(player => player.user.userId === userId) ? "yourProfile" : ""}>
                         {playersGrouped['host-offline']?.map(player => <PlayerItem serverInfo={serverInfo} key={player.user._id} player={player} onMenuToggle={handleMenuToggle} isOpen={openMenuId === player.user._id} onShowDetails={() => handleShowPlayerDetails(player.user.userId)} />)}
                     </ul>
-                    <h2 style={{ margin: '0' }}>Joueurs:</h2>
+                    <h2 style={{ margin: '0' }}>{t('players.players')}</h2>
                     <ul className={playersGrouped['user-online']?.some(player => player.user.userId === userId) ? "yourProfile" : ""}>
                         {playersGrouped['user-online']?.map(player => <PlayerItem serverInfo={serverInfo} key={player.user._id} player={player} onMenuToggle={handleMenuToggle} isOpen={openMenuId === player.user._id} onShowDetails={() => handleShowPlayerDetails(player.user.userId)} />)}
                     </ul>

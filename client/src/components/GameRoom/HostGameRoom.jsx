@@ -5,19 +5,21 @@ import {useSocket} from "../../SocketContext.jsx";
 import { useGame } from '../../GameContext.jsx';
 import Podium from './Podium.jsx';
 import GameWaitMessage from './GameWaitMessage.jsx';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 function HostGameRoom({ serverInfo }) {
     const { serverCode } = useParams();
     const { gameState, message, setMessage, buzzOrder, players, options } = useGame();
     const socket = useSocket();
+    const { t } = useLanguage();
 
     useEffect(() => {
         if (gameState === 'buzzed' && buzzOrder.length > 0) {
             // console.log(buzzOrder)
             const latestBuzzer = buzzOrder[0].userName;
-            setMessage(`Le joueur ${latestBuzzer} a buzzé !`);
+            setMessage(t('game.playerBuzzed', { name: latestBuzzer }));
         }
-    }, [buzzOrder, gameState, serverInfo, setMessage]);
+    }, [buzzOrder, gameState, serverInfo, setMessage, t]);
 
     // Déplacez vos gestionnaires ici, à l'extérieur de useEffect mais à l'intérieur de GameRoom
     const handleStartGame = () => {
@@ -63,38 +65,38 @@ function HostGameRoom({ serverInfo }) {
                     <div className={'modal_bg'}>
                         <div className={'modal'}>
                             <div className={'modal_content_title'}>
-                                <h2>Victoire !</h2>
+                                <h2>{t('game.victory')}</h2>
                             </div>
                             <div className={'modal_content'}>
                                 <Podium players={players} />
-                                <button onClick={handleNewGame} className={'btn-push btn-push-green'} style={{padding: '1rem 1.5rem'}}>Nouvelle manche</button>
+                                <button onClick={handleNewGame} className={'btn-push btn-push-green'} style={{padding: '1rem 1.5rem'}}>{t('game.newRound')}</button>
                             </div>
                         </div>
                     </div>
                 )}
                 {gameState === 'waiting' && players.length > 1 && (
                     <button onClick={handleStartGame} className="btn-push btn-push-green" style={{ padding: '1rem 1.5rem' }}>
-                        Démarrer la manche
+                        {t('game.startRound')}
                     </button>
                 )}
                 {gameState === 'waiting' && players.length <= 1 && (
                     <GameWaitMessage
-                        title="En attente de joueurs"
-                        subtitle="Partage le code du salon pour qu'on puisse commencer"
+                        title={t('game.waitingPlayersTitle')}
+                        subtitle={t('game.waitingPlayersSubtitle')}
                     />
                 )}
-                {gameState === 'inProgress' && <button onClick={handleCancelGame} className={'btn-push'} style={{padding: '1rem 1.5rem'}} >Annuler la manche</button>}
+                {gameState === 'inProgress' && <button onClick={handleCancelGame} className={'btn-push'} style={{padding: '1rem 1.5rem'}} >{t('game.cancelRound')}</button>}
                 {gameState === 'buzzed' && (
                     <div className={'modal_bg'}>
                         <div className={'modal'}>
                             <div className={'modal_content_title'}>
-                                <h2>Nouveau buzz !</h2>
+                                <h2>{t('game.newBuzz')}</h2>
                             </div>
                             <div className={'modal_content'}>
                                 <label htmlFor={'name'} style={{width:'100%',textAlign:'left'}}>{message}</label>
-                                <button onClick={handleAcceptAnswer} className={'btn-push btn-push-green'} style={{padding: '1rem 1.5rem'}}>Bonne réponse (+{options.answerPoint} points)</button>
-                                <button onClick={handleAcceptBonusAnswer} className={'btn-push btn-push-green'} style={{padding: '1rem 1.5rem'}}>Point bonus (+{options.answerPoint + 1} points)</button>
-                                <button onClick={handleDeclineAnswer} className={'btn-push'} style={{padding: '1rem 1.5rem'}}>Mauvaise réponse {options.deductPointOnWrongAnswer ? "(-1 point)" : ""}</button>
+                                <button onClick={handleAcceptAnswer} className={'btn-push btn-push-green'} style={{padding: '1rem 1.5rem'}}>{t('game.correctAnswerBtn', { points: options.answerPoint })}</button>
+                                <button onClick={handleAcceptBonusAnswer} className={'btn-push btn-push-green'} style={{padding: '1rem 1.5rem'}}>{t('game.bonusAnswerBtn', { points: options.answerPoint + 1 })}</button>
+                                <button onClick={handleDeclineAnswer} className={'btn-push'} style={{padding: '1rem 1.5rem'}}>{options.deductPointOnWrongAnswer ? t('game.wrongAnswerPenaltyBtn') : t('game.wrongAnswerBtn')}</button>
                             </div>
                         </div>
                     </div>

@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { format } from 'date-fns';
 import Modal from "../modal/Modal.jsx";
 import { QRCodeSVG } from 'qrcode.react';
 import { useGame } from "../../GameContext.jsx";
 import { FaEye, FaEyeSlash, FaShare } from "react-icons/fa6";
 import BlasonServerViewer from "../host/BlasonServerViewer.jsx";
 import config from '../../config.js';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
+import { formatDateParts } from '../../i18n/formatDate.js';
 
 async function copyToClipboard(text) {
     if (navigator.clipboard?.writeText) {
@@ -28,6 +29,7 @@ async function copyToClipboard(text) {
 function RoomDetails({ serverInfo }) {
     const { serverCode } = useParams();
     const { options } = useGame();
+    const { t } = useLanguage();
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const [copiedField, setCopiedField] = useState(null);
 
@@ -59,7 +61,7 @@ function RoomDetails({ serverInfo }) {
                         </button>
                         {serverInfo.createdAt && (
                             <p style={{ margin: '0.35rem 0 0', fontSize: '0.85rem', opacity: 0.8 }}>
-                                Créé le {format(new Date(serverInfo.createdAt), "dd/MM/yyyy 'à' HH'h'mm")}
+                                {t('room.createdAt', formatDateParts(serverInfo.createdAt, t))}
                             </p>
                         )}
                     </div>
@@ -68,12 +70,12 @@ function RoomDetails({ serverInfo }) {
                    <div style={  {marginBottom: "10px"} }>
                        {options.deductPointOnWrongAnswer &&
                            <div style={{width:"100%", textAlign:"center"}}>
-                               <h4 style={{margin:'0'}}>1 point retiré si mauvaise réponse</h4>
+                               <h4 style={{margin:'0'}}>{t('room.penaltyInfo')}</h4>
                            </div>
                        }
                        {options.autoRestartAfterDecline &&
                            <div style={{width:"100%", textAlign:"center"}}>
-                               <h4 style={{margin:'0'}}>Manche relancée automatiquement en cas de mauvaise réponse</h4>
+                               <h4 style={{margin:'0'}}>{t('room.autoRestartInfo')}</h4>
                            </div>
                        }
                        
@@ -81,12 +83,12 @@ function RoomDetails({ serverInfo }) {
                            <h4  style={{margin:'0', display:'flex', alignItems:"center", justifyContent:"center", gap:"5px"}}>
                                {options.isPublic && <>
                                     <FaEye/>
-                                   Serveur public
+                                   {t('server.options.public')}
                                    </>
                                }
                                {!options.isPublic && <>
                                    <FaEyeSlash/>
-                                   Serveur privé
+                                   {t('server.options.private')}
                                    </>
                                }
                                </h4>
@@ -95,17 +97,17 @@ function RoomDetails({ serverInfo }) {
                    </div>
                 <div className={"server-info-rules"}>
                     <div className={"server-info-rule"}>
-                        <h4 style={{margin:'0'}}>Points nécessaires pour gagner</h4>
+                        <h4 style={{margin:'0'}}>{t('room.pointsToWin')}</h4>
                         <h2 style={{margin:'0'}}>{options.winPoint}</h2>
                     </div>
                     <div style={{width:"100%", textAlign:"center"}}>
-                        <h4 style={{margin:'0'}}>Points gagnés par bonne réponse</h4>
+                        <h4 style={{margin:'0'}}>{t('room.pointsPerAnswer')}</h4>
                         <h2 style={{margin:'0'}}>+{options.answerPoint}</h2>
                     </div>
                 </div>
 
             </div>
-            <Modal title={'Partager'} isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)} style={{maxWidth:'none'}}>
+            <Modal title={t('room.share')} isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)} style={{maxWidth:'none'}}>
                 <div style={{ display:"flex", flexDirection:"column",alignItems:'center', justifyContent:'center',padding:'0 0 2rem 0', gap:'2rem'}}>
                     <div style={{backgroundColor:'white',borderRadius:'1rem',padding:'1rem', maxWidth: '300px'}}>
                         <QRCodeSVG value={joinUrl} size={512} style={{width: '100%', height: 'auto'}}/>
@@ -116,7 +118,7 @@ function RoomDetails({ serverInfo }) {
                         style={{ margin: 0, padding: '0.2rem 1rem', fontSize: '2rem' }}
                         className="btn-push btn-push-blue"
                     >
-                        {copiedField === 'code' ? 'Copié !' : serverCode}
+                        {copiedField === 'code' ? t('common.copied') : serverCode}
                     </button>
                     <button
                         type="button"
@@ -131,7 +133,7 @@ function RoomDetails({ serverInfo }) {
                         }}
                         className="btn-push btn-push-blue"
                     >
-                        {copiedField === 'url' ? 'Copié !' : joinUrl}
+                        {copiedField === 'url' ? t('common.copied') : joinUrl}
                     </button>
                 </div>
             </Modal>

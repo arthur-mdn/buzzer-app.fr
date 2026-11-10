@@ -2,10 +2,12 @@ import React, { lazy, Suspense, useState } from 'react';
 import config from '../../config';
 import Modal from '../modal/Modal.jsx';
 import { FaQrcode } from 'react-icons/fa6';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 const QRCodeScanner = lazy(() => import('./QRCodeScanner.jsx'));
 
 function Join({ onClose }) {
+    const { t } = useLanguage();
     const [tempJoinCode, setTempJoinCode] = useState('');
     const [showScanner, setShowScanner] = useState(false);
 
@@ -18,7 +20,7 @@ function Join({ onClose }) {
             const serverCode = match[1];
             window.location.href = `${config.instanceUrl}/server/${serverCode}`;
         } else {
-            alert("QR Code invalide ou ne contient pas un lien de serveur valide.");
+            alert(t('join.qrInvalid'));
         }
     };
 
@@ -37,7 +39,7 @@ function Join({ onClose }) {
         const validInput = /^[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}$/;
 
         if (!validInput.test(normalizedJoinCode)) {
-            alert("Le code doit être composé de 12 caractères minimum.");
+            alert(t('join.codeInvalid'));
             return;
         }
 
@@ -45,26 +47,26 @@ function Join({ onClose }) {
             window.location.href = config.instanceUrl + "/server/" + normalizedJoinCode;
         } catch (error) {
             console.error(error);
-            alert("Une erreur s'est produite lors de la communication avec le serveur.");
+            alert(t('common.serverCommError'));
         }
     };
 
     return (
         <>
-            <Modal isOpen={!showScanner} title={"Rejoindre un serveur"} onClose={onClose}>
+            <Modal isOpen={!showScanner} title={t('join.title')} onClose={onClose}>
                 <form className={'modal_content'} onSubmit={handleJoinSubmit}>
-                    <label htmlFor={'name'}>Quel serveur rejoindre ?</label>
+                    <label htmlFor={'name'}>{t('join.question')}</label>
                     <div style={{ display: 'flex', width: '100%', flexDirection: 'row', justifyContent: 'space-between', gap: '15px' }}>
                         <input type="text" style={{ width: '100%' }} value={tempJoinCode} required id={'name'} placeholder={'XXXX - XXXX - XXXX'} onChange={(e) => setTempJoinCode(e.target.value)} />
                     </div>
-                    <button type="submit" className={'btn-push btn-push-green'} style={{ padding: '1rem 2rem' }}>Rejoindre</button>
-                    <button type={"button"} className={'btn-push btn-push-blue'} onClick={() => setShowScanner(true)} style={{ padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '10px' }}><FaQrcode />Scan</button>
+                    <button type="submit" className={'btn-push btn-push-green'} style={{ padding: '1rem 2rem' }}>{t('home.join')}</button>
+                    <button type={"button"} className={'btn-push btn-push-blue'} onClick={() => setShowScanner(true)} style={{ padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '10px' }}><FaQrcode />{t('join.scan')}</button>
                 </form>
             </Modal>
             {showScanner && (
-                <Modal isOpen={true} title={"Scanner pour rejoindre"} onClose={() => setShowScanner(false)}>
+                <Modal isOpen={true} title={t('join.scanTitle')} onClose={() => setShowScanner(false)}>
                     <div className="modal_content">
-                        <Suspense fallback={<p>Chargement du scanner...</p>}>
+                        <Suspense fallback={<p>{t('join.scannerLoading')}</p>}>
                             <QRCodeScanner
                                 qrCodeSuccessCallback={handleCodeScanned}
                                 qrCodeErrorCallback={handleCodeScanError}

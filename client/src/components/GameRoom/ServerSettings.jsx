@@ -6,9 +6,11 @@ import {useParams} from "react-router-dom";
 import {FaArrowRotateLeft, FaTrash} from "react-icons/fa6";
 import Modal from "../modal/Modal.jsx";
 import {FaArrowAltCircleDown, FaArrowAltCircleLeft, FaArrowCircleLeft, FaStop} from "react-icons/fa";
+import { useLanguage } from "../../i18n/LanguageContext.jsx";
 
 function ServerSettings() {
     const { options } = useGame();
+    const { t } = useLanguage();
     const { serverCode } = useParams();
     const socket = useSocket();
     const [winPoint, setWinPoint] = useState(options.winPoint);
@@ -46,25 +48,25 @@ function ServerSettings() {
 
     return (
         <>
-            <Modal isOpen={showConfirmDeleteModal} title={"Confirmer la suppression"} onClose={() => setShowConfirmDeleteModal(false)}>
+            <Modal isOpen={showConfirmDeleteModal} title={t('room.confirmDeleteTitle')} onClose={() => setShowConfirmDeleteModal(false)}>
                 <div className="modal_content">
-                    <p>Êtes-vous sûr de vouloir supprimer ce serveur ? vous allez supprimer toutes les données associées à ce serveur. Cette action est irréversible.</p>
-                    <button onClick={handleDelServer} className={"btn-push"}>Supprimer le serveur</button>
-                    <button onClick={() => setShowConfirmDeleteModal(false)} className={"btn-push btn-push-gray"}>Annuler</button>
+                    <p>{t('room.confirmDeleteText')}</p>
+                    <button onClick={handleDelServer} className={"btn-push"}>{t('room.deleteRoom')}</button>
+                    <button onClick={() => setShowConfirmDeleteModal(false)} className={"btn-push btn-push-gray"}>{t('common.cancel')}</button>
                 </div>
             </Modal>
-            <Modal isOpen={showConfirmResetModal} title={"Confirmer la réinitialisation"} onClose={() => setShowConfirmResetModal(false)}>
+            <Modal isOpen={showConfirmResetModal} title={t('room.confirmResetTitle')} onClose={() => setShowConfirmResetModal(false)}>
                 <div className="modal_content">
-                    <p>Êtes-vous sûr de vouloir réinitialiser les scores ? Vous allez supprimer tous les points actuellement gagnés par les joueurs. Cette action est irréversible.</p>
-                    <button onClick={handleResetServer} className={"btn-push"}>Réinitialiser les scores</button>
-                    <button onClick={() => setShowConfirmResetModal(false)} className={"btn-push btn-push-gray"}>Annuler</button>
+                    <p>{t('room.confirmResetText')}</p>
+                    <button onClick={handleResetServer} className={"btn-push"}>{t('room.resetScores')}</button>
+                    <button onClick={() => setShowConfirmResetModal(false)} className={"btn-push btn-push-gray"}>{t('common.cancel')}</button>
                 </div>
             </Modal>
             <div className={"tab-content"} style={{height:'100%', overflowY:'scroll', padding:'0'}}>
 
                 <form className={'modal_content'} style={{padding:'1rem', backgroundColor:'transparent'}}>
                     <div>
-                        <label htmlFor="winPoint">Points pour gagner la partie :</label>
+                        <label htmlFor="winPoint">{t('server.options.winPoint')}</label>
                         <input
                             type="range"
                             min="5"
@@ -77,7 +79,7 @@ function ServerSettings() {
                         <span>{winPoint}</span>
                     </div>
                     <div>
-                        <label htmlFor="answerPoint">Points gagnés par bonne réponse :</label>
+                        <label htmlFor="answerPoint">{t('server.options.answerPoint')}</label>
                         <input
                             type="range"
                             min="1"
@@ -95,7 +97,7 @@ function ServerSettings() {
                                 checked={deductPointOnWrongAnswer}
                                 onChange={(e) => setDeductPointOnWrongAnswer(e.target.checked)}
                             />
-                            Retirer un point par mauvaise réponse.
+                            {t('server.options.deductPoint')}
                         </label>
                     </div>
                     <div>
@@ -105,7 +107,7 @@ function ServerSettings() {
                                 checked={autoRestartAfterDecline}
                                 onChange={(e) => setAutoRestartAfterDecline(e.target.checked)}
                             />
-                            Engager une nouvelle manche lors d'une mauvaise réponse.
+                            {t('server.options.autoRestart')}
                         </label>
                     </div>
                     <div>
@@ -115,16 +117,16 @@ function ServerSettings() {
                                 checked={isPublic}
                                 onChange={(e) => setIsPublic(e.target.checked)}
                             />
-                            Serveur public
+                            {t('server.options.public')}
                         </label>
                     </div>
                     { (winPoint === options.winPoint && answerPoint === options.answerPoint && deductPointOnWrongAnswer === options.deductPointOnWrongAnswer && autoRestartAfterDecline === options.autoRestartAfterDecline && isPublic === options.isPublic) ?
-                        <button type="button" onClick={handleSaveSettings} disabled className={'btn-push btn-push-green'} style={{width: '100%', padding: '1rem'}}>Enregistrer</button>
+                        <button type="button" onClick={handleSaveSettings} disabled className={'btn-push btn-push-green'} style={{width: '100%', padding: '1rem'}}>{t('common.save')}</button>
                         :
-                        <button type="button" onClick={handleSaveSettings} className={'btn-push btn-push-green'} style={{width: '100%', padding: '1rem'}}>Enregistrer</button>
+                        <button type="button" onClick={handleSaveSettings} className={'btn-push btn-push-green'} style={{width: '100%', padding: '1rem'}}>{t('common.save')}</button>
                     }
-                    <button type="button" onClick={handleOpenConfirmDeleteModal} className={'btn-push btn-push-red'} style={{padding:'0.5rem 1rem', display:"flex", alignItems:"center", gap:"10px"}}><FaTrash/>Supprimer le serveur</button>
-                    <button type="button" onClick={handleOpenConfirmResetModal} className={'btn-push btn-push-red'} style={{padding:'0.5rem 1rem', display:"flex", alignItems:"center", gap:"10px"}}><FaArrowRotateLeft/>Réinitialiser les scores</button>
+                    <button type="button" onClick={handleOpenConfirmDeleteModal} className={'btn-push btn-push-red'} style={{padding:'0.5rem 1rem', display:"flex", alignItems:"center", gap:"10px"}}><FaTrash/>{t('room.deleteRoom')}</button>
+                    <button type="button" onClick={handleOpenConfirmResetModal} className={'btn-push btn-push-red'} style={{padding:'0.5rem 1rem', display:"flex", alignItems:"center", gap:"10px"}}><FaArrowRotateLeft/>{t('room.resetScores')}</button>
                 </form>
             </div>
         </>

@@ -18,24 +18,26 @@ import PingViewer from './PingViewer.jsx';
 import config from '../../config.js';
 import GameWaitMessage from './GameWaitMessage.jsx';
 import GameFeedbackCard from './GameFeedbackCard.jsx';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 function ObserverPanel() {
     const { gameState, message, buzzOrder } = useGame();
+    const { t } = useLanguage();
     const latest = buzzOrder?.[0];
 
     return (
         <div style={{ padding: '1.5rem 2rem' }}>
             <div className="game-wait">
                 <div className="game-wait__card">
-                    <p className="game-wait__title">Mode observation</p>
+                    <p className="game-wait__title">{t('game.observerTitle')}</p>
                     <p className="game-wait__subtitle">
-                        Tu suis le salon sans apparaître dans la liste des joueurs.
+                        {t('game.observerSubtitle')}
                     </p>
-                    <p className="game-wait__subtitle">État : {gameState}</p>
+                    <p className="game-wait__subtitle">{t('game.observerState', { status: t(`game.status.${gameState}`) })}</p>
                     {message && <p className="game-wait__subtitle">{message}</p>}
                     {latest && (
                         <p className="game-wait__subtitle">
-                            Dernier buzz : {latest.userName}
+                            {t('game.observerLastBuzz', { name: latest.userName })}
                         </p>
                     )}
                 </div>
@@ -46,6 +48,7 @@ function ObserverPanel() {
 
 function GameRoom({ currentPing }) {
     const socket = useSocket();
+    const { t } = useLanguage();
     const { userId, userRole } = useUser();
     const token = useToken();
     const { serverCode } = useParams();
@@ -106,17 +109,17 @@ function GameRoom({ currentPing }) {
                         socket.emit('joinServer', { serverCode });
                     }
                 } else {
-                    setError('Serveur introuvable.');
+                    setError('room.notFound');
                 }
             } catch (err) {
                 if (cancelled) return;
                 console.error('There was an error fetching the server details:', err);
-                setError('Erreur lors de la récupération des détails du serveur. Veuillez réessayer.');
+                setError('room.fetchError');
             }
         };
 
         if (wantObserve && userRole !== 'admin') {
-            setError('Observation réservée aux administrateurs.');
+            setError('room.observeAdminOnly');
             return undefined;
         }
 
@@ -164,7 +167,7 @@ function GameRoom({ currentPing }) {
             if (code && code !== serverCode) {
                 return;
             }
-            setError('Serveur supprimé.');
+            setError('room.deleted');
         };
 
         socket.on('serverDeleted', handleServerDeleted);
@@ -188,11 +191,11 @@ function GameRoom({ currentPing }) {
                 <nav className={'modal_bg'}>
                     <div className={'modal'}>
                         <div className={'modal_content_title'}>
-                            <h2>Erreur !</h2>
+                            <h2>{t('common.error')}</h2>
                         </div>
                         <form className={'modal_content'}>
-                            <label style={{ width: '100%', textAlign: 'left' }}> {error} </label>
-                            <Link to="/app" className={'btn-push'} style={{ width: '100%', textAlign: 'center', padding: '1rem 0' }}>Accueil</Link>
+                            <label style={{ width: '100%', textAlign: 'left' }}> {t(error)} </label>
+                            <Link to="/app" className={'btn-push'} style={{ width: '100%', textAlign: 'center', padding: '1rem 0' }}>{t('common.home')}</Link>
                         </form>
                     </div>
                 </nav>
@@ -204,8 +207,8 @@ function GameRoom({ currentPing }) {
         return (
             <GameWaitMessage
                 fullScreen
-                title="Connexion au salon"
-                subtitle="Récupération des informations en cours..."
+                title={t('room.connectingTitle')}
+                subtitle={t('room.connectingSubtitle')}
             />
         );
     }
@@ -214,8 +217,8 @@ function GameRoom({ currentPing }) {
         return (
             <GameWaitMessage
                 fullScreen
-                title="Accès refusé"
-                subtitle="Ton rôle sur ce salon est invalide."
+                title={t('room.accessDeniedTitle')}
+                subtitle={t('room.accessDeniedSubtitle')}
             />
         );
     }
@@ -237,7 +240,7 @@ function GameRoom({ currentPing }) {
                         <h6 style={{ textAlign: 'left' }}>{serverInfo.name}</h6>
                         <span onClick={() => handleOpenModal('players')} style={{ display: 'flex', gap: '5px' }}>
                             <FaUser /> <PlayerCount />
-                            {role === 'observer' && <span style={{ marginLeft: '0.35rem' }}>(obs)</span>}
+                            {role === 'observer' && <span style={{ marginLeft: '0.35rem' }}>{t('game.observerShort')}</span>}
                         </span>
                     </div>
                 </button>
@@ -249,14 +252,14 @@ function GameRoom({ currentPing }) {
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} style={{ maxWidth: 'none' }}>
                 <div style={{ marginLeft: '15px', display: 'flex', gap: '10px' }}>
                     <button onClick={() => setActiveTab('details')} className={`modal-tab ${activeTab === 'details' ? 'active' : ''}`}>
-                        Détails
+                        {t('room.tabDetails')}
                     </button>
                     <button onClick={() => setActiveTab('players')} className={`modal-tab ${activeTab === 'players' ? 'active' : ''}`}>
-                        Membres
+                        {t('room.tabMembers')}
                     </button>
                     {role === 'host' && (
                         <button onClick={() => setActiveTab('settings')} className={`modal-tab ${activeTab === 'settings' ? 'active' : ''}`}>
-                            Options
+                            {t('room.tabOptions')}
                         </button>
                     )}
                 </div>
