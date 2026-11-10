@@ -770,6 +770,83 @@ module.exports = function(io) {
             }
         }, 'An error occurred while resetting scores');
 
+        safeOn('removeFromHistory', rateLimited('removeFromHistory', async ({ codes } = {}) => {
+            const user = await getAuthenticatedUser();
+            const uniqueCodes = [...new Set(
+                (Array.isArray(codes) ? codes : [])
+                    .filter((code) => typeof code === 'string')
+                    .map((code) => code.trim())
+                    .filter(Boolean)
+            )].slice(0, 50);
+
+            if (!user || uniqueCodes.length === 0) {
+                socket.emit('historyRemoved', { codes: [] });
+                return;
+            }
+
+            const removed = [];
+
+            for (const serverCode of uniqueCodes) {
+                const result = await retryOnVersionError(async () => {
+                    const doc = await populateServer(GameServer.findOne({
+                        code: serverCode,
+                        status: { $ne: 'del' },
+                    }));
+                    if (!doc) {
+                        return null;
+                    }
+
+                    const userKey = user._id.toString();
+                    const playerIndex = doc.players.findIndex(
+                        (player) => getPlayerUserId(player) === userKey
+                    );
+                    if (playerIndex === -1) {
+                        return null;
+                    }
+
+                    const wasHost = doc.hostId === user.userId;
+                    doc.players.splice(playerIndex, 1);
+                    doc.players = dedupePlayersByUser(doc.players);
+                    doc.buzzOrder = (doc.buzzOrder || []).filter(
+                        (id) => id?.toString?.() !== userKey
+                    );
+
+                    if (doc.players.length === 0) {
+                        doc.status = 'del';
+                    } else if (wasHost) {
+                        const nextHost = doc.players[0];
+                        const nextHostId = nextHost?.user?.userId;
+                        if (nextHostId) {
+                            doc.hostId = nextHostId;
+                            nextHost.role = 'host';
+                            doc.players.forEach((player, index) => {
+                                if (index !== 0 && player.role === 'host') {
+                                    player.role = 'user';
+                                }
+                            });
+                        }
+                    }
+
+                    await doc.save();
+                    return { serverId: doc._id, deleted: doc.status === 'del' };
+                });
+
+                if (!result) {
+                    continue;
+                }
+
+                removed.push(serverCode);
+                if (result.deleted) {
+                    io.to(serverCode).emit('serverDeleted', { serverCode });
+                    io.to(watchRoom(serverCode)).emit('serverDeleted', { serverCode });
+                } else {
+                    await emitPlayersUpdate(serverCode, result.serverId);
+                }
+            }
+
+            socket.emit('historyRemoved', { codes: removed });
+        }), 'An error occurred while removing servers from history');
+
         safeOn('delServer', async ({ serverCode }) => {
             const deleted = await retryOnVersionError(async () => {
                 const doc = await GameServer.findOne({
