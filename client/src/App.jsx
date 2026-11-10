@@ -1,7 +1,7 @@
 //App.js
 import { useEffect, useState, useRef, useCallback } from 'react';
 import io from 'socket.io-client';
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useParams } from 'react-router-dom';
 import NotFound from './components/NotFound.jsx';
 import GameRoom from './components/GameRoom/GameRoom.jsx';
 import HomePage from './components/homePage/HomePage.jsx';
@@ -13,6 +13,7 @@ import { TokenProvider } from './TokenContext.jsx';
 import { UserProvider } from './UserContext.jsx';
 import { ThemeProvider } from './ThemeContext.jsx';
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext.jsx';
+import { isSeoPathLocale } from './i18n/seoMeta.js';
 import config from './config.js';
 import { normalizeProfileColor, normalizeProfileImageIndex } from './utils/profilePicture.js';
 import { STORAGE_KEYS, clearAuthStorage, getStorageItem } from './utils/storage.js';
@@ -20,6 +21,20 @@ import { authenticateWithStoredToken } from './utils/auth.js';
 
 function getInitialStatus() {
     return getStorageItem(STORAGE_KEYS.token) ? 'initial' : 'noToken';
+}
+
+function LocaleLandingRoute({ authenticated, isReady, isBooting }) {
+    const { lang } = useParams();
+    if (!isSeoPathLocale(lang)) {
+        if (isReady) {
+            return <NotFound />;
+        }
+        if (isBooting) {
+            return <AppBootScreen />;
+        }
+        return <Navigate to="/" replace />;
+    }
+    return <LandingPage authenticated={authenticated} />;
 }
 
 function AuthenticatedShell({
@@ -351,6 +366,8 @@ function AppContent() {
         <Router>
             <Routes>
                 <Route path="/" element={<LandingPage authenticated={isReady} />} />
+                <Route path="/fr" element={<Navigate to="/" replace />} />
+                <Route path="/fr/" element={<Navigate to="/" replace />} />
                 <Route
                     path="/jouer"
                     element={
@@ -383,6 +400,8 @@ function AppContent() {
                         />
                     </>
                 )}
+
+                <Route path="/:lang" element={<LocaleLandingRoute authenticated={isReady} isReady={isReady} isBooting={isBooting} />} />
 
                 <Route
                     path="*"

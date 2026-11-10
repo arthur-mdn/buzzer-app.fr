@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
 import { FaGithub, FaPaypal } from 'react-icons/fa6';
 import { useLanguage } from '../../i18n/LanguageContext.jsx';
+import { localePath } from '../../i18n/seoMeta.js';
 
 function AboutModalContent() {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
 
     return (
         <>
@@ -21,7 +22,7 @@ function AboutModalContent() {
                 </p>
             </div>
             <div className="about-modal__links">
-                <Link className="btn-push btn-push-gray about-modal__link" to="/">
+                <Link className="btn-push btn-push-gray about-modal__link" to={localePath(language)}>
                     {t('about.home')}
                 </Link>
                 <a

@@ -9,6 +9,7 @@ import Modal from '../modal/Modal.jsx';
 import ThemeChooser from '../UserNameInput/ThemeChooser.jsx';
 import { useTheme } from '../../ThemeContext.jsx';
 import { useLanguage } from '../../i18n/LanguageContext.jsx';
+import { localePath } from '../../i18n/seoMeta.js';
 import AboutModalContent from './AboutModalContent.jsx';
 import { normalizeProfileColor, normalizeProfileImageIndex } from '../../utils/profilePicture.js';
 
@@ -147,7 +148,7 @@ function SettingsView() {
                                 <FaChevronRight className="profile-actions__chevron" aria-hidden="true" />
                             </button>
 
-                            <Link to="/" className="profile-actions__item" role="listitem">
+                            <Link to={localePath(language)} className="profile-actions__item" role="listitem">
                                 <span className="profile-actions__icon" aria-hidden="true">
                                     <FaHouse />
                                 </span>

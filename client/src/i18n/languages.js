@@ -1,3 +1,5 @@
+import { SEO_PATH_LOCALES, isSeoPathLocale, localePath } from './seoMeta.js';
+
 export const SUPPORTED_LANGUAGES = ['fr', 'en', 'es', 'de', 'zh', 'ru'];
 
 export const LANGUAGE_OPTIONS = [
@@ -10,6 +12,8 @@ export const LANGUAGE_OPTIONS = [
 ];
 
 export const DEFAULT_LANGUAGE = 'fr';
+
+export { SEO_PATH_LOCALES, isSeoPathLocale, localePath };
 
 export function isSupportedLanguage(code) {
     return SUPPORTED_LANGUAGES.includes(code);

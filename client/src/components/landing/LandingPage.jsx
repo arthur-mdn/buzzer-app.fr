@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
     FaBolt,
     FaQrcode,
@@ -15,9 +15,13 @@ import {
     FaCheck,
 } from 'react-icons/fa6';
 import { useLanguage } from '../../i18n/LanguageContext.jsx';
+import { isSeoPathLocale, localePath } from '../../i18n/seoMeta.js';
 
 function LandingPage({ authenticated = false }) {
     const { t, language, languages, setLanguage } = useLanguage();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { lang: routeLang } = useParams();
     const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
     const languageMenuRef = useRef(null);
     const playTo = authenticated ? '/app' : '/jouer';
@@ -25,6 +29,17 @@ function LandingPage({ authenticated = false }) {
     const finalLabel = authenticated ? t('landing.backToPlay') : t('landing.createProfile');
     const finalLead = authenticated ? t('landing.ctaAuth') : t('landing.ctaGuest');
     const currentLanguageLabel = languages.find((item) => item.code === language)?.nativeLabel || language;
+    const urlLang = isSeoPathLocale(routeLang)
+        ? routeLang
+        : location.pathname === '/'
+            ? 'fr'
+            : null;
+
+    useEffect(() => {
+        if (urlLang && urlLang !== language) {
+            setLanguage(urlLang);
+        }
+    }, [urlLang, language, setLanguage]);
 
     const steps = [
         { title: t('landing.step1Title'), text: t('landing.step1Text') },
@@ -100,8 +115,12 @@ function LandingPage({ authenticated = false }) {
                                         type="button"
                                         className={`landing-lang__option${selected ? ' is-selected' : ''}`}
                                         onClick={() => {
+                                            const nextPath = localePath(item.code);
                                             setLanguage(item.code);
                                             setLanguageMenuOpen(false);
+                                            if (nextPath !== location.pathname) {
+                                                navigate(nextPath);
+                                            }
                                         }}
                                     >
                                         <span>{item.nativeLabel}</span>

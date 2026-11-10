@@ -1,5 +1,7 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Allow: /
+Disallow: /app
+Disallow: /server
 
 Sitemap: https://buzzer-app.fr/sitemap.xml

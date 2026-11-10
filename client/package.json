@@ -8,7 +8,8 @@
   },
   "scripts": {
     "dev": "vite --port 5174 --host",
-    "build": "vite build",
+    "build": "vite build && node scripts/prerender-locales.mjs",
+    "prerender": "node scripts/prerender-locales.mjs",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "preview": "vite preview"

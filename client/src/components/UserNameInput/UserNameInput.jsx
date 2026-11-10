@@ -7,6 +7,7 @@ import AboutApp from "../homePage/AboutApp.jsx";
 import { normalizeProfileColor, PROFILE_COLORS } from "../../utils/profilePicture.js";
 import { STORAGE_KEYS, setStorageItem, getStorageItem } from "../../utils/storage.js";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
+import { localePath } from "../../i18n/seoMeta.js";
 
 function UserNameInput({ onSuccess }) {
     const location = useLocation();
@@ -105,7 +106,7 @@ function UserNameInput({ onSuccess }) {
                 <div className={'modal'}>
                     <div className={'modal_content_title'}>
                         {showBackToLanding && (
-                            <Link to="/" className="back btn-push" aria-label={t('auth.backHome')}>
+                            <Link to={localePath(language)} className="back btn-push" aria-label={t('auth.backHome')}>
                                 ‹
                             </Link>
                         )}
