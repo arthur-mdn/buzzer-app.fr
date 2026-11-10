@@ -97,12 +97,11 @@ function SettingsView() {
                             <FaChevronRight className="profile-identity__chevron" aria-hidden="true" />
                         </button>
 
-                        <div className="profile-actions" role="list">
+                        <div className="profile-actions">
                             <button
                                 type="button"
                                 className="profile-actions__item"
                                 onClick={handleThemeClick}
-                                role="listitem"
                             >
                                 <span className="profile-actions__icon" aria-hidden="true">
                                     <FaPalette />
@@ -118,7 +117,6 @@ function SettingsView() {
                                 type="button"
                                 className="profile-actions__item"
                                 onClick={() => setIsLanguageModalOpen(true)}
-                                role="listitem"
                             >
                                 <span className="profile-actions__icon" aria-hidden="true">
                                     <FaLanguage />
@@ -136,7 +134,6 @@ function SettingsView() {
                                 type="button"
                                 className="profile-actions__item"
                                 onClick={() => setIsAboutModalOpen(true)}
-                                role="listitem"
                             >
                                 <span className="profile-actions__icon" aria-hidden="true">
                                     <FaInfo />
@@ -148,7 +145,7 @@ function SettingsView() {
                                 <FaChevronRight className="profile-actions__chevron" aria-hidden="true" />
                             </button>
 
-                            <Link to={localePath(language)} className="profile-actions__item" role="listitem">
+                            <Link to={localePath(language)} className="profile-actions__item">
                                 <span className="profile-actions__icon" aria-hidden="true">
                                     <FaHouse />
                                 </span>

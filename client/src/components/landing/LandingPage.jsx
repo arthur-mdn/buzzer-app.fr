@@ -58,8 +58,7 @@ function LandingPage({ authenticated = false }) {
         { Icon: FaQrcode, title: t('landing.f8Title'), text: t('landing.f8Text') },
     ];
 
-    const scrollToMore = (event) => {
-        event.preventDefault();
+    const scrollToMore = () => {
         document.getElementById('en-savoir-plus')?.scrollIntoView({
             behavior: 'smooth',
             block: 'start',
@@ -97,7 +96,7 @@ function LandingPage({ authenticated = false }) {
                 <button
                     type="button"
                     className="landing-lang__button"
-                    aria-haspopup="listbox"
+                    aria-haspopup="menu"
                     aria-expanded={languageMenuOpen}
                     aria-label={t('profile.language')}
                     onClick={() => setLanguageMenuOpen((open) => !open)}
@@ -106,30 +105,31 @@ function LandingPage({ authenticated = false }) {
                     <span>{currentLanguageLabel}</span>
                 </button>
                 {languageMenuOpen && (
-                    <ul className="landing-lang__menu" role="listbox" aria-label={t('profile.language')}>
+                    <div className="landing-lang__menu" role="menu" aria-label={t('profile.language')}>
                         {languages.map((item) => {
                             const selected = item.code === language;
                             return (
-                                <li key={item.code} role="option" aria-selected={selected}>
-                                    <button
-                                        type="button"
-                                        className={`landing-lang__option${selected ? ' is-selected' : ''}`}
-                                        onClick={() => {
-                                            const nextPath = localePath(item.code);
-                                            setLanguage(item.code);
-                                            setLanguageMenuOpen(false);
-                                            if (nextPath !== location.pathname) {
-                                                navigate(nextPath);
-                                            }
-                                        }}
-                                    >
-                                        <span>{item.nativeLabel}</span>
-                                        {selected ? <FaCheck aria-hidden="true" /> : null}
-                                    </button>
-                                </li>
+                                <button
+                                    key={item.code}
+                                    type="button"
+                                    role="menuitemradio"
+                                    aria-checked={selected}
+                                    className={`landing-lang__option${selected ? ' is-selected' : ''}`}
+                                    onClick={() => {
+                                        const nextPath = localePath(item.code);
+                                        setLanguage(item.code);
+                                        setLanguageMenuOpen(false);
+                                        if (nextPath !== location.pathname) {
+                                            navigate(nextPath);
+                                        }
+                                    }}
+                                >
+                                    <span>{item.nativeLabel}</span>
+                                    {selected ? <FaCheck aria-hidden="true" /> : null}
+                                </button>
                             );
                         })}
-                    </ul>
+                    </div>
                 )}
             </div>
 
@@ -148,13 +148,13 @@ function LandingPage({ authenticated = false }) {
                         <Link to={playTo} className="btn-push btn-push-green landing-hero__cta">
                             {playLabel}
                         </Link>
-                        <a
-                            href="#en-savoir-plus"
+                        <button
+                            type="button"
                             className="btn-push btn-push-gray landing-hero__cta"
                             onClick={scrollToMore}
                         >
                             {t('landing.learnMore')}
-                        </a>
+                        </button>
                     </div>
                 </div>
             </header>
