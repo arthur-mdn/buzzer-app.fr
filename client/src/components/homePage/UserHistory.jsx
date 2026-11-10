@@ -7,11 +7,13 @@ import { useToken } from '../../TokenContext.jsx';
 import ServerList from './ServerList.jsx';
 import Modal from '../modal/Modal.jsx';
 import { useWatchedServers } from '../../hooks/useWatchedServers.js';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 function UserHistory() {
     const token = useToken();
     const socket = useSocket();
     const { userId } = useUser();
+    const { t } = useLanguage();
     const [userServers, setUserServers] = useState([]);
     const [selectedCodes, setSelectedCodes] = useState([]);
     const [confirmOpen, setConfirmOpen] = useState(false);
@@ -102,8 +104,8 @@ function UserHistory() {
     };
 
     const confirmMessage = selectedCount === 1
-        ? 'Retirer ce salon de ton historique ?'
-        : `Retirer ${selectedCount} salons de ton historique ?`;
+        ? t('salons.confirmOne')
+        : t('salons.confirmMany', { count: selectedCount });
 
     const handleConfirmRemove = () => {
         if (selectedCount === 0 || isRemoving) {
@@ -122,7 +124,7 @@ function UserHistory() {
                         className="btn-push btn-push-gray history-toolbar__select"
                         onClick={toggleSelectAll}
                     >
-                        {allSelected ? 'Tout désélectionner' : 'Tout sélectionner'}
+                        {allSelected ? t('salons.deselectAll') : t('salons.selectAll')}
                     </button>
                     <button
                         type="button"
@@ -130,21 +132,21 @@ function UserHistory() {
                         onClick={() => setConfirmOpen(true)}
                     >
                         <FaTrash aria-hidden="true" />
-                        Supprimer ({selectedCount})
+                        {t('salons.deleteCount', { count: selectedCount })}
                     </button>
                 </div>
             )}
 
             <ServerList
                 servers={userServers}
-                emptyMessage="Tu n'as rejoint aucun salon pour le moment."
+                emptyMessage={t('salons.historyEmpty')}
                 selectable
                 selectedCodes={selectedCodes}
                 onToggleSelect={toggleSelect}
             />
 
             <Modal
-                title="Confirmer"
+                title={t('common.confirm')}
                 isOpen={confirmOpen}
                 onClose={() => {
                     if (!isRemoving) {
@@ -162,7 +164,7 @@ function UserHistory() {
                             disabled={isRemoving}
                             onClick={() => setConfirmOpen(false)}
                         >
-                            Annuler
+                            {t('common.cancel')}
                         </button>
                         <button
                             type="button"
@@ -171,7 +173,7 @@ function UserHistory() {
                             disabled={isRemoving}
                             onClick={handleConfirmRemove}
                         >
-                            Confirmer
+                            {t('common.confirm')}
                         </button>
                     </div>
                 </div>

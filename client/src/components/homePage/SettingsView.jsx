@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaChevronRight, FaHouse, FaInfo, FaPalette } from 'react-icons/fa6';
+import { FaCheck, FaChevronRight, FaHouse, FaInfo, FaLanguage, FaPalette } from 'react-icons/fa6';
 import { useUser } from '../../UserContext.jsx';
 import { useSocket } from '../../SocketContext.jsx';
 import ProfilePictureChooser from '../UserNameInput/ProfilePictureChooser.jsx';
@@ -8,12 +8,14 @@ import ProfilePictureViewer from '../UserNameInput/ProfilePictureViewer.jsx';
 import Modal from '../modal/Modal.jsx';
 import ThemeChooser from '../UserNameInput/ThemeChooser.jsx';
 import { useTheme } from '../../ThemeContext.jsx';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 import AboutModalContent from './AboutModalContent.jsx';
 import { normalizeProfileColor, normalizeProfileImageIndex } from '../../utils/profilePicture.js';
 
 function SettingsView() {
     const { userName, userPictureSmiley, userPictureColor } = useUser();
     const { userBackground, setThemeBackground } = useTheme();
+    const { language, setLanguage, languages, t } = useLanguage();
     const socket = useSocket();
 
     const [tempImageIndex, setTempImageIndex] = useState(() => normalizeProfileImageIndex(userPictureSmiley, false));
@@ -21,7 +23,10 @@ function SettingsView() {
     const [tempBackground, setTempBackground] = useState(userBackground || 'default');
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
     const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
+    const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
     const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
+
+    const currentLanguageLabel = languages.find((item) => item.code === language)?.nativeLabel || language;
 
     const handleSaveProfile = () => {
         socket.emit('updateUserProfile', {
@@ -35,6 +40,11 @@ function SettingsView() {
             userTheme: { background: tempBackground },
         });
         setIsThemeModalOpen(false);
+    };
+
+    const handleSelectLanguage = (code) => {
+        setLanguage(code);
+        setIsLanguageModalOpen(false);
     };
 
     const handleCancelChanges = () => {
@@ -64,7 +74,7 @@ function SettingsView() {
         <>
             <div className="tab-screen profile-view">
                 <div className="profile-panel">
-                    <h2 className="profile-panel__title">Profil</h2>
+                    <h2 className="profile-panel__title">{t('profile.title')}</h2>
 
                     <div className="profile-panel__card">
                         <button
@@ -81,7 +91,7 @@ function SettingsView() {
                             </span>
                             <span className="profile-identity__meta">
                                 <span className="profile-identity__name">{userName}</span>
-                                <span className="profile-identity__hint">Modifier l’avatar et la couleur</span>
+                                <span className="profile-identity__hint">{t('profile.editAvatar')}</span>
                             </span>
                             <FaChevronRight className="profile-identity__chevron" aria-hidden="true" />
                         </button>
@@ -97,8 +107,26 @@ function SettingsView() {
                                     <FaPalette />
                                 </span>
                                 <span className="profile-actions__copy">
-                                    <span className="profile-actions__label">Thème</span>
-                                    <span className="profile-actions__desc">Fond d’écran de l’application</span>
+                                    <span className="profile-actions__label">{t('profile.theme')}</span>
+                                    <span className="profile-actions__desc">{t('profile.themeDesc')}</span>
+                                </span>
+                                <FaChevronRight className="profile-actions__chevron" aria-hidden="true" />
+                            </button>
+
+                            <button
+                                type="button"
+                                className="profile-actions__item"
+                                onClick={() => setIsLanguageModalOpen(true)}
+                                role="listitem"
+                            >
+                                <span className="profile-actions__icon" aria-hidden="true">
+                                    <FaLanguage />
+                                </span>
+                                <span className="profile-actions__copy">
+                                    <span className="profile-actions__label">{t('profile.language')}</span>
+                                    <span className="profile-actions__desc">
+                                        {t('profile.languageDesc')} · {currentLanguageLabel}
+                                    </span>
                                 </span>
                                 <FaChevronRight className="profile-actions__chevron" aria-hidden="true" />
                             </button>
@@ -113,8 +141,8 @@ function SettingsView() {
                                     <FaInfo />
                                 </span>
                                 <span className="profile-actions__copy">
-                                    <span className="profile-actions__label">À propos</span>
-                                    <span className="profile-actions__desc">Infos, crédits et liens</span>
+                                    <span className="profile-actions__label">{t('profile.about')}</span>
+                                    <span className="profile-actions__desc">{t('profile.aboutDesc')}</span>
                                 </span>
                                 <FaChevronRight className="profile-actions__chevron" aria-hidden="true" />
                             </button>
@@ -124,8 +152,8 @@ function SettingsView() {
                                     <FaHouse />
                                 </span>
                                 <span className="profile-actions__copy">
-                                    <span className="profile-actions__label">Page d’accueil</span>
-                                    <span className="profile-actions__desc">Présentation de Buzzer App</span>
+                                    <span className="profile-actions__label">{t('profile.landing')}</span>
+                                    <span className="profile-actions__desc">{t('profile.landingDesc')}</span>
                                 </span>
                                 <FaChevronRight className="profile-actions__chevron" aria-hidden="true" />
                             </Link>
@@ -134,7 +162,7 @@ function SettingsView() {
                 </div>
             </div>
 
-            <Modal title="Modifier profil" isOpen={isProfileModalOpen} onClose={handleCancelChanges}>
+            <Modal title={t('profile.editProfile')} isOpen={isProfileModalOpen} onClose={handleCancelChanges}>
                 <div className="modal_content profile-modal">
                     <ProfilePictureChooser
                         onImageSelect={setTempImageIndex}
@@ -147,12 +175,12 @@ function SettingsView() {
                         onClick={handleSaveProfile}
                         className="btn-push btn-push-green profile-modal__save"
                     >
-                        Enregistrer
+                        {t('common.save')}
                     </button>
                 </div>
             </Modal>
 
-            <Modal title="Modifier thème" isOpen={isThemeModalOpen} onClose={handleCancelThemeChanges}>
+            <Modal title={t('profile.editTheme')} isOpen={isThemeModalOpen} onClose={handleCancelThemeChanges}>
                 <div className="modal_content profile-modal">
                     <ThemeChooser
                         onBackgroundSelect={setTempBackground}
@@ -163,12 +191,39 @@ function SettingsView() {
                         onClick={handleSaveTheme}
                         className="btn-push btn-push-green profile-modal__save"
                     >
-                        Enregistrer
+                        {t('common.save')}
                     </button>
                 </div>
             </Modal>
 
-            <Modal title="À propos" isOpen={isAboutModalOpen} onClose={() => setIsAboutModalOpen(false)}>
+            <Modal
+                title={t('profile.editLanguage')}
+                isOpen={isLanguageModalOpen}
+                onClose={() => setIsLanguageModalOpen(false)}
+            >
+                <div className="modal_content profile-modal">
+                    <ul className="language-list">
+                        {languages.map((item) => {
+                            const selected = item.code === language;
+                            return (
+                                <li key={item.code}>
+                                    <button
+                                        type="button"
+                                        className={`language-list__item${selected ? ' is-selected' : ''}`}
+                                        onClick={() => handleSelectLanguage(item.code)}
+                                        aria-pressed={selected}
+                                    >
+                                        <span className="language-list__label">{item.nativeLabel}</span>
+                                        {selected ? <FaCheck aria-hidden="true" /> : null}
+                                    </button>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </div>
+            </Modal>
+
+            <Modal title={t('profile.about')} isOpen={isAboutModalOpen} onClose={() => setIsAboutModalOpen(false)}>
                 <div className="modal_content about-modal">
                     <AboutModalContent />
                 </div>

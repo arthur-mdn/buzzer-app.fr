@@ -34,7 +34,7 @@ const adminPasswordAttemptLimiter = rateLimit({
 });
 
 router.post('/registerUser', registerUserLimiter, adminPasswordAttemptLimiter, async (req, res) => {
-    const { userName, userPassword, userPictureSmiley, userPictureColor } = req.body;
+    const { userName, userPassword, userPictureSmiley, userPictureColor, userLanguage } = req.body;
     try {
         const normalizedName = normalizeUserName(userName, {
             min: MIN_USERNAME_LENGTH,
@@ -49,12 +49,15 @@ router.post('/registerUser', registerUserLimiter, adminPasswordAttemptLimiter, a
 
         const userId = generateUserId();
         const isAdmin = isAdminRegistration(userPassword, config.adminPassword);
+        const allowedLanguages = User.USER_LANGUAGES || ['fr', 'en', 'es', 'de', 'zh', 'ru'];
+        const language = allowedLanguages.includes(userLanguage) ? userLanguage : 'fr';
 
         const user = new User({
             userId,
             userName: normalizedName,
             userRole: isAdmin ? 'admin' : 'user',
-            userPicture: { smiley: userPictureSmiley, color: userPictureColor }
+            userPicture: { smiley: userPictureSmiley, color: userPictureColor },
+            userLanguage: language,
         });
         await user.save();
 
@@ -73,7 +76,7 @@ router.get('/authenticate', async (req, res) => {
     if (!token) return res.status(401).json({ success: false, message: "No token provided." });
     try {
         const data = verifyToken(token);
-        const user = await User.findOne({ userId: data.userId }).select(USER_PUBLIC_FIELDS + ' userTheme');
+        const user = await User.findOne({ userId: data.userId }).select(USER_PUBLIC_FIELDS + ' userTheme userLanguage');
         if (user) {
             const tokens = generateTokenPair({ userId: data.userId });
             res.json({
@@ -83,6 +86,7 @@ router.get('/authenticate', async (req, res) => {
                 userName: user.userName,
                 userPicture: user.userPicture,
                 userTheme: user.userTheme,
+                userLanguage: user.userLanguage || 'fr',
                 ...tokens,
             });
         } else {

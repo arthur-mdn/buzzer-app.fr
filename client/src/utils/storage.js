@@ -5,6 +5,7 @@ export const STORAGE_KEYS = {
     refreshToken: `${PREFIX}refreshToken`,
     userName: `${PREFIX}userName`,
     userId: `${PREFIX}userId`,
+    language: `${PREFIX}language`,
 };
 
 const LEGACY_KEYS = {

@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
     FaBolt,
@@ -10,73 +11,37 @@ import {
     FaGlobe,
     FaGithub,
     FaPaypal,
+    FaLanguage,
+    FaCheck,
 } from 'react-icons/fa6';
-
-const STEPS = [
-    {
-        title: 'Crée un salon',
-        text: 'Choisis un nom, un blason et les règles de score. Tu es prêt en quelques secondes.',
-    },
-    {
-        title: 'Invite tes amis',
-        text: 'Partage un code, un lien ou un QR. Chacun rejoint depuis son téléphone, où qu’il soit.',
-    },
-    {
-        title: 'Buzz et valide',
-        text: 'Lance la manche, le plus rapide apparaît en direct. Tu valides ou refuses la réponse.',
-    },
-];
-
-const FEATURES = [
-    {
-        Icon: FaBolt,
-        title: 'Buzzer temps réel',
-        text: 'Le premier joueur à buzz apparaît tout de suite pour tout le monde.',
-    },
-    {
-        Icon: FaTrophy,
-        title: 'Scores sur mesure',
-        text: 'Points par bonne réponse, bonus, pénalité : tu règles la compétition comme tu veux.',
-    },
-    {
-        Icon: FaLink,
-        title: 'Code, lien et QR',
-        text: 'Plusieurs façons d’entrer dans le salon, sans installation.',
-    },
-    {
-        Icon: FaUserGroup,
-        title: 'Salons publics',
-        text: 'Parcours les parties ouvertes ou retrouve tes salons dans l’historique.',
-    },
-    {
-        Icon: FaSliders,
-        title: 'Profil et thème',
-        text: 'Avatar, couleurs et fond : chacun s’installe à sa façon.',
-    },
-    {
-        Icon: FaWifi,
-        title: 'Réseaux différents OK',
-        text: 'Pas besoin du même Wi-Fi. Wi-Fi, 4G ou 5G : chacun joue dès qu’il a une connexion.',
-    },
-    {
-        Icon: FaGlobe,
-        title: 'Gratuit, dans le navigateur',
-        text: 'Aucune app à installer. Ouvre le site sur téléphone, tablette ou ordinateur, et joue tout de suite.',
-    },
-    {
-        Icon: FaQrcode,
-        title: 'Idéal en soirée',
-        text: 'Blind-test, quiz, culture G : un téléphone suffit pour jouer.',
-    },
-];
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 function LandingPage({ authenticated = false }) {
+    const { t, language, languages, setLanguage } = useLanguage();
+    const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
+    const languageMenuRef = useRef(null);
     const playTo = authenticated ? '/app' : '/jouer';
-    const playLabel = authenticated ? 'Ouvrir l’app' : 'Jouer maintenant';
-    const finalLabel = authenticated ? 'Retourner jouer' : 'Créer mon profil';
-    const finalLead = authenticated
-        ? 'Ton profil est prêt. Rejoins un salon ou crée-en un nouveau.'
-        : 'Pas de compte à créer : choisis un pseudo, un avatar, et c’est parti.';
+    const playLabel = authenticated ? t('landing.openApp') : t('landing.play');
+    const finalLabel = authenticated ? t('landing.backToPlay') : t('landing.createProfile');
+    const finalLead = authenticated ? t('landing.ctaAuth') : t('landing.ctaGuest');
+    const currentLanguageLabel = languages.find((item) => item.code === language)?.nativeLabel || language;
+
+    const steps = [
+        { title: t('landing.step1Title'), text: t('landing.step1Text') },
+        { title: t('landing.step2Title'), text: t('landing.step2Text') },
+        { title: t('landing.step3Title'), text: t('landing.step3Text') },
+    ];
+
+    const features = [
+        { Icon: FaBolt, title: t('landing.f1Title'), text: t('landing.f1Text') },
+        { Icon: FaTrophy, title: t('landing.f2Title'), text: t('landing.f2Text') },
+        { Icon: FaLink, title: t('landing.f3Title'), text: t('landing.f3Text') },
+        { Icon: FaUserGroup, title: t('landing.f4Title'), text: t('landing.f4Text') },
+        { Icon: FaSliders, title: t('landing.f5Title'), text: t('landing.f5Text') },
+        { Icon: FaWifi, title: t('landing.f6Title'), text: t('landing.f6Text') },
+        { Icon: FaGlobe, title: t('landing.f7Title'), text: t('landing.f7Text') },
+        { Icon: FaQrcode, title: t('landing.f8Title'), text: t('landing.f8Text') },
+    ];
 
     const scrollToMore = (event) => {
         event.preventDefault();
@@ -86,8 +51,69 @@ function LandingPage({ authenticated = false }) {
         });
     };
 
+    useEffect(() => {
+        if (!languageMenuOpen) {
+            return undefined;
+        }
+
+        const handlePointerDown = (event) => {
+            if (!languageMenuRef.current?.contains(event.target)) {
+                setLanguageMenuOpen(false);
+            }
+        };
+
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                setLanguageMenuOpen(false);
+            }
+        };
+
+        document.addEventListener('pointerdown', handlePointerDown);
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('pointerdown', handlePointerDown);
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [languageMenuOpen]);
+
     return (
         <div className="landing">
+            <div className="landing-lang" ref={languageMenuRef}>
+                <button
+                    type="button"
+                    className="landing-lang__button"
+                    aria-haspopup="listbox"
+                    aria-expanded={languageMenuOpen}
+                    aria-label={t('profile.language')}
+                    onClick={() => setLanguageMenuOpen((open) => !open)}
+                >
+                    <FaLanguage aria-hidden="true" />
+                    <span>{currentLanguageLabel}</span>
+                </button>
+                {languageMenuOpen && (
+                    <ul className="landing-lang__menu" role="listbox" aria-label={t('profile.language')}>
+                        {languages.map((item) => {
+                            const selected = item.code === language;
+                            return (
+                                <li key={item.code} role="option" aria-selected={selected}>
+                                    <button
+                                        type="button"
+                                        className={`landing-lang__option${selected ? ' is-selected' : ''}`}
+                                        onClick={() => {
+                                            setLanguage(item.code);
+                                            setLanguageMenuOpen(false);
+                                        }}
+                                    >
+                                        <span>{item.nativeLabel}</span>
+                                        {selected ? <FaCheck aria-hidden="true" /> : null}
+                                    </button>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                )}
+            </div>
+
             <header className="landing-hero">
                 <div className="landing-hero__content">
                     <img
@@ -97,10 +123,8 @@ function LandingPage({ authenticated = false }) {
                         width={220}
                         height={220}
                     />
-                    <h1 className="landing-hero__title">Le buzzer de tes soirées jeux</h1>
-                    <p className="landing-hero__lead">
-                        Anime un blind-test ou un quiz en live : crée un salon, invite tes amis, et vois qui appuie en premier.
-                    </p>
+                    <h1 className="landing-hero__title">{t('landing.title')}</h1>
+                    <p className="landing-hero__lead">{t('landing.lead')}</p>
                     <div className="landing-hero__actions">
                         <Link to={playTo} className="btn-push btn-push-green landing-hero__cta">
                             {playLabel}
@@ -110,7 +134,7 @@ function LandingPage({ authenticated = false }) {
                             className="btn-push btn-push-gray landing-hero__cta"
                             onClick={scrollToMore}
                         >
-                            En savoir plus
+                            {t('landing.learnMore')}
                         </a>
                     </div>
                 </div>
@@ -122,10 +146,10 @@ function LandingPage({ authenticated = false }) {
                     className="landing-section"
                     aria-labelledby="landing-how-title"
                 >
-                    <h2 id="landing-how-title" className="landing-section__title">Comment ça marche</h2>
-                    <p className="landing-section__lead">Trois gestes, et la partie est lancée.</p>
+                    <h2 id="landing-how-title" className="landing-section__title">{t('landing.howTitle')}</h2>
+                    <p className="landing-section__lead">{t('landing.howLead')}</p>
                     <ol className="landing-steps">
-                        {STEPS.map((step, index) => (
+                        {steps.map((step, index) => (
                             <li key={step.title} className="landing-steps__item">
                                 <span className="landing-steps__index" aria-hidden="true">{index + 1}</span>
                                 <div>
@@ -142,12 +166,10 @@ function LandingPage({ authenticated = false }) {
                     className="landing-section landing-section--features"
                     aria-labelledby="landing-features-title"
                 >
-                    <h2 id="landing-features-title" className="landing-section__title">Tout ce que tu peux faire</h2>
-                    <p className="landing-section__lead">
-                        Pensé pour les soirées entre amis, les animateurs et les parties improvisées.
-                    </p>
+                    <h2 id="landing-features-title" className="landing-section__title">{t('landing.featuresTitle')}</h2>
+                    <p className="landing-section__lead">{t('landing.featuresLead')}</p>
                     <ul className="landing-features">
-                        {FEATURES.map(({ Icon, title, text }) => (
+                        {features.map(({ Icon, title, text }) => (
                             <li key={title} className="landing-features__item">
                                 <span className="landing-features__icon-wrap" aria-hidden="true">
                                     <Icon className="landing-features__icon" />
@@ -162,7 +184,7 @@ function LandingPage({ authenticated = false }) {
                 </section>
 
                 <section className="landing-section landing-section--cta" aria-labelledby="landing-cta-title">
-                    <h2 id="landing-cta-title" className="landing-section__title">Prêt à buzz ?</h2>
+                    <h2 id="landing-cta-title" className="landing-section__title">{t('landing.ctaTitle')}</h2>
                     <p className="landing-section__lead">{finalLead}</p>
                     <Link to={playTo} className="btn-push btn-push-green landing-hero__cta">
                         {finalLabel}
@@ -172,7 +194,7 @@ function LandingPage({ authenticated = false }) {
 
             <footer className="landing-footer">
                 <p className="landing-footer__credit">
-                    Réalisé avec ❤️ par{' '}
+                    {t('landing.madeBy')}{' '}
                     <a href="https://mondon.pro/projet/buzzer-app" target="_blank" rel="noreferrer">
                         Arthur Mondon
                     </a>

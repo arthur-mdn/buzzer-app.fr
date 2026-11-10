@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { FaCheck, FaChevronRight, FaUserGroup } from 'react-icons/fa6';
 import BlasonServerViewer from '../host/BlasonServerViewer.jsx';
 import { countOnlinePlayers, sortServersByRecency } from '../../utils/serverList.js';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 function ServerList({
     servers,
@@ -11,6 +12,7 @@ function ServerList({
     selectedCodes = [],
     onToggleSelect,
 }) {
+    const { t } = useLanguage();
     const sortedServers = useMemo(() => sortServersByRecency(servers), [servers]);
     const selectedSet = useMemo(() => new Set(selectedCodes), [selectedCodes]);
 
@@ -46,7 +48,7 @@ function ServerList({
                                 <span className="server-list__name">{server.name}</span>
                                 <span className="server-list__meta">
                                     <FaUserGroup aria-hidden="true" />
-                                    {onlinePlayersCount} en ligne
+                                    {t('salons.online', { count: onlinePlayersCount })}
                                 </span>
                             </div>
                             <FaChevronRight className="server-list__chevron" aria-hidden="true" />

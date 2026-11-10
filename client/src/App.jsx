@@ -12,6 +12,7 @@ import { SocketProvider } from './SocketContext.jsx';
 import { TokenProvider } from './TokenContext.jsx';
 import { UserProvider } from './UserContext.jsx';
 import { ThemeProvider } from './ThemeContext.jsx';
+import { LanguageProvider, useLanguage } from './i18n/LanguageContext.jsx';
 import config from './config.js';
 import { normalizeProfileColor, normalizeProfileImageIndex } from './utils/profilePicture.js';
 import { STORAGE_KEYS, clearAuthStorage, getStorageItem } from './utils/storage.js';
@@ -51,7 +52,8 @@ function AuthenticatedShell({
     );
 }
 
-function App() {
+function AppContent() {
+    const { t, language, setLanguage } = useLanguage();
     const [status, setStatus] = useState(getInitialStatus);
     const [statusMsg, setStatusMsg] = useState('');
     const [userId, setUserId] = useState(null);
@@ -64,6 +66,7 @@ function App() {
     const [currentPing, setCurrentPing] = useState(0);
 
     const socketRef = useRef();
+    const skipLanguagePersistRef = useRef(false);
     const isReady = status === 'socketReady';
     const isGuest = status === 'noToken';
     const isBooting = status === 'initial' || status === 'authenticated';
@@ -114,14 +117,24 @@ function App() {
             setStatus('kickServer');
         });
 
-        socketRef.current.on('updateProfile', ({ newUserRole, newUserName, newUserPicture, newUserTheme }) => {
+        socketRef.current.on('updateProfile', ({
+            newUserRole,
+            newUserName,
+            newUserPicture,
+            newUserTheme,
+            newUserLanguage,
+        }) => {
             setUserRole(newUserRole);
             setUserName(newUserName);
             setUserPictureSmiley(normalizeProfileImageIndex(newUserPicture.smiley, false));
             setUserPictureColor(normalizeProfileColor(newUserPicture.color));
             setUserBackground(newUserTheme.background);
+            if (newUserLanguage) {
+                skipLanguagePersistRef.current = true;
+                setLanguage(newUserLanguage);
+            }
         });
-    }, []);
+    }, [setLanguage]);
 
     const authenticateUser = useCallback(async () => {
         console.log('Authenticating user...');
@@ -143,16 +156,31 @@ function App() {
             setUserPictureSmiley(normalizeProfileImageIndex(result.user.userPicture.smiley, false));
             setUserPictureColor(normalizeProfileColor(result.user.userPicture.color));
             setUserBackground(result.user.userTheme.background);
+            if (result.user.userLanguage) {
+                skipLanguagePersistRef.current = true;
+                setLanguage(result.user.userLanguage);
+            }
             setStatus('authenticated');
             setupSocket();
         } catch {
             setStatus('connectError');
         }
-    }, [setupSocket]);
+    }, [setupSocket, setLanguage]);
 
     useEffect(() => {
         authenticateUser();
     }, [authenticateUser]);
+
+    useEffect(() => {
+        if (!isReady || !socketRef.current) {
+            return;
+        }
+        if (skipLanguagePersistRef.current) {
+            skipLanguagePersistRef.current = false;
+            return;
+        }
+        socketRef.current.emit('updateUserLanguage', { userLanguage: language });
+    }, [language, isReady]);
 
     const ping = useCallback(() => {
         if (!isWaitingForPong && socketRef.current) {
@@ -183,18 +211,18 @@ function App() {
             <div className="modal_bg">
                 <div className="modal">
                     <div className="modal_content_title">
-                        <h2>Erreur !</h2>
+                        <h2>{t('common.error')}</h2>
                     </div>
                     <div className="modal_content">
-                        <label htmlFor="name" style={{ width: '100%', textAlign: 'center' }}>
-                            Erreur de connexion au serveur
+                        <label style={{ width: '100%', textAlign: 'center' }}>
+                            {t('app.connectError')}
                         </label>
                         <button
                             onClick={() => window.location.reload()}
                             className="btn-push btn-push-green"
                             style={{ padding: '1rem 1.5rem' }}
                         >
-                            Réessayer
+                            {t('common.retry')}
                         </button>
                     </div>
                 </div>
@@ -207,21 +235,21 @@ function App() {
             <div className="modal_bg">
                 <div className="modal">
                     <div className="modal_content_title">
-                        <h2>Erreur !</h2>
+                        <h2>{t('common.error')}</h2>
                     </div>
                     <div className="modal_content">
-                        <label htmlFor="name" style={{ width: '100%', textAlign: 'center' }}>
-                            Erreur de connexion : {statusMsg}
+                        <label style={{ width: '100%', textAlign: 'center' }}>
+                            {t('app.authError', { message: statusMsg })}
                         </label>
                         <button
                             onClick={() => window.location.reload()}
                             className="btn-push btn-push-green"
                             style={{ padding: '1rem 1.5rem' }}
                         >
-                            Réessayer
+                            {t('common.retry')}
                         </button>
                         <button onClick={onLogout} className="btn-push" style={{ padding: '1rem 1.5rem' }}>
-                            Déconnexion
+                            {t('common.logout')}
                         </button>
                     </div>
                 </div>
@@ -234,18 +262,18 @@ function App() {
             <div className="modal_bg">
                 <div className="modal">
                     <div className="modal_content_title">
-                        <h2>Erreur !</h2>
+                        <h2>{t('common.error')}</h2>
                     </div>
                     <div className="modal_content">
-                        <label htmlFor="name" style={{ width: '100%', textAlign: 'center' }}>
-                            Oops... Vous semblez vous être connecté sur un autre appareil.
+                        <label style={{ width: '100%', textAlign: 'center' }}>
+                            {t('app.forceDisconnect')}
                         </label>
                         <button
                             onClick={() => window.location.reload()}
                             className="btn-push btn-push-green"
                             style={{ padding: '1rem 1.5rem' }}
                         >
-                            Reconnexion
+                            {t('common.reconnect')}
                         </button>
                     </div>
                 </div>
@@ -258,18 +286,18 @@ function App() {
             <div className="modal_bg">
                 <div className="modal">
                     <div className="modal_content_title">
-                        <h2>Erreur !</h2>
+                        <h2>{t('common.error')}</h2>
                     </div>
                     <div className="modal_content">
-                        <label htmlFor="name" style={{ width: '100%', textAlign: 'center' }}>
-                            Vous avez été déconnecté par un administrateur.
+                        <label style={{ width: '100%', textAlign: 'center' }}>
+                            {t('app.adminDisconnect')}
                         </label>
                         <button
                             onClick={() => window.location.reload()}
                             className="btn-push btn-push-green"
                             style={{ padding: '1rem 1.5rem' }}
                         >
-                            Reconnexion
+                            {t('common.reconnect')}
                         </button>
                     </div>
                 </div>
@@ -282,11 +310,11 @@ function App() {
             <div className="modal_bg">
                 <div className="modal">
                     <div className="modal_content_title">
-                        <h2>Erreur !</h2>
+                        <h2>{t('common.error')}</h2>
                     </div>
                     <div className="modal_content">
-                        <label htmlFor="name" style={{ width: '100%', textAlign: 'center' }}>
-                            Vous avez été exclu du serveur.
+                        <label style={{ width: '100%', textAlign: 'center' }}>
+                            {t('app.kick')}
                         </label>
                         <button
                             onClick={() => {
@@ -295,7 +323,7 @@ function App() {
                             className="btn-push"
                             style={{ padding: '1rem 1.5rem' }}
                         >
-                            Accueil
+                            {t('common.home')}
                         </button>
                     </div>
                 </div>
@@ -362,6 +390,14 @@ function App() {
                 />
             </Routes>
         </Router>
+    );
+}
+
+function App() {
+    return (
+        <LanguageProvider>
+            <AppContent />
+        </LanguageProvider>
     );
 }
 

@@ -5,10 +5,12 @@ import config from "../../config";
 import ProfilePictureChooser from "./ProfilePictureChooser.jsx";
 import AboutApp from "../homePage/AboutApp.jsx";
 import { normalizeProfileColor, PROFILE_COLORS } from "../../utils/profilePicture.js";
-import { STORAGE_KEYS, setStorageItem } from "../../utils/storage.js";
+import { STORAGE_KEYS, setStorageItem, getStorageItem } from "../../utils/storage.js";
+import { useLanguage } from "../../i18n/LanguageContext.jsx";
 
 function UserNameInput({ onSuccess }) {
     const location = useLocation();
+    const { t, language } = useLanguage();
     const showBackToLanding = location.pathname === '/jouer' || location.pathname.startsWith('/server/');
     const [tempUserName, setTempUserName] = useState('');
     const [showPasswordCount, setShowPasswordCount] = useState(0);
@@ -65,7 +67,13 @@ function UserNameInput({ onSuccess }) {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ userName: trimmedUserName, userPassword: trimmedPassword, userPictureSmiley: selectedImageIndex, userPictureColor: selectedColor }),
+                body: JSON.stringify({
+                    userName: trimmedUserName,
+                    userPassword: trimmedPassword,
+                    userPictureSmiley: selectedImageIndex,
+                    userPictureColor: selectedColor,
+                    userLanguage: getStorageItem(STORAGE_KEYS.language) || language,
+                }),
             });
 
             if (response.ok) {
@@ -101,23 +109,23 @@ function UserNameInput({ onSuccess }) {
                                 ‹
                             </Link>
                         )}
-                        <h2 onClick={incrementShowPasswordCount}>Bienvenue !</h2>
+                        <h2 onClick={incrementShowPasswordCount}>{t('auth.welcome')}</h2>
                         <AboutApp />
                     </div>
                     <form onSubmit={handleUsernameSubmit} className={'modal_content'}>
-                        <label htmlFor={'name'} style={{width:'100%',textAlign:'left'}}>Comment dois-je t'appeler ?</label>
+                        <label htmlFor={'name'} style={{width:'100%',textAlign:'left'}}>{t('auth.askName')}</label>
                         <div style={{display: 'flex', width: '100%', flexDirection:'column'}}>
                             <input type="text" required id={'name'} placeholder={'John D'} value={tempUserName} minLength={3} maxLength={30} onChange={(e) => setTempUserName(e.target.value)}  />
                         </div>
                         {showPasswordCount > 10 &&
                             <div style={{width: '100%'}}>
-                                <label htmlFor={'name'} style={{width:'100%',textAlign:'left'}}>Code secret</label>
+                                <label htmlFor={'name'} style={{width:'100%',textAlign:'left'}}>{t('auth.secretCode')}</label>
                                 <div style={{display: 'flex', width: '100%', flexDirection:'column'}}>
                                     <input type="password" id={'password'} placeholder={'******'} value={tempPassword} minLength={3} maxLength={30} onChange={(e) => setTempPassword(e.target.value)}  />
                                 </div>
                             </div>
                         }
-                        <label htmlFor={'name'} style={{width:'100%',textAlign:'left'}}>Photo de profil</label>
+                        <label htmlFor={'name'} style={{width:'100%',textAlign:'left'}}>{t('auth.profilePicture')}</label>
                         <div style={{display: 'flex', width: '100%', flexDirection:'column'}}>
                             <ProfilePictureChooser
                                 onImageSelect={handleImageSelect}
@@ -126,7 +134,7 @@ function UserNameInput({ onSuccess }) {
                             />
                         </div>
 
-                        <button type="submit" className={'btn-push btn-push-green'} style={{width: '100%', padding: '1rem'}}>Enregistrer</button>
+                        <button type="submit" className={'btn-push btn-push-green'} style={{width: '100%', padding: '1rem'}}>{t('auth.register')}</button>
                     </form>
                 </div>
             </nav>

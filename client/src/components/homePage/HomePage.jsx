@@ -5,6 +5,7 @@ import HomeView from './HomeView.jsx';
 import SettingsView from './SettingsView.jsx';
 import AdminView from './AdminView.jsx';
 import { useUser } from '../../UserContext.jsx';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 import { FaUserGroup, FaBolt, FaSliders, FaShieldHalved } from 'react-icons/fa6';
 
 const AXIS_LOCK_PX = 10;
@@ -26,19 +27,20 @@ function clampDragOffset(offset, tab, width, maxIndex) {
 
 function HomePage() {
     const { userRole } = useUser();
+    const { t } = useLanguage();
     const isAdmin = userRole === 'admin';
 
     const tabs = useMemo(() => {
         const items = [
-            { key: 'servers', label: 'Salons', Icon: FaUserGroup, variant: 'servers', panel: <ServerView /> },
-            { key: 'home', label: 'Jouer !', Icon: FaBolt, variant: 'home', panel: <HomeView /> },
+            { key: 'servers', label: t('nav.salons'), Icon: FaUserGroup, variant: 'servers', panel: <ServerView /> },
+            { key: 'home', label: t('nav.play'), Icon: FaBolt, variant: 'home', panel: <HomeView /> },
         ];
         if (isAdmin) {
-            items.push({ key: 'admin', label: 'Admin', Icon: FaShieldHalved, variant: 'admin', panel: <AdminView /> });
+            items.push({ key: 'admin', label: t('nav.admin'), Icon: FaShieldHalved, variant: 'admin', panel: <AdminView /> });
         }
-        items.push({ key: 'settings', label: 'Profil', Icon: FaSliders, variant: 'settings', panel: <SettingsView /> });
+        items.push({ key: 'settings', label: t('nav.profile'), Icon: FaSliders, variant: 'settings', panel: <SettingsView /> });
         return items;
-    }, [isAdmin]);
+    }, [isAdmin, t]);
 
     const contentRef = useRef(null);
     const currentTabRef = useRef(1);
@@ -182,7 +184,7 @@ function HomePage() {
                 </div>
             </div>
 
-            <nav className="navbar-bottom" aria-label="Navigation principale">
+            <nav className="navbar-bottom" aria-label={t('nav.main')}>
                 <div className="navbar-bottom__glow" aria-hidden="true" />
                 <div className="navbar-bottom__track">
                     {tabs.map(({ key, label, Icon, variant }, index) => {

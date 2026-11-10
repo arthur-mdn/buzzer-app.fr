@@ -1203,6 +1203,56 @@ progress::-moz-progress-bar {
   padding: 0.65rem 2rem;
 }
 
+.language-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.language-list__item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.8rem;
+  border: 2px solid rgba(30, 40, 55, 0.18);
+  border-bottom-width: 3px;
+  background: linear-gradient(180deg, #f7f9fc 0%, #e8eef6 100%);
+  box-shadow: 0 3px 0 rgba(30, 40, 55, 0.18);
+  color: #1e2a38;
+  cursor: pointer;
+  font-family: "Nunito", "Segoe UI", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.language-list__item.is-selected {
+  background: linear-gradient(180deg, #84f928 0%, #2ea818 100%);
+  border-color: rgba(255, 255, 255, 0.28);
+  border-bottom-color: #1a5f2a;
+  box-shadow: 0 3px 0 #1f6b2f;
+  color: #fff;
+}
+
+.language-list__item:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(30, 40, 55, 0.18);
+}
+
+.language-list__item svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  flex-shrink: 0;
+}
+
 .salons-panel {
   width: 100%;
   max-width: 28rem;
@@ -2427,6 +2477,7 @@ progress::-moz-progress-bar {
 { opacity: 100%; }
 /* ========== Landing (SEO public) ========== */
 .landing {
+  position: relative;
   height: 100dvh;
   max-height: 100dvh;
   width: 100%;
@@ -2447,6 +2498,91 @@ progress::-moz-progress-bar {
   box-sizing: border-box;
   overflow-x: hidden;
   background: transparent;
+}
+
+.landing-lang {
+  position: absolute;
+  top: max(0.85rem, env(safe-area-inset-top, 0px));
+  right: max(0.85rem, env(safe-area-inset-right, 0px));
+  z-index: 20;
+}
+
+.landing-lang__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(18, 22, 34, 0.55);
+  color: #fff;
+  cursor: pointer;
+  font-family: "Nunito", "Segoe UI", sans-serif;
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+}
+
+.landing-lang__button svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+.landing-lang__menu {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0.35rem;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 9.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(22, 26, 38, 0.96);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.landing-lang__option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0.55rem 0.65rem;
+  border: 0;
+  border-radius: 0.55rem;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  font-family: "Nunito", "Segoe UI", sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.landing-lang__option:hover,
+.landing-lang__option:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.landing-lang__option.is-selected {
+  background: rgba(46, 168, 24, 0.28);
+  color: #fff;
+}
+
+.landing-lang__option svg {
+  width: 0.8rem;
+  height: 0.8rem;
+  flex-shrink: 0;
 }
 
 .landing-hero {

@@ -13,6 +13,8 @@ const THEME_BACKGROUNDS = [
     'dark-green',
 ];
 
+const USER_LANGUAGES = ['fr', 'en', 'es', 'de', 'zh', 'ru'];
+
 const userSchema = new Schema({
     userId: {
         type: String,
@@ -62,7 +64,15 @@ const userSchema = new Schema({
             enum: THEME_BACKGROUNDS,
             maxlength: 32,
         }
-    }
+    },
+    userLanguage: {
+        type: String,
+        default: 'fr',
+        required: true,
+        enum: USER_LANGUAGES,
+        maxlength: 8,
+    },
 });
 
 module.exports = mongoose.model('User', userSchema);
+module.exports.USER_LANGUAGES = USER_LANGUAGES;

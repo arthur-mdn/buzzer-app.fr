@@ -5,11 +5,13 @@ import config from '../../config';
 import { useToken } from '../../TokenContext.jsx';
 import ServerList from './ServerList.jsx';
 import { useWatchedServers } from '../../hooks/useWatchedServers.js';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 function PublicServerList() {
     const token = useToken();
     const socket = useSocket();
     const { userId } = useUser();
+    const { t } = useLanguage();
     const [userServers, setUserServers] = useState([]);
 
     useWatchedServers(socket, userServers);
@@ -46,7 +48,7 @@ function PublicServerList() {
     return (
         <ServerList
             servers={userServers}
-            emptyMessage="Aucun salon public pour le moment."
+            emptyMessage={t('salons.publicEmpty')}
         />
     );
 }

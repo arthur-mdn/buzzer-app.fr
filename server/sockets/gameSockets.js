@@ -673,7 +673,8 @@ module.exports = function(io) {
                 newUserRole: newUser.userRole,
                 newUserName: newUser.userName,
                 newUserPicture: newUser.userPicture,
-                newUserTheme: newUser.userTheme
+                newUserTheme: newUser.userTheme,
+                newUserLanguage: newUser.userLanguage || 'fr',
             });
         }, 'An error occurred while updating the profile');
 
@@ -698,9 +699,42 @@ module.exports = function(io) {
                 newUserRole: newUser.userRole,
                 newUserName: newUser.userName,
                 newUserPicture: newUser.userPicture,
-                newUserTheme: newUser.userTheme
+                newUserTheme: newUser.userTheme,
+                newUserLanguage: newUser.userLanguage || 'fr',
             });
         }, 'An error occurred while updating the theme');
+
+        safeOn('updateUserLanguage', async ({ userLanguage }) => {
+            const user = await getAuthenticatedUser();
+            if (!user) {
+                socket.emit('serverError', { message: 'User not found' });
+                return;
+            }
+
+            const allowedLanguages = User.USER_LANGUAGES || ['fr', 'en', 'es', 'de', 'zh', 'ru'];
+            if (!allowedLanguages.includes(userLanguage)) {
+                socket.emit('serverError', { message: 'Invalid language' });
+                return;
+            }
+
+            await User.findOneAndUpdate(
+                { userId: user.userId },
+                { $set: { userLanguage } },
+                { runValidators: true }
+            );
+            const newUser = await User.findOne({ userId: user.userId });
+            if (!newUser) {
+                socket.emit('serverError', { message: 'User not found' });
+                return;
+            }
+            socket.emit('updateProfile', {
+                newUserRole: newUser.userRole,
+                newUserName: newUser.userName,
+                newUserPicture: newUser.userPicture,
+                newUserTheme: newUser.userTheme,
+                newUserLanguage: newUser.userLanguage || 'fr',
+            });
+        }, 'An error occurred while updating the language');
 
         safeOn('kickPlayer', async ({ serverCode, playerId }) => {
             const server = await retryOnVersionError(async () => {

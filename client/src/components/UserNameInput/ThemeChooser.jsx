@@ -1,8 +1,9 @@
 //ThemeChooser.jsx
-import React, { useState, useEffect } from 'react';
-import { useTheme } from '../../ThemeContext.jsx';
+import { useState } from 'react';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 function ThemeChooser({ onBackgroundSelect , initialBackground }) {
+    const { t } = useLanguage();
     const backgrounds = ["default", "blue", "dark", "light", "gradient", "green", "purple", "yellow"];
     const [selectedBackground, setSelectedBackground ] = useState(initialBackground);
 
@@ -14,7 +15,7 @@ function ThemeChooser({ onBackgroundSelect , initialBackground }) {
 
     return (
         <div className="profile-picture-chooser" style={{width:'100%'}}>
-            <label>Fond d'écran</label>
+            <label>{t('profile.wallpaper')}</label>
             <div className="profile-picture-grid" style={{width:'100%'}}>
                 {Array.from(backgrounds).map((name) => (
                     <img
