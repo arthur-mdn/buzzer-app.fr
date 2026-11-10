@@ -77,85 +77,83 @@ function SettingsView() {
                 <div className="profile-panel">
                     <h2 className="profile-panel__title">{t('profile.title')}</h2>
 
-                    <div className="profile-panel__card">
+                    <button
+                        type="button"
+                        className="profile-identity"
+                        onClick={handleProfileClick}
+                    >
+                        <span className="profile-identity__avatar">
+                            <ProfilePictureViewer
+                                imageIndex={userPictureSmiley}
+                                imageColor={userPictureColor}
+                                size="4.75rem"
+                            />
+                        </span>
+                        <span className="profile-identity__meta">
+                            <span className="profile-identity__name">{userName}</span>
+                            <span className="profile-identity__hint">{t('profile.editAvatar')}</span>
+                        </span>
+                        <FaChevronRight className="profile-identity__chevron" aria-hidden="true" />
+                    </button>
+
+                    <div className="profile-actions">
                         <button
                             type="button"
-                            className="profile-identity"
-                            onClick={handleProfileClick}
+                            className="profile-actions__item"
+                            onClick={handleThemeClick}
                         >
-                            <span className="profile-identity__avatar">
-                                <ProfilePictureViewer
-                                    imageIndex={userPictureSmiley}
-                                    imageColor={userPictureColor}
-                                    size="4.75rem"
-                                />
+                            <span className="profile-actions__icon" aria-hidden="true">
+                                <FaPalette />
                             </span>
-                            <span className="profile-identity__meta">
-                                <span className="profile-identity__name">{userName}</span>
-                                <span className="profile-identity__hint">{t('profile.editAvatar')}</span>
+                            <span className="profile-actions__copy">
+                                <span className="profile-actions__label">{t('profile.theme')}</span>
+                                <span className="profile-actions__desc">{t('profile.themeDesc')}</span>
                             </span>
-                            <FaChevronRight className="profile-identity__chevron" aria-hidden="true" />
+                            <FaChevronRight className="profile-actions__chevron" aria-hidden="true" />
                         </button>
 
-                        <div className="profile-actions">
-                            <button
-                                type="button"
-                                className="profile-actions__item"
-                                onClick={handleThemeClick}
-                            >
-                                <span className="profile-actions__icon" aria-hidden="true">
-                                    <FaPalette />
+                        <button
+                            type="button"
+                            className="profile-actions__item"
+                            onClick={() => setIsLanguageModalOpen(true)}
+                        >
+                            <span className="profile-actions__icon" aria-hidden="true">
+                                <FaLanguage />
+                            </span>
+                            <span className="profile-actions__copy">
+                                <span className="profile-actions__label">{t('profile.language')}</span>
+                                <span className="profile-actions__desc">
+                                    {t('profile.languageDesc')} · {currentLanguageLabel}
                                 </span>
-                                <span className="profile-actions__copy">
-                                    <span className="profile-actions__label">{t('profile.theme')}</span>
-                                    <span className="profile-actions__desc">{t('profile.themeDesc')}</span>
-                                </span>
-                                <FaChevronRight className="profile-actions__chevron" aria-hidden="true" />
-                            </button>
+                            </span>
+                            <FaChevronRight className="profile-actions__chevron" aria-hidden="true" />
+                        </button>
 
-                            <button
-                                type="button"
-                                className="profile-actions__item"
-                                onClick={() => setIsLanguageModalOpen(true)}
-                            >
-                                <span className="profile-actions__icon" aria-hidden="true">
-                                    <FaLanguage />
-                                </span>
-                                <span className="profile-actions__copy">
-                                    <span className="profile-actions__label">{t('profile.language')}</span>
-                                    <span className="profile-actions__desc">
-                                        {t('profile.languageDesc')} · {currentLanguageLabel}
-                                    </span>
-                                </span>
-                                <FaChevronRight className="profile-actions__chevron" aria-hidden="true" />
-                            </button>
+                        <button
+                            type="button"
+                            className="profile-actions__item"
+                            onClick={() => setIsAboutModalOpen(true)}
+                        >
+                            <span className="profile-actions__icon" aria-hidden="true">
+                                <FaInfo />
+                            </span>
+                            <span className="profile-actions__copy">
+                                <span className="profile-actions__label">{t('profile.about')}</span>
+                                <span className="profile-actions__desc">{t('profile.aboutDesc')}</span>
+                            </span>
+                            <FaChevronRight className="profile-actions__chevron" aria-hidden="true" />
+                        </button>
 
-                            <button
-                                type="button"
-                                className="profile-actions__item"
-                                onClick={() => setIsAboutModalOpen(true)}
-                            >
-                                <span className="profile-actions__icon" aria-hidden="true">
-                                    <FaInfo />
-                                </span>
-                                <span className="profile-actions__copy">
-                                    <span className="profile-actions__label">{t('profile.about')}</span>
-                                    <span className="profile-actions__desc">{t('profile.aboutDesc')}</span>
-                                </span>
-                                <FaChevronRight className="profile-actions__chevron" aria-hidden="true" />
-                            </button>
-
-                            <Link to={localePath(language)} className="profile-actions__item">
-                                <span className="profile-actions__icon" aria-hidden="true">
-                                    <FaHouse />
-                                </span>
-                                <span className="profile-actions__copy">
-                                    <span className="profile-actions__label">{t('profile.landing')}</span>
-                                    <span className="profile-actions__desc">{t('profile.landingDesc')}</span>
-                                </span>
-                                <FaChevronRight className="profile-actions__chevron" aria-hidden="true" />
-                            </Link>
-                        </div>
+                        <Link to={localePath(language)} className="profile-actions__item">
+                            <span className="profile-actions__icon" aria-hidden="true">
+                                <FaHouse />
+                            </span>
+                            <span className="profile-actions__copy">
+                                <span className="profile-actions__label">{t('profile.landing')}</span>
+                                <span className="profile-actions__desc">{t('profile.landingDesc')}</span>
+                            </span>
+                            <FaChevronRight className="profile-actions__chevron" aria-hidden="true" />
+                        </Link>
                     </div>
                 </div>
             </div>
