@@ -21,7 +21,7 @@ function UserNameInput({ onSuccess }) {
         const validInput = /^[\w\s.-]+$/;
 
 // Supprimez les espaces au début et à la fin de la chaîne
-        let trimmedUserName = tempUserName.trim();
+        const trimmedUserName = tempUserName.trim();
         let trimmedPassword = tempPassword.trim();
 // Vérifiez si la chaîne est vide après suppression des espaces
         if (!trimmedUserName) {

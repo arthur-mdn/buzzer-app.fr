@@ -1,0 +1,59 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.6.6/schema.json",
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"files": {
+		"includes": ["**", "!!**/dist", "!!**/*.css"]
+	},
+	"formatter": {
+		"enabled": false
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"preset": "recommended",
+			"a11y": {
+				"noSvgWithoutTitle": "off",
+				"useKeyWithClickEvents": "off",
+				"useSemanticElements": "off",
+				"noStaticElementInteractions": "off",
+				"useButtonType": "off",
+				"noLabelWithoutControl": "off",
+				"useAltText": "off",
+				"useMediaCaption": "off",
+				"noRedundantAlt": "off"
+			},
+			"complexity": {
+				"noImportantStyles": "off",
+				"noUselessFragments": "warn",
+				"useOptionalChain": "warn"
+			},
+			"correctness": {
+				"noUnusedImports": "warn",
+				"noUnusedFunctionParameters": "warn",
+				"noUnusedVariables": "warn",
+				"useExhaustiveDependencies": "warn",
+				"useHookAtTopLevel": "error"
+			},
+			"security": {
+				"noDangerouslySetInnerHtml": "warn"
+			},
+			"style": {
+				"noDescendingSpecificity": "off",
+				"noUselessElse": "off",
+				"useConst": "warn",
+				"useTemplate": "warn"
+			},
+			"suspicious": {
+				"noArrayIndexKey": "off",
+				"useIterableCallbackReturn": "warn"
+			}
+		}
+	},
+	"assist": {
+		"enabled": false
+	}
+}

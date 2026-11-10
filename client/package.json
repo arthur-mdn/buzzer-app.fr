@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "vite --port 5174 --host",
     "build": "vite build",
-    "lint": "eslint .",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -29,16 +30,11 @@
     "ws": "8.22.0"
   },
   "devDependencies": {
-    "@eslint-react/eslint-plugin": "^5.28.8",
-    "@eslint/js": "^10.0.1",
+    "@biomejs/biome": "^2.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.2.1",
-    "eslint": "^10.14.0",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.7",
-    "globals": "^17.14.0",
-    "typescript": "~5.9.3",
+    "typescript": "^7.0.2",
     "vite": "^8.3.6"
   }
 }

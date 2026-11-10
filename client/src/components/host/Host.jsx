@@ -27,7 +27,7 @@ function Host({ onClose }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            let trimmedServerName = serverName.trim();
+            const trimmedServerName = serverName.trim();
             if (!trimmedServerName) {
                 alert("Le nom du serveur ne peut pas être vide.");
                 return;
