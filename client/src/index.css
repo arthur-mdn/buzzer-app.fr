@@ -433,6 +433,9 @@ nav .btn-push{
   line-height: 1;
   border-radius: 0.55rem;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  text-decoration: none;
+  color: #fff;
+  box-sizing: border-box;
 }
 
 .modal .modal_content_title .close.btn-push {
@@ -2223,3 +2226,373 @@ progress::-moz-progress-bar {
 .signal-icon.strong .signal-bar:nth-child(3),
 .signal-icon.strong .signal-bar:nth-child(4)
 { opacity: 100%; }
+/* ========== Landing (SEO public) ========== */
+.landing {
+  height: 100dvh;
+  max-height: 100dvh;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  color: #fff;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  background: rgba(12, 14, 20, 0.62);
+}
+
+.landing-main {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  background: transparent;
+}
+
+.landing-hero {
+  position: relative;
+  min-height: 100%;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.25rem 3rem;
+  text-align: center;
+  isolation: isolate;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  background: transparent;
+}
+
+.landing-hero__content {
+  position: relative;
+  z-index: 1;
+  max-width: 34rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  animation: landing-rise 0.7s ease-out both;
+}
+
+.landing-hero__logo {
+  width: min(42vw, 11.5rem);
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.45));
+  animation: landing-logo-bob 3.2s ease-in-out infinite;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.landing-hero__title {
+  margin: 0.15rem 0 0;
+  font-family: "Fredoka One", sans-serif;
+  font-size: clamp(1.15rem, 4.2vw, 1.55rem);
+  font-weight: normal;
+  letter-spacing: 0.02rem;
+  line-height: 1.25;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.landing-hero__lead {
+  margin: 0;
+  max-width: 28rem;
+  font-family: "Nunito", "Segoe UI", sans-serif;
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.55;
+  letter-spacing: 0.01rem;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.landing-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 0.55rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.landing-hero__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  padding: 0.85rem 1.35rem;
+  font-size: 1rem;
+  min-width: min(10.5rem, 100%);
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.landing-section {
+  width: min(100%, 42rem);
+  margin: 0 auto;
+  padding: 3.25rem 1.25rem 1.5rem;
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.landing-section__title {
+  margin: 0 0 0.55rem;
+  font-family: "Fredoka One", sans-serif;
+  font-size: clamp(1.45rem, 5vw, 1.9rem);
+  letter-spacing: 0.03rem;
+  text-align: center;
+  color: #fff;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.45), 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.landing-section__lead {
+  margin: 0 auto 1.75rem;
+  max-width: 28rem;
+  text-align: center;
+  font-family: "Nunito", "Segoe UI", sans-serif;
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.landing-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0 0.15rem 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.landing-steps__item {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+  padding: 0.95rem 1rem;
+  border-radius: 0.9rem;
+  background: linear-gradient(180deg, rgba(58, 66, 86, 0.95) 0%, rgba(36, 42, 56, 0.98) 100%);
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  border-bottom-color: #12151c;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+}
+
+.landing-steps__index {
+  flex-shrink: 0;
+  width: 2.35rem;
+  height: 2.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.65rem;
+  font-family: "Fredoka One", sans-serif;
+  font-size: 1.1rem;
+  background: linear-gradient(180deg, #fb7073 0%, #de2e48 100%);
+  box-shadow: 0 4px 0 #a01b1b;
+}
+
+.landing-steps__title {
+  margin: 0 0 0.3rem;
+  font-family: "Fredoka One", sans-serif;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.landing-steps__text {
+  margin: 0;
+  font-family: "Nunito", "Segoe UI", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.landing-section--features {
+  padding-top: 2.5rem;
+}
+
+#en-savoir-plus {
+  scroll-margin-top: 1.25rem;
+}
+
+.landing-features {
+  list-style: none;
+  margin: 0;
+  padding: 0 0.15rem 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.landing-features__item {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+  padding: 0.95rem 1rem;
+  border-radius: 0.9rem;
+  background: linear-gradient(180deg, rgba(58, 66, 86, 0.95) 0%, rgba(36, 42, 56, 0.98) 100%);
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  border-bottom-color: #12151c;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.landing-features__item > div {
+  min-width: 0;
+  flex: 1;
+}
+
+.landing-features__icon-wrap {
+  flex-shrink: 0;
+  width: 2.35rem;
+  height: 2.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.7rem;
+  background: linear-gradient(180deg, #84f928 0%, #2ea818 100%);
+  box-shadow: 0 3px 0 #1f6b2f;
+}
+
+.landing-features__icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: #fff;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
+}
+
+.landing-features__title {
+  margin: 0 0 0.25rem;
+  font-family: "Fredoka One", sans-serif;
+  font-size: 1.05rem;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.landing-features__text {
+  margin: 0;
+  font-family: "Nunito", "Segoe UI", sans-serif;
+  font-size: 0.94rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.landing-section--cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 2.25rem;
+  text-align: center;
+}
+
+.landing-footer {
+  padding: 1.25rem 1.25rem calc(1.75rem + env(safe-area-inset-bottom, 0px));
+  text-align: center;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.landing-footer__credit {
+  margin: 0;
+  font-family: "Nunito", "Segoe UI", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.landing-footer__credit a {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 0.18rem;
+}
+
+.landing-footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.landing-footer__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: "Nunito", "Segoe UI", sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.78);
+  text-decoration: none;
+  opacity: 0.9;
+}
+
+.landing-footer__link:hover,
+.landing-footer__link:focus-visible {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 0.15rem;
+}
+
+.landing-footer__link svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+@keyframes landing-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes landing-logo-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@media (min-width: 720px) {
+  .landing-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 1.1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-hero__content,
+  .landing-hero__logo {
+    animation: none;
+  }
+}

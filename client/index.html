@@ -4,16 +4,99 @@
     <meta charset="UTF-8" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Buzzer App : buzzer en ligne pour blind-test et quiz</title>
     <meta
-            name="description"
-            content="Buzzer-App révolutionne les soirées jeux avec une expérience interactive et dynamique, transformant chaque rencontre en une compétition palpitante de rapidité et d'esprit. Cette application web innovante est conçue pour animer vos soirées blind-test, quizz et bien d'autres jeux de groupe, en introduisant un élément compétitif captivant : qui appuiera sur le buzzer en premier ? Avec Buzzer-App, l'hôte crée facilement un groupe et invite les participants via un code ou un lien d’invitation. Chaque joueur, muni de son buzzer virtuel, est prêt à relever le défi dès que l'hôte lance la partie. Les points en jeu, définis par l'hôte, ajoutent une couche stratégique à chaque question. L'application affiche en temps réel le nom du joueur le plus rapide, tandis que l'hôte garde le contrôle pour valider ou refuser les réponses. Buzzer-App ne se contente pas de mesurer la rapidité ; elle offre aussi un aperçu de la connexion réseau de chaque participant, garantissant ainsi une compétition équitable. Rejoignez la communauté Buzzer-App pour transformer vos rencontres en moments inoubliables d'amusement et de compétition."
+      name="description"
+      content="Buzzer App : buzzer web en temps réel pour blind-test, quiz et soirées jeux. Crée un salon, invite avec un code, un lien ou un QR, et vois qui buzz en premier."
     />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#de2e48" />
+    <link rel="canonical" href="https://buzzer-app.fr/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:site_name" content="Buzzer App" />
+    <meta property="og:url" content="https://buzzer-app.fr/" />
+    <meta property="og:title" content="Buzzer App : buzzer en ligne pour blind-test et quiz" />
+    <meta
+      property="og:description"
+      content="Anime tes soirées jeux avec un buzzer virtuel en temps réel. Salon, invitations et scores personnalisables."
+    />
+    <meta property="og:image" content="https://buzzer-app.fr/buzzer-app-logo-512.webp" />
+    <meta property="og:image:alt" content="Logo Buzzer App" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Buzzer App : buzzer en ligne pour blind-test et quiz" />
+    <meta
+      name="twitter:description"
+      content="Buzzer web en temps réel pour blind-test, quiz et soirées jeux. Sans installation."
+    />
+    <meta name="twitter:image" content="https://buzzer-app.fr/buzzer-app-logo-512.webp" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
     <link rel="apple-touch-icon" href="/buzzer-app-logo-192.webp" />
     <link rel="manifest" href="/manifest.json" />
-    <title>Buzzer App</title>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Buzzer App",
+        "url": "https://buzzer-app.fr/",
+        "applicationCategory": "GameApplication",
+        "operatingSystem": "Web",
+        "inLanguage": "fr-FR",
+        "description": "Buzzer web en temps réel pour blind-test, quiz et soirées jeux. Crée un salon, invite tes amis et vois qui buzz en premier.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "EUR"
+        },
+        "creator": {
+          "@type": "Person",
+          "name": "Arthur Mondon",
+          "url": "https://mondon.pro/projet/buzzer-app"
+        }
+      }
+    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <article>
+        <header>
+          <h1>Buzzer App</h1>
+          <p>Le buzzer de tes soirées jeux. Anime un blind-test ou un quiz en live : crée un salon, invite tes amis, et vois qui appuie en premier.</p>
+          <p><a href="/jouer">Jouer maintenant</a></p>
+        </header>
+        <section>
+          <h2>Comment ça marche</h2>
+          <ol>
+            <li>Crée un salon avec un nom, un blason et les règles de score.</li>
+            <li>Invite tes amis avec un code, un lien ou un QR.</li>
+            <li>Lance la manche : le plus rapide apparaît en direct, tu valides ou refuses la réponse.</li>
+          </ol>
+        </section>
+        <section>
+          <h2>Fonctionnalités</h2>
+          <ul>
+            <li>Buzzer temps réel</li>
+            <li>Scores sur mesure (points, bonus, pénalité)</li>
+            <li>Invitation par code, lien et QR</li>
+            <li>Salons publics et historique</li>
+            <li>Profil, avatar et thème</li>
+            <li>Idéal pour les soirées blind-test et quiz</li>
+            <li>Pas besoin d’être sur le même Wi-Fi : Wi-Fi, 4G ou 5G suffisent</li>
+            <li>Pas de compte à créer</li>
+            <li>Gratuit, utilisable dans le navigateur sans installation</li>
+          </ul>
+        </section>
+        <footer>
+          <p>Buzzer App · Arthur Mondon · <a href="https://mondon.pro/projet/buzzer-app">mondon.pro</a></p>
+        </footer>
+      </article>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

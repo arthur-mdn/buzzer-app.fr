@@ -192,7 +192,7 @@ function GameRoom({ currentPing }) {
                         </div>
                         <form className={'modal_content'}>
                             <label style={{ width: '100%', textAlign: 'left' }}> {error} </label>
-                            <Link to="/" className={'btn-push'} style={{ width: '100%', textAlign: 'center', padding: '1rem 0' }}>Accueil</Link>
+                            <Link to="/app" className={'btn-push'} style={{ width: '100%', textAlign: 'center', padding: '1rem 0' }}>Accueil</Link>
                         </form>
                     </div>
                 </nav>
@@ -241,7 +241,7 @@ function GameRoom({ currentPing }) {
                         </span>
                     </div>
                 </button>
-                <Link to="/" onClick={handleBackClick} className={'btn-push'} style={{ padding: '0.1rem 0.7rem 0.3rem 0.75rem', height: 'fit-content' }}>{'x'}</Link>
+                <Link to="/app" onClick={handleBackClick} className={'btn-push'} style={{ padding: '0.1rem 0.7rem 0.3rem 0.75rem', height: 'fit-content' }}>{'x'}</Link>
             </div>
             {role === 'host' && <HostGameRoom serverInfo={serverInfo} />}
             {role === 'participant' && <PlayerGameRoom serverInfo={serverInfo} />}

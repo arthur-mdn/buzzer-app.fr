@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { FaGithub, FaPaypal } from 'react-icons/fa6';
 
 function AboutModalContent() {
@@ -33,6 +34,9 @@ function AboutModalContent() {
                 </p>
             </div>
             <div className="about-modal__links">
+                <Link className="btn-push btn-push-gray about-modal__link" to="/">
+                    Page d&apos;accueil
+                </Link>
                 <a
                     className="btn-push about-modal__link"
                     href="https://github.com/arthur-mdn/buzzer-app"

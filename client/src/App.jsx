@@ -1,11 +1,13 @@
 //App.js
-import  {useEffect, useState, useRef, useCallback} from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import io from 'socket.io-client';
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import NotFound from "./components/NotFound.jsx";
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import NotFound from './components/NotFound.jsx';
 import GameRoom from './components/GameRoom/GameRoom.jsx';
 import HomePage from './components/homePage/HomePage.jsx';
+import LandingPage from './components/landing/LandingPage.jsx';
 import UserNameInput from './components/UserNameInput/UserNameInput.jsx';
+import AppBootScreen from './components/AppBootScreen.jsx';
 import { SocketProvider } from './SocketContext.jsx';
 import { TokenProvider } from './TokenContext.jsx';
 import { UserProvider } from './UserContext.jsx';
@@ -15,9 +17,42 @@ import { normalizeProfileColor, normalizeProfileImageIndex } from './utils/profi
 import { STORAGE_KEYS, clearAuthStorage, getStorageItem } from './utils/storage.js';
 import { authenticateWithStoredToken } from './utils/auth.js';
 
+function getInitialStatus() {
+    return getStorageItem(STORAGE_KEYS.token) ? 'initial' : 'noToken';
+}
+
+function AuthenticatedShell({
+    userId,
+    userRole,
+    userName,
+    userPictureSmiley,
+    userPictureColor,
+    userBackground,
+    setUserBackground,
+    socketRef,
+    token,
+}) {
+    return (
+        <UserProvider
+            userId={userId}
+            userRole={userRole}
+            userName={userName}
+            userPictureSmiley={userPictureSmiley}
+            userPictureColor={userPictureColor}
+        >
+            <TokenProvider token={token}>
+                <SocketProvider socket={socketRef}>
+                    <ThemeProvider userBackground={userBackground} setUserBackground={setUserBackground}>
+                        <Outlet />
+                    </ThemeProvider>
+                </SocketProvider>
+            </TokenProvider>
+        </UserProvider>
+    );
+}
 
 function App() {
-    const [status, setStatus] = useState('initial');
+    const [status, setStatus] = useState(getInitialStatus);
     const [statusMsg, setStatusMsg] = useState('');
     const [userId, setUserId] = useState(null);
     const [userRole, setUserRole] = useState('user');
@@ -29,10 +64,13 @@ function App() {
     const [currentPing, setCurrentPing] = useState(0);
 
     const socketRef = useRef();
+    const isReady = status === 'socketReady';
+    const isGuest = status === 'noToken';
+    const isBooting = status === 'initial' || status === 'authenticated';
 
     const setupSocket = useCallback(() => {
-        console.log('setup')
-        console.log(config.serverSocketUrl)
+        console.log('setup');
+        console.log(config.serverSocketUrl);
         if (socketRef.current) {
             socketRef.current.removeAllListeners();
             socketRef.current.disconnect();
@@ -40,11 +78,11 @@ function App() {
         }
         socketRef.current = io(config.serverSocketUrl, {
             transports: ['websocket', 'polling'],
-            query: { token: getStorageItem(STORAGE_KEYS.token) }
+            query: { token: getStorageItem(STORAGE_KEYS.token) },
         });
 
         socketRef.current.on('socketIdUpdated', () => {
-            console.log("socketIdUpdated")
+            console.log('socketIdUpdated');
             setStatus('socketReady');
             setIsWaitingForPong(false);
         });
@@ -76,7 +114,7 @@ function App() {
             setStatus('kickServer');
         });
 
-        socketRef.current.on('updateProfile', ({newUserRole, newUserName, newUserPicture, newUserTheme}) => {
+        socketRef.current.on('updateProfile', ({ newUserRole, newUserName, newUserPicture, newUserTheme }) => {
             setUserRole(newUserRole);
             setUserName(newUserName);
             setUserPictureSmiley(normalizeProfileImageIndex(newUserPicture.smiley, false));
@@ -86,7 +124,7 @@ function App() {
     }, []);
 
     const authenticateUser = useCallback(async () => {
-        console.log("Authenticating user...");
+        console.log('Authenticating user...');
         try {
             const result = await authenticateWithStoredToken();
             if (result.reason === 'noToken') {
@@ -130,118 +168,201 @@ function App() {
     }, [ping]);
 
     const onRegisterSuccess = () => {
-        console.log("Register success...");
+        console.log('Register success...');
         authenticateUser();
     };
+
     const onLogout = () => {
-        console.log("logout...");
+        console.log('logout...');
         clearAuthStorage();
-        window.location.reload()
+        window.location.reload();
     };
-    switch (status) {
-        case 'noToken':
-            return <UserNameInput onSuccess={onRegisterSuccess} />;
-        case 'connectError':
-            return <div className={'modal_bg'}>
-                <div className={'modal'}>
-                    <div className={'modal_content_title'}>
+
+    if (status === 'connectError') {
+        return (
+            <div className="modal_bg">
+                <div className="modal">
+                    <div className="modal_content_title">
                         <h2>Erreur !</h2>
                     </div>
-                    <div className={'modal_content'}>
-                        <label htmlFor={'name'} style={{width:'100%',textAlign:'center'}}>Erreur de connexion au serveur</label>
-                        <button onClick={() => window.location.reload()}  className={'btn-push btn-push-green'} style={{padding: '1rem 1.5rem'}}>Réessayer</button>
+                    <div className="modal_content">
+                        <label htmlFor="name" style={{ width: '100%', textAlign: 'center' }}>
+                            Erreur de connexion au serveur
+                        </label>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="btn-push btn-push-green"
+                            style={{ padding: '1rem 1.5rem' }}
+                        >
+                            Réessayer
+                        </button>
                     </div>
                 </div>
             </div>
-                ;
+        );
+    }
 
-        case 'authError':
-            return <div className={'modal_bg'}>
-                <div className={'modal'}>
-                    <div className={'modal_content_title'}>
+    if (status === 'authError') {
+        return (
+            <div className="modal_bg">
+                <div className="modal">
+                    <div className="modal_content_title">
                         <h2>Erreur !</h2>
                     </div>
-                    <div className={'modal_content'}>
-                        <label htmlFor={'name'} style={{width:'100%',textAlign:'center'}}>Erreur de connexion : {statusMsg}</label>
-                        <button onClick={() => window.location.reload()} className={'btn-push btn-push-green'}  style={{padding: '1rem 1.5rem'}}>Réessayer</button>
-                        <button onClick={onLogout} className={'btn-push'} style={{padding: '1rem 1.5rem'}}>Déconnexion</button>
+                    <div className="modal_content">
+                        <label htmlFor="name" style={{ width: '100%', textAlign: 'center' }}>
+                            Erreur de connexion : {statusMsg}
+                        </label>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="btn-push btn-push-green"
+                            style={{ padding: '1rem 1.5rem' }}
+                        >
+                            Réessayer
+                        </button>
+                        <button onClick={onLogout} className="btn-push" style={{ padding: '1rem 1.5rem' }}>
+                            Déconnexion
+                        </button>
                     </div>
                 </div>
-            </div>;
-        case 'forceDisconnect':
-            return (
-                <div className={'modal_bg'}>
-                    <div className={'modal'}>
-                        <div className={'modal_content_title'}>
-                            <h2>Erreur !</h2>
-                        </div>
-                        <div className={'modal_content'}>
-                            <label htmlFor={'name'} style={{width:'100%',textAlign:'center'}}> Oops... Vous semblez vous être connecté sur un autre appareil.</label>
-                            <button onClick={() => window.location.reload()}  className={'btn-push btn-push-green'} style={{padding: '1rem 1.5rem'}}>Reconnexion</button>
-                        </div>
-                    </div>
-                </div>
-            );
-        case 'adminForceDisconnect':
-            return (
-                <div className={'modal_bg'}>
-                    <div className={'modal'}>
-                        <div className={'modal_content_title'}>
-                            <h2>Erreur !</h2>
-                        </div>
-                        <div className={'modal_content'}>
-                            <label htmlFor={'name'} style={{width:'100%',textAlign:'center'}}> Vous avez été déconnecté par un administrateur.</label>
-                            <button onClick={() => window.location.reload()}  className={'btn-push btn-push-green'} style={{padding: '1rem 1.5rem'}}>Reconnexion</button>
-                        </div>
-                    </div>
-                </div>
-            );
-        case 'kickServer':
-            return (
-                <div className={'modal_bg'}>
-                    <div className={'modal'}>
-                        <div className={'modal_content_title'}>
-                            <h2>Erreur !</h2>
-                        </div>
-                        <div className={'modal_content'}>
-                            <label htmlFor={'name'} style={{width:'100%',textAlign:'center'}}> Vous avez été exclu du serveur.</label>
-                            <button onClick={() => window.location.href = config.instanceUrl+"/"}  className={'btn-push'} style={{padding: '1rem 1.5rem'}}>Accueil</button>
-                        </div>
-                    </div>
-                </div>
-            );
-        case 'socketReady': {
-            const token = getStorageItem(STORAGE_KEYS.token);
-            return (
-                <UserProvider userId={userId} userRole={userRole} userName={userName} userPictureSmiley={userPictureSmiley} userPictureColor={userPictureColor}>
-                    <TokenProvider token={token}>
-                        <SocketProvider socket={socketRef}>
-                            <ThemeProvider userBackground={userBackground} setUserBackground={setUserBackground}>
-                                <Router>
-                                    <Routes>
-                                        <Route path="/" element={ <HomePage />} />
-                                        <Route path="/server/:serverCode" element={<GameRoom currentPing={currentPing}/>} />
-                                        <Route path="*" element={<NotFound />} />
-                                    </Routes>
-                                </Router>
-                            </ThemeProvider>
-                        </SocketProvider>
-                    </TokenProvider>
-                </UserProvider>
-            );
-        }
-        default:
-            return <div className={'modal_bg'}>
-                <div className={'modal'}>
-                    <div className={'modal_content_title'}>
-                        <h2>Chargement</h2>
-                    </div>
-                    <div className={'modal_content'}>
-                        <label htmlFor={'name'} style={{width:'100%',textAlign:'center'}}>Chargement... Veuillez patienter</label>
-                    </div>
-                </div>
-            </div>;
+            </div>
+        );
     }
+
+    if (status === 'forceDisconnect') {
+        return (
+            <div className="modal_bg">
+                <div className="modal">
+                    <div className="modal_content_title">
+                        <h2>Erreur !</h2>
+                    </div>
+                    <div className="modal_content">
+                        <label htmlFor="name" style={{ width: '100%', textAlign: 'center' }}>
+                            Oops... Vous semblez vous être connecté sur un autre appareil.
+                        </label>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="btn-push btn-push-green"
+                            style={{ padding: '1rem 1.5rem' }}
+                        >
+                            Reconnexion
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (status === 'adminForceDisconnect') {
+        return (
+            <div className="modal_bg">
+                <div className="modal">
+                    <div className="modal_content_title">
+                        <h2>Erreur !</h2>
+                    </div>
+                    <div className="modal_content">
+                        <label htmlFor="name" style={{ width: '100%', textAlign: 'center' }}>
+                            Vous avez été déconnecté par un administrateur.
+                        </label>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="btn-push btn-push-green"
+                            style={{ padding: '1rem 1.5rem' }}
+                        >
+                            Reconnexion
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (status === 'kickServer') {
+        return (
+            <div className="modal_bg">
+                <div className="modal">
+                    <div className="modal_content_title">
+                        <h2>Erreur !</h2>
+                    </div>
+                    <div className="modal_content">
+                        <label htmlFor="name" style={{ width: '100%', textAlign: 'center' }}>
+                            Vous avez été exclu du serveur.
+                        </label>
+                        <button
+                            onClick={() => {
+                                window.location.href = `${config.instanceUrl}/app`;
+                            }}
+                            className="btn-push"
+                            style={{ padding: '1rem 1.5rem' }}
+                        >
+                            Accueil
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    const token = getStorageItem(STORAGE_KEYS.token);
+
+    const authLayout = (
+        <AuthenticatedShell
+            userId={userId}
+            userRole={userRole}
+            userName={userName}
+            userPictureSmiley={userPictureSmiley}
+            userPictureColor={userPictureColor}
+            userBackground={userBackground}
+            setUserBackground={setUserBackground}
+            socketRef={socketRef}
+            token={token}
+        />
+    );
+
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<LandingPage authenticated={isReady} />} />
+                <Route
+                    path="/jouer"
+                    element={
+                        isReady
+                            ? <Navigate to="/app" replace />
+                            : isGuest
+                                ? <UserNameInput onSuccess={onRegisterSuccess} />
+                                : <AppBootScreen />
+                    }
+                />
+
+                {isReady ? (
+                    <Route element={authLayout}>
+                        <Route path="/app" element={<HomePage />} />
+                        <Route path="/server/:serverCode" element={<GameRoom currentPing={currentPing} />} />
+                    </Route>
+                ) : (
+                    <>
+                        <Route
+                            path="/app"
+                            element={isGuest ? <Navigate to="/jouer" replace /> : <AppBootScreen />}
+                        />
+                        <Route
+                            path="/server/:serverCode"
+                            element={
+                                isGuest
+                                    ? <UserNameInput onSuccess={onRegisterSuccess} />
+                                    : <AppBootScreen />
+                            }
+                        />
+                    </>
+                )}
+
+                <Route
+                    path="*"
+                    element={isReady ? <NotFound /> : isBooting ? <AppBootScreen /> : <Navigate to="/" replace />}
+                />
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;

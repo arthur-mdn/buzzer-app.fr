@@ -1,5 +1,6 @@
 // UserNameInput.jsx
 import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import config from "../../config";
 import ProfilePictureChooser from "./ProfilePictureChooser.jsx";
 import AboutApp from "../homePage/AboutApp.jsx";
@@ -7,6 +8,8 @@ import { normalizeProfileColor, PROFILE_COLORS } from "../../utils/profilePictur
 import { STORAGE_KEYS, setStorageItem } from "../../utils/storage.js";
 
 function UserNameInput({ onSuccess }) {
+    const location = useLocation();
+    const showBackToLanding = location.pathname === '/jouer' || location.pathname.startsWith('/server/');
     const [tempUserName, setTempUserName] = useState('');
     const [showPasswordCount, setShowPasswordCount] = useState(0);
     const [tempPassword, setTempPassword] = useState('');
@@ -93,9 +96,13 @@ function UserNameInput({ onSuccess }) {
             <nav className={'modal_bg'}>
                 <div className={'modal'}>
                     <div className={'modal_content_title'}>
+                        {showBackToLanding && (
+                            <Link to="/" className="back btn-push" aria-label="Retour à l'accueil">
+                                ‹
+                            </Link>
+                        )}
                         <h2 onClick={incrementShowPasswordCount}>Bienvenue !</h2>
                         <AboutApp />
-
                     </div>
                     <form onSubmit={handleUsernameSubmit} className={'modal_content'}>
                         <label htmlFor={'name'} style={{width:'100%',textAlign:'left'}}>Comment dois-je t'appeler ?</label>
